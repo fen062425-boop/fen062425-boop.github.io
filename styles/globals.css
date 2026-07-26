@@ -39,6 +39,12 @@ body.is-locked {
   overflow: hidden;
 }
 
+.site-root {
+  min-height: 100svh;
+  color: var(--text);
+  background: var(--bg);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -157,6 +163,16 @@ button {
     linear-gradient(118deg, #050607 0%, #0b171c 54%, #081014 100%);
   transform: scale(1.02);
   animation: hero-drift 18s ease-in-out infinite alternate;
+}
+
+.hero-background-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.58;
+  filter: saturate(0.82) contrast(1.08);
 }
 
 .hero-media::before {
@@ -546,6 +562,13 @@ button {
     linear-gradient(150deg, #172328, #070b0d 72%);
 }
 
+.portrait-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
 .portrait-grid {
   position: absolute;
   inset: 0;
@@ -854,6 +877,26 @@ button {
   transition:
     transform 600ms var(--ease),
     filter 260ms ease;
+}
+
+.work-art--image {
+  background: #050607;
+}
+
+.work-art--image::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, transparent 42%, rgba(5, 6, 7, 0.78)),
+    linear-gradient(90deg, rgba(5, 6, 7, 0.08), transparent 50%);
+  content: "";
+}
+
+.art-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .work-card:hover .work-art {

@@ -5,7 +5,11 @@ export const siteContent = {
   heroStatementPhrases: ["让产品视觉更高级，", "也更高效。"],
   heroDescription:
     "聚焦品牌策略、电商视觉、产品表现与 AIGC 设计工作流，把卖点、审美、转化诉求和生产效率整合成清晰可落地的视觉系统。",
+  heroImage: "",
   profile: {
+    portraitImage: "",
+    captionTitle: "Design Director",
+    captionText: "AIGC Workflow / Brand Upgrade / Ecommerce Visual",
     titlePhrases: [
       "从品牌策略到",
       "AI 提效，",

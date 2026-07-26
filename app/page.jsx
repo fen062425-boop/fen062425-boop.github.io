@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { siteContent, workFilters, workGroups } from "../data/portfolio";
+import { workFilters } from "../data/portfolio";
+import {
+  getDefaultPortfolioConfig,
+  loadPortfolioConfig,
+  PORTFOLIO_PREVIEW_MESSAGE,
+  PORTFOLIO_STORAGE_KEY,
+  PORTFOLIO_UPDATE_EVENT
+} from "../lib/portfolio-config";
 
 const navItems = [
   { href: "#profile", label: "介绍" },
@@ -9,6 +16,24 @@ const navItems = [
 ];
 
 function WorkArtwork({ project }) {
+  if (project.image) {
+    return (
+      <div
+        aria-hidden="true"
+        className="work-art work-art--image"
+        style={{ "--accent": project.accent }}
+      >
+        <img
+          alt=""
+          className="art-image"
+          draggable="false"
+          referrerPolicy="no-referrer"
+          src={project.image}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       aria-hidden="true"
@@ -73,9 +98,16 @@ function WorkGroup({ group, hidden, onOpen }) {
         <h3>{group.title}</h3>
       </div>
       <div className={group.id === "video" ? "video-grid" : "image-grid"}>
-        {group.projects.map((project) => (
-          <WorkCard group={group} key={project.id} onOpen={onOpen} project={project} />
-        ))}
+        {group.projects
+          .filter((project) => project.visible !== false)
+          .map((project) => (
+            <WorkCard
+              group={group}
+              key={project.id}
+              onOpen={onOpen}
+              project={project}
+            />
+          ))}
       </div>
     </section>
   );
@@ -164,15 +196,62 @@ function ProjectLightbox({ project, onClose }) {
 }
 
 export default function Home() {
+  const [portfolioConfig, setPortfolioConfig] = useState(
+    getDefaultPortfolioConfig
+  );
   const [activeFilter, setActiveFilter] = useState("all");
   const [selectedProject, setSelectedProject] = useState(null);
   const [copied, setCopied] = useState(false);
   const lastFocusedRef = useRef(null);
+  const { siteContent, theme, workGroups } = portfolioConfig;
+
+  useEffect(() => {
+    const syncConfig = () => {
+      setPortfolioConfig(loadPortfolioConfig());
+      setSelectedProject(null);
+    };
+    const handleStorage = (event) => {
+      if (!event.key || event.key === PORTFOLIO_STORAGE_KEY) syncConfig();
+    };
+    const handleMessage = (event) => {
+      if (
+        event.origin === window.location.origin &&
+        event.source === window.parent &&
+        event.data?.type === PORTFOLIO_PREVIEW_MESSAGE
+      ) {
+        syncConfig();
+      }
+    };
+
+    syncConfig();
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener(PORTFOLIO_UPDATE_EVENT, syncConfig);
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener(PORTFOLIO_UPDATE_EVENT, syncConfig);
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
   useEffect(() => {
     document.body.classList.toggle("is-locked", Boolean(selectedProject));
     return () => document.body.classList.remove("is-locked");
   }, [selectedProject]);
+
+  useEffect(() => {
+    if (
+      activeFilter !== "all" &&
+      !workGroups.some(
+        (group) =>
+          group.id === activeFilter &&
+          group.projects.some((project) => project.visible !== false)
+      )
+    ) {
+      setActiveFilter("all");
+    }
+  }, [activeFilter, workGroups]);
 
   const openProject = (project) => {
     lastFocusedRef.current = document.activeElement;
@@ -205,8 +284,26 @@ export default function Home() {
     window.setTimeout(() => setCopied(false), 1800);
   };
 
+  const availableFilters = workFilters.filter(
+    (filter) =>
+      filter.id === "all" ||
+      workGroups.some(
+        (group) =>
+          group.id === filter.id &&
+          group.projects.some((project) => project.visible !== false)
+      )
+  );
+
   return (
-    <>
+    <div
+      className="site-root"
+      style={{
+        "--bg": theme.background,
+        "--cyan": theme.cyan,
+        "--gold": theme.gold,
+        "--text": theme.text
+      }}
+    >
       <header className="site-nav">
         <a aria-label="返回首页" className="brand" href="#top">
           {siteContent.brand}
@@ -226,38 +323,50 @@ export default function Home() {
       <main id="top">
         <section aria-labelledby="hero-title" className="hero">
           <div aria-hidden="true" className="hero-media">
-            <div className="hero-media-grid" />
-            <div className="hero-beam hero-beam-one" />
-            <div className="hero-beam hero-beam-two" />
-            <div className="ice-cube ice-cube-one" />
-            <div className="ice-cube ice-cube-two" />
-            <div className="ice-cube ice-cube-three" />
-            <div className="hero-machine">
-              <div className="machine-top" />
-              <div className="machine-screen">
-                <span>ICE</span>
-                <strong>08</strong>
-              </div>
-              <div className="machine-window">
-                <i />
-                <i />
-                <i />
-              </div>
-              <div className="machine-line" />
-            </div>
+            {siteContent.heroImage ? (
+              <img
+                alt=""
+                className="hero-background-image"
+                draggable="false"
+                referrerPolicy="no-referrer"
+                src={siteContent.heroImage}
+              />
+            ) : (
+              <>
+                <div className="hero-media-grid" />
+                <div className="hero-beam hero-beam-one" />
+                <div className="hero-beam hero-beam-two" />
+                <div className="ice-cube ice-cube-one" />
+                <div className="ice-cube ice-cube-two" />
+                <div className="ice-cube ice-cube-three" />
+                <div className="hero-machine">
+                  <div className="machine-top" />
+                  <div className="machine-screen">
+                    <span>ICE</span>
+                    <strong>08</strong>
+                  </div>
+                  <div className="machine-window">
+                    <i />
+                    <i />
+                    <i />
+                  </div>
+                  <div className="machine-line" />
+                </div>
+              </>
+            )}
           </div>
           <div className="hero-shade" />
           <div className="hero-inner">
             <p className="kicker">{siteContent.role}</p>
             <h1 id="hero-title">
-              {siteContent.heroLines.map((line) => (
-                <span key={line}>{line}</span>
+              {siteContent.heroLines.map((line, index) => (
+                <span key={index}>{line}</span>
               ))}
             </h1>
             <div className="hero-grid">
               <p className="hero-title phrase-title">
-                {siteContent.heroStatementPhrases.map((phrase) => (
-                  <span key={phrase}>{phrase}</span>
+                {siteContent.heroStatementPhrases.map((phrase, index) => (
+                  <span key={index}>{phrase}</span>
                 ))}
               </p>
               <p>{siteContent.heroDescription}</p>
@@ -278,34 +387,50 @@ export default function Home() {
             <div className="section-shell profile-layout">
               <div className="profile-card">
                 <div aria-hidden="true" className="portrait-scene">
-                  <div className="portrait-grid" />
-                  <div className="portrait-halo" />
-                  <div className="portrait-figure">
-                    <i className="portrait-head" />
-                    <i className="portrait-body" />
-                  </div>
-                  <span className="portrait-word">YOUR<br />PORTRAIT</span>
+                  {siteContent.profile.portraitImage ? (
+                    <img
+                      alt=""
+                      className="portrait-image"
+                      draggable="false"
+                      referrerPolicy="no-referrer"
+                      src={siteContent.profile.portraitImage}
+                    />
+                  ) : (
+                    <>
+                      <div className="portrait-grid" />
+                      <div className="portrait-halo" />
+                      <div className="portrait-figure">
+                        <i className="portrait-head" />
+                        <i className="portrait-body" />
+                      </div>
+                      <span className="portrait-word">
+                        YOUR
+                        <br />
+                        PORTRAIT
+                      </span>
+                    </>
+                  )}
                 </div>
                 <div className="profile-card-caption">
-                  <span>Design Director</span>
-                  <p>AIGC Workflow / Brand Upgrade / Ecommerce Visual</p>
+                  <span>{siteContent.profile.captionTitle}</span>
+                  <p>{siteContent.profile.captionText}</p>
                 </div>
               </div>
 
               <div className="profile-copy">
                 <p className="kicker">Profile</p>
                 <h2 className="phrase-title">
-                  {siteContent.profile.titlePhrases.map((phrase) => (
-                    <span key={phrase}>{phrase}</span>
+                  {siteContent.profile.titlePhrases.map((phrase, index) => (
+                    <span key={index}>{phrase}</span>
                   ))}
                 </h2>
-                {siteContent.profile.paragraphs.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                {siteContent.profile.paragraphs.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
                 ))}
 
                 <div aria-label="工作经历时间轴" className="timeline">
-                  {siteContent.profile.timeline.map((item) => (
-                    <article className="timeline-item" key={item.period}>
+                  {siteContent.profile.timeline.map((item, index) => (
+                    <article className="timeline-item" key={index}>
                       <time>{item.period}</time>
                       <div>
                         <h3>{item.company}</h3>
@@ -317,8 +442,8 @@ export default function Home() {
                 </div>
 
                 <div className="stats">
-                  {siteContent.profile.stats.map((item) => (
-                    <span key={item.label}>
+                  {siteContent.profile.stats.map((item, index) => (
+                    <span key={index}>
                       <strong>{item.value}</strong>
                       {item.label}
                     </span>
@@ -336,7 +461,7 @@ export default function Home() {
                   <h2>作品集</h2>
                 </div>
                 <div aria-label="作品分类" className="filters">
-                  {workFilters.map((filter) => (
+                  {availableFilters.map((filter) => (
                     <button
                       aria-pressed={activeFilter === filter.id}
                       className={`filter ${activeFilter === filter.id ? "active" : ""}`}
@@ -350,14 +475,18 @@ export default function Home() {
                 </div>
               </div>
 
-              {workGroups.map((group) => (
-                <WorkGroup
-                  group={group}
-                  hidden={activeFilter !== "all" && activeFilter !== group.id}
-                  key={group.id}
-                  onOpen={openProject}
-                />
-              ))}
+              {workGroups
+                .filter((group) =>
+                  group.projects.some((project) => project.visible !== false)
+                )
+                .map((group) => (
+                  <WorkGroup
+                    group={group}
+                    hidden={activeFilter !== "all" && activeFilter !== group.id}
+                    key={group.id}
+                    onOpen={openProject}
+                  />
+                ))}
             </div>
           </section>
 
@@ -365,8 +494,8 @@ export default function Home() {
             <div className="section-shell contact-inner">
               <p className="kicker">Contact</p>
               <h2 className="phrase-title">
-                {siteContent.contact.titlePhrases.map((phrase) => (
-                  <span key={phrase}>{phrase}</span>
+                {siteContent.contact.titlePhrases.map((phrase, index) => (
+                  <span key={index}>{phrase}</span>
                 ))}
               </h2>
               <div className="contact-links">
@@ -390,6 +519,6 @@ export default function Home() {
       {selectedProject && (
         <ProjectLightbox onClose={closeProject} project={selectedProject} />
       )}
-    </>
+    </div>
   );
 }
