@@ -1,136 +1,251 @@
 export const siteContent = {
-  brand: "STUDIO / 26",
-  eyebrow: "Independent visual designer · China",
-  heroLines: ["Visual", "Design", "Portfolio."],
-  heroStatement: "让好设计不只被看见，也真正推动品牌向前。",
+  brand: "YOUR NAME",
+  role: "AI 电商设计师 × 品牌视觉设计师",
+  heroLines: ["Creative", "E-commerce", "Director"],
+  heroStatementPhrases: ["让产品视觉更高级，", "也更高效。"],
   heroDescription:
-    "聚焦品牌视觉、电商设计与内容系统，把策略、审美和执行整合成清晰、有记忆点、可持续落地的商业设计。",
+    "聚焦品牌策略、电商视觉、产品表现与 AIGC 设计工作流，把卖点、审美、转化诉求和生产效率整合成清晰可落地的视觉系统。",
   profile: {
-    label: "Profile / 01",
-    title: ["让策略成为视觉，", "让设计推动品牌。"],
+    titlePhrases: [
+      "从品牌策略到",
+      "AI 提效，",
+      "把电商视觉做成",
+      "可持续的生产系统。"
+    ],
     paragraphs: [
-      "你好，我是一名平面与品牌视觉设计师。关注商业目标，也在意每一个版式、字体与材质细节。",
-      "我的工作覆盖品牌升级、电商视觉、活动主视觉与 AIGC 工作流。擅长从模糊需求中找到清晰方向，再把方向变成可以持续使用的视觉系统。"
+      "你好，我是一名专注商业视觉与电商内容的设计师。擅长从产品定位和核心卖点出发，建立兼顾品牌感、信息效率与转化目标的视觉表达。",
+      "目前页面中的经历、项目和联系方式均为演示内容。替换为你的真实资料后，即可作为正式个人作品集使用。"
+    ],
+    timeline: [
+      {
+        period: "2023 — NOW",
+        company: "独立设计项目",
+        role: "视觉方向 / AIGC 工作流",
+        description:
+          "负责品牌视觉方向、电商页面规划、核心创意与 AI 辅助生产流程搭建。"
+      },
+      {
+        period: "2020 — 2023",
+        company: "品牌设计团队",
+        role: "高级视觉设计",
+        description:
+          "参与消费品牌视觉升级、平台活动页面和产品内容体系的设计与落地。"
+      },
+      {
+        period: "2018 — 2020",
+        company: "创意设计机构",
+        role: "视觉设计",
+        description:
+          "负责电商详情页、店铺首页、活动视觉与线下传播物料等商业设计项目。"
+      }
+    ],
+    stats: [
+      { value: "10+", label: "商业视觉项目类型" },
+      { value: "03", label: "核心业务方向" },
+      { value: "AIGC", label: "设计流程搭建" },
+      { value: "3D", label: "产品表现与渲染" }
     ]
   },
-  capabilities: [
-    { index: "01", title: "Brand", text: "品牌视觉与设计系统" },
-    { index: "02", title: "E-commerce", text: "电商页面与转化视觉" },
-    { index: "03", title: "Campaign", text: "活动 KV 与传播物料" },
-    { index: "04", title: "AIGC", text: "AI 视觉与高效工作流" }
-  ],
-  services: [
-    {
-      number: "01",
-      title: "品牌视觉设计",
-      text: "从定位、视觉方向到核心应用，建立统一且可延展的品牌表达。",
-      tags: ["视觉策略", "VI 系统", "设计规范"]
-    },
-    {
-      number: "02",
-      title: "电商视觉设计",
-      text: "围绕卖点与阅读路径，规划主图、详情页、活动页和内容素材。",
-      tags: ["页面策划", "信息层级", "转化设计"]
-    },
-    {
-      number: "03",
-      title: "整合创意与 AIGC",
-      text: "为 campaign 建立核心创意，并用 AI 工作流提升素材生产与迭代效率。",
-      tags: ["创意概念", "AI 生图", "流程搭建"]
-    }
-  ],
   contact: {
+    titlePhrases: ["一起把产品视觉", "推进到更高效、", "更有判断力的版本。"],
     email: "hello@yourname.com",
     wechat: "your_wechat",
-    location: "China · Remote"
+    availability: "Open for selected projects"
   }
 };
 
-export const projects = [
-  {
-    id: "northland",
-    index: "01",
-    title: "NORTHLAND",
-    subtitle: "城市文旅品牌视觉",
-    category: "品牌视觉",
-    year: "2026",
-    size: "featured",
-    artwork: "travel",
-    accent: "#d5ff3f",
-    summary:
-      "为山地旅行目的地建立更年轻、更具国际感的视觉语言，让自然体验与城市人群产生连接。",
-    deliverables: ["品牌概念", "主视觉系统", "户外海报", "社交媒体延展"]
-  },
-  {
-    id: "mori",
-    index: "02",
-    title: "MORI",
-    subtitle: "香氛品牌焕新",
-    category: "品牌视觉",
-    year: "2026",
-    size: "standard",
-    artwork: "beauty",
-    accent: "#f0c7af",
-    summary:
-      "以克制的材质与留白重塑香氛品牌气质，统一包装、产品摄影与线上传播体验。",
-    deliverables: ["视觉升级", "包装系统", "产品视觉", "上线物料"]
-  },
-  {
-    id: "nova",
-    index: "03",
-    title: "NOVA / X1",
-    subtitle: "科技新品发布",
-    category: "活动视觉",
-    year: "2025",
-    size: "standard",
-    artwork: "tech",
-    accent: "#7b8cff",
-    summary:
-      "以精密光学和速度感为核心，为科技新品发布建立高辨识度的动态视觉框架。",
-    deliverables: ["发布会 KV", "舞台视觉", "数字物料", "动态规范"]
-  },
-  {
-    id: "minday",
-    index: "04",
-    title: "MINDAY",
-    subtitle: "内容品牌视觉系统",
-    category: "内容设计",
-    year: "2025",
-    size: "standard",
-    artwork: "social",
-    accent: "#ff725e",
-    summary:
-      "针对高频内容生产场景，建立兼顾辨识度、阅读效率与批量复用的内容模板系统。",
-    deliverables: ["内容策略", "封面系统", "长图模板", "运营规范"]
-  },
-  {
-    id: "solace",
-    index: "05",
-    title: "SOLACE",
-    subtitle: "旅行主题视觉企划",
-    category: "活动视觉",
-    year: "2025",
-    size: "standard",
-    artwork: "culture",
-    accent: "#ffd36a",
-    summary:
-      "从影像叙事出发，将旅行中的光、风与地貌转化为一套具有编辑感的传播视觉。",
-    deliverables: ["创意企划", "主题海报", "旅行画册", "线下物料"]
-  },
-  {
-    id: "form06",
-    index: "06",
-    title: "FORM / 06",
-    subtitle: "家居产品电商视觉",
-    category: "电商视觉",
-    year: "2025",
-    size: "featured",
-    artwork: "ecommerce",
-    accent: "#89e6d2",
-    summary:
-      "以空间秩序与生活方式为线索，重新组织产品卖点，提升详情页的高级感与阅读效率。",
-    deliverables: ["卖点梳理", "详情页策划", "场景视觉", "平台素材"]
-  }
+export const workFilters = [
+  { id: "all", label: "全部" },
+  { id: "video", label: "视频" },
+  { id: "detail", label: "详情页" },
+  { id: "home", label: "首页" }
 ];
 
-export const projectCategories = ["全部", "品牌视觉", "电商视觉", "活动视觉", "内容设计"];
+export const workGroups = [
+  {
+    id: "video",
+    index: "01",
+    title: "视频作品",
+    typeLabel: "Video",
+    projects: [
+      {
+        id: "ice-01",
+        title: "制冰机产品视觉",
+        label: "产品主图视频 / 功能卖点",
+        artwork: "ice",
+        word: "ICE",
+        code: "01",
+        accent: "#71dce5"
+      },
+      {
+        id: "kitchen-r1",
+        title: "厨房电器氛围片",
+        label: "厨房电器 / 氛围视觉",
+        artwork: "kitchen",
+        word: "R1",
+        code: "02",
+        accent: "#bda66b"
+      },
+      {
+        id: "vacuum-v2",
+        title: "真空包装机演示",
+        label: "产品演示 / 转化视频",
+        artwork: "vacuum",
+        word: "VAC",
+        code: "03",
+        accent: "#8dc3d6"
+      },
+      {
+        id: "fresh-sensor",
+        title: "果蔬净化科技片",
+        label: "产品检测 / 科技表达",
+        artwork: "fresh",
+        word: "FRESH",
+        code: "04",
+        accent: "#77dfbd"
+      },
+      {
+        id: "home-scene",
+        title: "高端家居场景短片",
+        label: "短视频 / 场景种草",
+        artwork: "motion",
+        word: "HOME",
+        code: "05",
+        accent: "#e8c48b"
+      },
+      {
+        id: "live-motion",
+        title: "直播间动态视觉",
+        label: "直播场景 / 视觉节奏",
+        artwork: "live",
+        word: "LIVE",
+        code: "06",
+        accent: "#9bb5ff"
+      }
+    ]
+  },
+  {
+    id: "detail",
+    index: "02",
+    title: "详情页作品",
+    typeLabel: "Detail",
+    projects: [
+      {
+        id: "detail-clean",
+        title: "净护产品详情页",
+        label: "AIGC 产品视觉 / 卖点规划",
+        artwork: "fresh",
+        word: "CLEAN",
+        code: "01",
+        accent: "#76dfc4"
+      },
+      {
+        id: "detail-ice",
+        title: "制冰机详情页",
+        label: "小家电 / 清凉场景",
+        artwork: "ice",
+        word: "ICE",
+        code: "02",
+        accent: "#71dce5"
+      },
+      {
+        id: "detail-air",
+        title: "空气系统详情页",
+        label: "家电 / 科技表达",
+        artwork: "air",
+        word: "AIR",
+        code: "03",
+        accent: "#a3c1ff"
+      },
+      {
+        id: "detail-water",
+        title: "净饮产品详情页",
+        label: "小家电 / 纯净视觉",
+        artwork: "water",
+        word: "PURE",
+        code: "04",
+        accent: "#9de6ef"
+      },
+      {
+        id: "detail-winter",
+        title: "冬季场景详情页",
+        label: "场景视觉 / 季节内容",
+        artwork: "winter",
+        word: "WINTER",
+        code: "05",
+        accent: "#d4e6ef"
+      },
+      {
+        id: "detail-aura",
+        title: "AURA 新品详情页",
+        label: "新品上市 / 品牌视觉",
+        artwork: "aura",
+        word: "AURA",
+        code: "06",
+        accent: "#dfc49e"
+      }
+    ]
+  },
+  {
+    id: "home",
+    index: "03",
+    title: "首页 / 活动页作品",
+    typeLabel: "Home",
+    projects: [
+      {
+        id: "home-brand",
+        title: "品牌旗舰店首页",
+        label: "首页 / 品牌视觉升级",
+        artwork: "brand",
+        word: "NOVA",
+        code: "01",
+        accent: "#80dbe3"
+      },
+      {
+        id: "home-sale",
+        title: "年度大促活动页",
+        label: "首页 / 营销活动",
+        artwork: "sale",
+        word: "SALE",
+        code: "02",
+        accent: "#dfc06f"
+      },
+      {
+        id: "home-mobile",
+        title: "品牌 APP 首页",
+        label: "首页 / 移动端",
+        artwork: "mobile",
+        word: "APP",
+        code: "03",
+        accent: "#96b0ff"
+      },
+      {
+        id: "home-tech",
+        title: "科技新品预售页",
+        label: "首页 / 新品预售",
+        artwork: "live",
+        word: "X1",
+        code: "04",
+        accent: "#88a4ff"
+      },
+      {
+        id: "home-event",
+        title: "节点主题活动页",
+        label: "首页 / 节点活动",
+        artwork: "event",
+        word: "DAY",
+        code: "05",
+        accent: "#e9b886"
+      },
+      {
+        id: "home-editorial",
+        title: "内容专题承接页",
+        label: "首页 / 内容视觉",
+        artwork: "editorial",
+        word: "EDIT",
+        code: "06",
+        accent: "#8cdbc8"
+      }
+    ]
+  }
+];
