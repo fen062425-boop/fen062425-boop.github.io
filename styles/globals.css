@@ -7,6 +7,31 @@
   --cyan: #71dce5;
   --gold: #bda66b;
   --shell: min(1700px, calc(100% - 96px));
+  --type-hero-min: 78px;
+  --type-hero-fluid: 8.7vw;
+  --type-hero-desktop: 160px;
+  --type-hero-mobile: 58px;
+  --type-hero-tablet: calc(-13.432px + 9.921vw);
+  --type-hero-spacing: -0.065em;
+  --type-hero-leading: 0.84;
+  --type-section-min: 42px;
+  --type-section-fluid: 5vw;
+  --type-section-desktop: 86px;
+  --type-section-mobile: 42px;
+  --type-section-tablet: calc(17.368px + 3.421vw);
+  --type-section-narrow: 36px;
+  --type-section-spacing: -0.045em;
+  --type-section-leading: 1.03;
+  --type-body-desktop: 18px;
+  --type-body-mobile: 14px;
+  --type-body-tablet: calc(6.421px + 1.053vw);
+  --type-body-spacing: 0em;
+  --type-body-leading: 1.9;
+  --type-work-desktop: 24px;
+  --type-work-mobile: 21px;
+  --type-work-tablet: calc(15.316px + 0.789vw);
+  --type-work-spacing: 0em;
+  --type-work-leading: 1.15;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -402,10 +427,14 @@ button {
 .hero h1 {
   max-width: 1120px;
   margin: 24px 0 0;
-  font-size: clamp(78px, 8.7vw, 160px);
+  font-size: clamp(
+    var(--type-hero-min),
+    var(--type-hero-fluid),
+    var(--type-hero-desktop)
+  );
   font-weight: 800;
-  letter-spacing: -0.065em;
-  line-height: 0.84;
+  letter-spacing: var(--type-hero-spacing);
+  line-height: var(--type-hero-leading);
 }
 
 .hero h1 span {
@@ -436,8 +465,9 @@ button {
 .profile-copy > p {
   margin: 0;
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1.9;
+  font-size: var(--type-body-desktop);
+  letter-spacing: var(--type-body-spacing);
+  line-height: var(--type-body-leading);
 }
 
 .below-stage {
@@ -670,9 +700,13 @@ button {
 .section-head h2,
 .contact-inner h2 {
   margin: 16px 0 28px;
-  font-size: clamp(42px, 5vw, 86px);
-  letter-spacing: -0.045em;
-  line-height: 1.03;
+  font-size: clamp(
+    var(--type-section-min),
+    var(--type-section-fluid),
+    var(--type-section-desktop)
+  );
+  letter-spacing: var(--type-section-spacing);
+  line-height: var(--type-section-leading);
   text-wrap: balance;
 }
 
@@ -1243,8 +1277,9 @@ button {
 
 .card-info strong {
   display: block;
-  font-size: 24px;
-  line-height: 1.15;
+  font-size: var(--type-work-desktop);
+  letter-spacing: var(--type-work-spacing);
+  line-height: var(--type-work-leading);
 }
 
 .contact-section {
@@ -1579,6 +1614,27 @@ button {
   }
 }
 
+@media (min-width: 721px) and (max-width: 1100px) {
+  .hero h1 {
+    font-size: var(--type-hero-tablet);
+  }
+
+  .profile-copy h2,
+  .section-head h2,
+  .contact-inner h2 {
+    font-size: var(--type-section-tablet);
+  }
+
+  .hero-grid p:last-child,
+  .profile-copy > p {
+    font-size: var(--type-body-tablet);
+  }
+
+  .card-info strong {
+    font-size: var(--type-work-tablet);
+  }
+}
+
 @media (max-width: 720px) {
   html {
     scroll-padding-top: 82px;
@@ -1622,8 +1678,8 @@ button {
 
   .hero h1 {
     margin-top: 28px;
-    font-size: clamp(48px, 14.7vw, 58px);
-    line-height: 0.86;
+    font-size: var(--type-hero-mobile);
+    line-height: var(--type-hero-leading);
   }
 
   .hero-grid {
@@ -1639,8 +1695,8 @@ button {
 
   .hero-grid p:last-child,
   .profile-copy > p {
-    font-size: 14px;
-    line-height: 1.8;
+    font-size: var(--type-body-mobile);
+    line-height: var(--type-body-leading);
   }
 
   .phrase-title > span {
@@ -1700,7 +1756,7 @@ button {
   .profile-copy h2,
   .section-head h2,
   .contact-inner h2 {
-    font-size: 42px;
+    font-size: var(--type-section-mobile);
   }
 
   .timeline {
@@ -1748,6 +1804,10 @@ button {
   .video-grid,
   .image-grid {
     grid-template-columns: 1fr;
+  }
+
+  .card-info strong {
+    font-size: var(--type-work-mobile);
   }
 
   .video-card {
@@ -1855,7 +1915,7 @@ button {
   }
 
   .hero h1 {
-    font-size: 14vw;
+    font-size: min(var(--type-hero-mobile), 14vw);
   }
 
   .hero-grid {
@@ -1869,7 +1929,7 @@ button {
   .profile-copy h2,
   .section-head h2,
   .contact-inner h2 {
-    font-size: 36px;
+    font-size: var(--type-section-narrow);
   }
 
   .card-info {
@@ -1877,7 +1937,7 @@ button {
   }
 
   .card-info strong {
-    font-size: 21px;
+    font-size: min(var(--type-work-mobile), 7vw);
   }
 }
 

@@ -15,7 +15,9 @@ import {
   normalizePortfolioConfig,
   portfolioConfigSize,
   PORTFOLIO_PREVIEW_MESSAGE,
-  savePortfolioConfig
+  savePortfolioConfig,
+  typographyDefaults,
+  typographyLimits
 } from "../../lib/portfolio-config";
 
 const editorSections = [
@@ -24,7 +26,31 @@ const editorSections = [
   { id: "resume", index: "03", label: "经历与数据" },
   { id: "works", index: "04", label: "作品" },
   { id: "contact", index: "05", label: "联系" },
-  { id: "theme", index: "06", label: "主题与备份" }
+  { id: "typography", index: "06", label: "排版" },
+  { id: "theme", index: "07", label: "主题与备份" }
+];
+
+const typographyGroups = [
+  {
+    id: "heroTitle",
+    title: "首页大标题",
+    description: "控制首屏英文标题。桌面字号会保持流式缩放，手机端在窄屏会自动限制，避免横向溢出。"
+  },
+  {
+    id: "sectionTitle",
+    title: "区块标题",
+    description: "控制个人介绍、作品集和联系区的主标题。"
+  },
+  {
+    id: "body",
+    title: "主要正文",
+    description: "控制首屏说明和个人介绍正文，不影响标签、时间轴辅助文字等次级信息。"
+  },
+  {
+    id: "workTitle",
+    title: "作品卡标题",
+    description: "控制作品封面底部标题，手机字号在窄屏作品卡中生效。"
+  }
 ];
 
 const MAX_CONFIG_BYTES = 4_000_000;
@@ -198,6 +224,66 @@ function ColorControl({ label, value, onChange }) {
           value={value}
         />
       </div>
+    </div>
+  );
+}
+
+function formatRangeValue(value, unit, decimals) {
+  const numeric = Number(value);
+  const prefix = unit === "em" && numeric > 0 ? "+" : "";
+  return `${prefix}${numeric.toFixed(decimals)}${unit ? ` ${unit}` : ""}`;
+}
+
+function RangeControl({
+  defaultValue,
+  decimals = 0,
+  hint,
+  label,
+  max,
+  min,
+  onChange,
+  step,
+  unit,
+  value
+}) {
+  const id = useId();
+  const hintId = useId();
+  const numericValue = Number(value);
+  const progress = ((numericValue - min) / (max - min)) * 100;
+  const valueText = formatRangeValue(numericValue, unit, decimals);
+
+  return (
+    <div
+      className="editor-range-field"
+      style={{ "--range-progress": `${Math.min(100, Math.max(0, progress))}%` }}
+    >
+      <div className="editor-range-head">
+        <label htmlFor={id}>{label}</label>
+        <div>
+          <small>{numericValue === defaultValue ? "默认值" : "已调整"}</small>
+          <output htmlFor={id}>{valueText}</output>
+        </div>
+      </div>
+      <input
+        aria-describedby={hint ? hintId : undefined}
+        aria-valuetext={valueText}
+        id={id}
+        max={max}
+        min={min}
+        onChange={(event) => onChange(Number(event.target.value))}
+        step={step}
+        type="range"
+        value={numericValue}
+      />
+      <div aria-hidden="true" className="editor-range-scale">
+        <span>{formatRangeValue(min, unit, decimals)}</span>
+        <span>{formatRangeValue(max, unit, decimals)}</span>
+      </div>
+      {hint && (
+        <small className="editor-field-hint" id={hintId}>
+          {hint}
+        </small>
+      )}
     </div>
   );
 }
@@ -381,6 +467,10 @@ export default function PortfolioEditor() {
     () => contrastRatio(config.theme.text, config.theme.background),
     [config.theme.background, config.theme.text]
   );
+  const typographyIsDefault = useMemo(
+    () => JSON.stringify(config.typography) === JSON.stringify(typographyDefaults),
+    [config.typography]
+  );
   const selectedGroup = config.workGroups[selectedGroupIndex];
   const selectedProject = selectedGroup.projects[selectedProjectIndex];
 
@@ -444,6 +534,26 @@ export default function PortfolioEditor() {
     setSaveStatus({
       kind: "saving",
       text: "正在恢复并保存默认内容…"
+    });
+  };
+
+  const resetTypography = () => {
+    if (typographyIsDefault) return;
+    if (
+      !window.confirm(
+        "仅恢复排版设置，内容、颜色和图片不会改变。是否继续？"
+      )
+    ) {
+      return;
+    }
+
+    setConfig((current) => ({
+      ...current,
+      typography: clone(typographyDefaults)
+    }));
+    setSaveStatus({
+      kind: "saving",
+      text: "已恢复默认排版，正在保存到当前浏览器…"
     });
   };
 
@@ -868,11 +978,110 @@ export default function PortfolioEditor() {
     </>
   );
 
+  const renderTypography = () => (
+    <>
+      <SectionHeader
+        description="调整主要文字层级的字号、字间距和行距，桌面端与手机端可分别设置。"
+        eyebrow="06 / Typography"
+        title="文字排版"
+      />
+      {typographyGroups.map((group) => {
+        const values = config.typography[group.id];
+        const defaults = typographyDefaults[group.id];
+        const limits = typographyLimits[group.id];
+
+        return (
+          <fieldset
+            className="editor-fieldset editor-typography-group"
+            key={group.id}
+          >
+            <legend>{group.title}</legend>
+            <p className="editor-typography-description">{group.description}</p>
+            <RangeControl
+              defaultValue={defaults.desktopSize}
+              hint={
+                group.id === "heroTitle" || group.id === "sectionTitle"
+                  ? "桌面端会在此字号以内随屏幕宽度等比例缩放。"
+                  : undefined
+              }
+              label="桌面字号"
+              max={limits.desktopSize.max}
+              min={limits.desktopSize.min}
+              onChange={(value) =>
+                updatePath(["typography", group.id, "desktopSize"], value)
+              }
+              step={limits.desktopSize.step}
+              unit="px"
+              value={values.desktopSize}
+            />
+            <RangeControl
+              defaultValue={defaults.mobileSize}
+              hint={
+                group.id === "workTitle"
+                  ? "手机作品卡会使用该字号，极窄屏仍会自动限制。"
+                  : group.id === "body"
+                    ? "手机预览会使用该字号。"
+                    : "手机预览会使用该字号，极窄屏仍会自动限制。"
+              }
+              label={group.id === "body" ? "手机字号" : "手机最大字号"}
+              max={limits.mobileSize.max}
+              min={limits.mobileSize.min}
+              onChange={(value) =>
+                updatePath(["typography", group.id, "mobileSize"], value)
+              }
+              step={limits.mobileSize.step}
+              unit="px"
+              value={values.mobileSize}
+            />
+            <RangeControl
+              decimals={3}
+              defaultValue={defaults.letterSpacing}
+              hint="负值让文字更紧凑，正值让文字更疏朗。"
+              label="字间距"
+              max={limits.letterSpacing.max}
+              min={limits.letterSpacing.min}
+              onChange={(value) =>
+                updatePath(["typography", group.id, "letterSpacing"], value)
+              }
+              step={limits.letterSpacing.step}
+              unit="em"
+              value={values.letterSpacing}
+            />
+            <RangeControl
+              decimals={2}
+              defaultValue={defaults.lineHeight}
+              hint="数值越大，行与行之间越松。"
+              label="行距"
+              max={limits.lineHeight.max}
+              min={limits.lineHeight.min}
+              onChange={(value) =>
+                updatePath(["typography", group.id, "lineHeight"], value)
+              }
+              step={limits.lineHeight.step}
+              unit=""
+              value={values.lineHeight}
+            />
+          </fieldset>
+        );
+      })}
+      <div className="editor-typography-actions">
+        <button
+          disabled={typographyIsDefault}
+          onClick={resetTypography}
+          type="button"
+        >
+          恢复排版默认值
+        </button>
+        <small>只恢复字号、字间距和行距，不影响文字内容、颜色或图片。</small>
+      </div>
+    </>
+  );
+
   const renderTheme = () => (
     <>
       <SectionHeader
         description="修改基础色彩，并管理当前浏览器中的配置备份。"
-        eyebrow="06 / Theme & Backup"
+        eyebrow="07 / Theme & Backup"
         title="主题与备份"
       />
       <div className="editor-color-grid">
@@ -946,6 +1155,7 @@ export default function PortfolioEditor() {
     if (activeSection === "resume") return renderResume();
     if (activeSection === "works") return renderWorks();
     if (activeSection === "contact") return renderContact();
+    if (activeSection === "typography") return renderTypography();
     if (activeSection === "theme") return renderTheme();
     return renderHome();
   };

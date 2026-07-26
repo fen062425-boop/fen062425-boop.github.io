@@ -15,6 +15,69 @@ const navItems = [
   { href: "#works", label: "作品" }
 ];
 
+function roundedCssNumber(value) {
+  return Number(value.toFixed(3));
+}
+
+function interpolatedCssSize(startSize, endSize) {
+  const slope = (endSize - startSize) / (1100 - 720);
+  const viewportCoefficient = roundedCssNumber(Math.abs(slope * 100));
+  const intercept = roundedCssNumber(startSize - slope * 720);
+  const operator = slope >= 0 ? "+" : "-";
+
+  return `calc(${intercept}px ${operator} ${viewportCoefficient}vw)`;
+}
+
+function getTypographyVariables(typography) {
+  const heroDesktopScale = typography.heroTitle.desktopSize / 160;
+  const sectionDesktopScale = typography.sectionTitle.desktopSize / 86;
+  const heroSizeAt1100 = typography.heroTitle.desktopSize * (95.7 / 160);
+  const sectionSizeAt1100 =
+    typography.sectionTitle.desktopSize * (55 / 86);
+
+  return {
+    "--type-hero-min": `${roundedCssNumber(78 * heroDesktopScale)}px`,
+    "--type-hero-fluid": `${roundedCssNumber(8.7 * heroDesktopScale)}vw`,
+    "--type-hero-desktop": `${typography.heroTitle.desktopSize}px`,
+    "--type-hero-mobile": `${typography.heroTitle.mobileSize}px`,
+    "--type-hero-tablet": interpolatedCssSize(
+      typography.heroTitle.mobileSize,
+      heroSizeAt1100
+    ),
+    "--type-hero-spacing": `${typography.heroTitle.letterSpacing}em`,
+    "--type-hero-leading": typography.heroTitle.lineHeight,
+    "--type-section-min": `${roundedCssNumber(42 * sectionDesktopScale)}px`,
+    "--type-section-fluid": `${roundedCssNumber(5 * sectionDesktopScale)}vw`,
+    "--type-section-desktop": `${typography.sectionTitle.desktopSize}px`,
+    "--type-section-mobile": `${typography.sectionTitle.mobileSize}px`,
+    "--type-section-tablet": interpolatedCssSize(
+      typography.sectionTitle.mobileSize,
+      sectionSizeAt1100
+    ),
+    "--type-section-narrow": `${roundedCssNumber(
+      typography.sectionTitle.mobileSize * (36 / 42)
+    )}px`,
+    "--type-section-spacing": `${typography.sectionTitle.letterSpacing}em`,
+    "--type-section-leading": typography.sectionTitle.lineHeight,
+    "--type-body-desktop": `${typography.body.desktopSize}px`,
+    "--type-body-mobile": `${typography.body.mobileSize}px`,
+    "--type-body-tablet": interpolatedCssSize(
+      typography.body.mobileSize,
+      typography.body.desktopSize
+    ),
+    "--type-body-spacing": `${typography.body.letterSpacing}em`,
+    "--type-body-leading": typography.body.lineHeight,
+    "--type-work-desktop": `${typography.workTitle.desktopSize}px`,
+    "--type-work-mobile": `${typography.workTitle.mobileSize}px`,
+    "--type-work-tablet": interpolatedCssSize(
+      typography.workTitle.mobileSize,
+      typography.workTitle.desktopSize
+    ),
+    "--type-work-spacing": `${typography.workTitle.letterSpacing}em`,
+    "--type-work-leading": typography.workTitle.lineHeight
+  };
+}
+
 function WorkArtwork({ project }) {
   if (project.image) {
     return (
@@ -203,7 +266,7 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [copied, setCopied] = useState(false);
   const lastFocusedRef = useRef(null);
-  const { siteContent, theme, workGroups } = portfolioConfig;
+  const { siteContent, theme, typography, workGroups } = portfolioConfig;
 
   useEffect(() => {
     const syncConfig = () => {
@@ -301,7 +364,8 @@ export default function Home() {
         "--bg": theme.background,
         "--cyan": theme.cyan,
         "--gold": theme.gold,
-        "--text": theme.text
+        "--text": theme.text,
+        ...getTypographyVariables(typography)
       }}
     >
       <header className="site-nav">
