@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.next/
+.vinext/
+.vite/
+.pnpm-store/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.learnings/
