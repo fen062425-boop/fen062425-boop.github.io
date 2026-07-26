@@ -26,7 +26,7 @@ pnpm.cmd start
 data/portfolio.js
 ```
 
-项目封面当前由 `pages/index.jsx` 中的 `ProjectArtwork` 组件与 `styles/globals.css` 生成，不依赖外部图片。
+项目封面当前由 `app/page.jsx` 中的 `ProjectArtwork` 组件与 `styles/globals.css` 生成，不依赖外部图片。
 
 替换成真实作品时，可以：
 

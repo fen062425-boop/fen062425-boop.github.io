@@ -1,4 +1,5 @@
-import Head from "next/head";
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { projectCategories, projects, siteContent } from "../data/portfolio";
 
@@ -345,17 +346,6 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>设计师作品集 · Visual Designer Portfolio</title>
-        <meta
-          content="平面设计师个人作品集，涵盖品牌视觉、电商设计、活动主视觉与 AIGC 工作流。"
-          name="description"
-        />
-        <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport" />
-        <meta content="#10110f" name="theme-color" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
-      </Head>
-
       <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
         <a aria-label="返回首页" className="site-brand" href="#top">
           <span className="brand-mark">D</span>
