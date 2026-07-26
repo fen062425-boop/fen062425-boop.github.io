@@ -12,6 +12,8 @@ import {
   getDefaultPortfolioConfig,
   isSafeImageSource,
   loadPortfolioConfig,
+  MAX_IMAGE_UPLOAD_DATA_LENGTH,
+  MAX_PORTFOLIO_CONFIG_BYTES,
   normalizePortfolioConfig,
   portfolioConfigSize,
   PORTFOLIO_PREVIEW_MESSAGE,
@@ -53,9 +55,27 @@ const typographyGroups = [
   }
 ];
 
-const MAX_CONFIG_BYTES = 4_000_000;
 const MAX_SOURCE_IMAGE_BYTES = 15_000_000;
-const MAX_IMAGE_DATA_LENGTH = 1_500_000;
+const IMAGE_STORAGE_SAFETY_BYTES = 100_000;
+const MIN_IMAGE_DATA_BUDGET = 160_000;
+
+const imageCompressionProfiles = {
+  standard: {
+    maxWidth: 1920,
+    maxHeight: 1920,
+    maxPixels: 4_000_000,
+    initialQuality: 0.86,
+    minimumQuality: 0.62
+  },
+  detail: {
+    maxWidth: 1200,
+    maxHeight: 16000,
+    maxPixels: 16_000_000,
+    minimumWidth: 750,
+    initialQuality: 0.92,
+    minimumQuality: 0.72
+  }
+};
 
 function clone(value) {
   if (typeof structuredClone === "function") return structuredClone(value);
@@ -111,12 +131,158 @@ function blobToDataUrl(blob) {
   });
 }
 
-async function compressImage(file) {
+function fitImageDimensions(sourceWidth, sourceHeight, profile) {
+  const pixelScale = Math.sqrt(
+    profile.maxPixels / Math.max(1, sourceWidth * sourceHeight)
+  );
+  const scale = Math.min(
+    1,
+    profile.maxWidth / sourceWidth,
+    profile.maxHeight / sourceHeight,
+    pixelScale
+  );
+
+  return {
+    width: Math.max(1, Math.round(sourceWidth * scale)),
+    height: Math.max(1, Math.round(sourceHeight * scale))
+  };
+}
+
+function createImageCanvas(width, height) {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { alpha: true });
+
+  if (!context) throw new Error("浏览器无法创建图片处理画布，请更换浏览器后重试。");
+
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  return { canvas, context };
+}
+
+function renderHighQualityCanvas(
+  source,
+  sourceWidth,
+  sourceHeight,
+  targetWidth,
+  targetHeight
+) {
+  let currentSource = source;
+  let currentWidth = sourceWidth;
+  let currentHeight = sourceHeight;
+
+  while (
+    currentWidth / 2 > targetWidth &&
+    currentHeight / 2 > targetHeight
+  ) {
+    const nextWidth = Math.max(targetWidth, Math.round(currentWidth / 2));
+    const nextHeight = Math.max(targetHeight, Math.round(currentHeight / 2));
+    const intermediate = createImageCanvas(nextWidth, nextHeight);
+    intermediate.context.drawImage(
+      currentSource,
+      0,
+      0,
+      currentWidth,
+      currentHeight,
+      0,
+      0,
+      nextWidth,
+      nextHeight
+    );
+    currentSource = intermediate.canvas;
+    currentWidth = nextWidth;
+    currentHeight = nextHeight;
+  }
+
+  const output = createImageCanvas(targetWidth, targetHeight);
+  output.context.drawImage(
+    currentSource,
+    0,
+    0,
+    currentWidth,
+    currentHeight,
+    0,
+    0,
+    targetWidth,
+    targetHeight
+  );
+  return output.canvas;
+}
+
+function canvasToWebpBlob(canvas, quality) {
+  return new Promise((resolve) =>
+    canvas.toBlob(resolve, "image/webp", quality)
+  );
+}
+
+async function encodeCanvasWithinBudget(canvas, profile, maxBlobBytes) {
+  const highQualityBlob = await canvasToWebpBlob(
+    canvas,
+    profile.initialQuality
+  );
+  if (!highQualityBlob) return null;
+  if (highQualityBlob.size <= maxBlobBytes) {
+    return {
+      blob: highQualityBlob,
+      fits: true,
+      quality: profile.initialQuality
+    };
+  }
+
+  const minimumQualityBlob = await canvasToWebpBlob(
+    canvas,
+    profile.minimumQuality
+  );
+  if (!minimumQualityBlob) return null;
+  if (minimumQualityBlob.size > maxBlobBytes) {
+    return {
+      blob: minimumQualityBlob,
+      fits: false,
+      quality: profile.minimumQuality
+    };
+  }
+
+  let lowerQuality = profile.minimumQuality;
+  let upperQuality = profile.initialQuality;
+  let bestBlob = minimumQualityBlob;
+  let bestQuality = lowerQuality;
+
+  for (let index = 0; index < 5; index += 1) {
+    const quality = (lowerQuality + upperQuality) / 2;
+    const blob = await canvasToWebpBlob(canvas, quality);
+    if (!blob) break;
+
+    if (blob.size <= maxBlobBytes) {
+      bestBlob = blob;
+      bestQuality = quality;
+      lowerQuality = quality;
+    } else {
+      upperQuality = quality;
+    }
+  }
+
+  return {
+    blob: bestBlob,
+    fits: true,
+    quality: bestQuality
+  };
+}
+
+async function compressImage(
+  file,
+  { mode = "standard", maxDataLength = MAX_IMAGE_UPLOAD_DATA_LENGTH } = {}
+) {
   if (!file?.type?.startsWith("image/")) {
     throw new Error("请选择 PNG、JPG、WebP 或其他常见图片格式。");
   }
   if (file.size > MAX_SOURCE_IMAGE_BYTES) {
     throw new Error("源图片不能超过 15MB，请先压缩后再上传。");
+  }
+  if (maxDataLength < MIN_IMAGE_DATA_BUDGET) {
+    throw new Error(
+      "当前浏览器配置空间不足，请先移除部分本地图片，或改用图片地址。"
+    );
   }
 
   let source;
@@ -127,37 +293,133 @@ async function compressImage(file) {
     cleanup = () => source.close?.();
   } else {
     const objectUrl = URL.createObjectURL(file);
+    cleanup = () => URL.revokeObjectURL(objectUrl);
     source = new Image();
     source.src = objectUrl;
     await new Promise((resolve, reject) => {
       source.onload = resolve;
-      source.onerror = () => reject(new Error("图片读取失败，请更换图片。"));
+      source.onerror = () => {
+        cleanup();
+        reject(new Error("图片读取失败，请更换图片。"));
+      };
     });
-    cleanup = () => URL.revokeObjectURL(objectUrl);
   }
 
-  const sourceWidth = source.width || source.naturalWidth;
-  const sourceHeight = source.height || source.naturalHeight;
-  const maxSide = 1440;
-  const scale = Math.min(1, maxSide / Math.max(sourceWidth, sourceHeight));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.round(sourceWidth * scale));
-  canvas.height = Math.max(1, Math.round(sourceHeight * scale));
-  const context = canvas.getContext("2d", { alpha: true });
-  context.drawImage(source, 0, 0, canvas.width, canvas.height);
-  cleanup();
+  try {
+    const sourceWidth = source.width || source.naturalWidth;
+    const sourceHeight = source.height || source.naturalHeight;
+    const profile =
+      imageCompressionProfiles[mode] ?? imageCompressionProfiles.standard;
+    let dimensions = fitImageDimensions(
+      sourceWidth,
+      sourceHeight,
+      profile
+    );
+    const minimumOutputWidth =
+      mode === "detail"
+        ? Math.min(sourceWidth, profile.minimumWidth)
+        : 1;
+    const detailSizeError =
+      "长图在至少 750px 宽的清晰度下仍超过本地空间，请拆分长图或填写图片地址。";
+    const supportedOriginalType =
+      /^image\/(?:png|jpe?g|webp|gif)$/i.test(file.type);
 
-  const blob = await new Promise((resolve) =>
-    canvas.toBlob(resolve, "image/webp", 0.76)
-  );
-  if (!blob) throw new Error("图片压缩失败，请更换图片后重试。");
+    if (
+      supportedOriginalType &&
+      dimensions.width === sourceWidth &&
+      dimensions.height === sourceHeight
+    ) {
+      const originalDataUrl = await blobToDataUrl(file);
+      if (originalDataUrl.length <= maxDataLength) {
+        return {
+          dataUrl: originalDataUrl,
+          sourceWidth,
+          sourceHeight,
+          outputWidth: sourceWidth,
+          outputHeight: sourceHeight,
+          outputBytes: file.size,
+          quality: null,
+          preservedOriginal: true
+        };
+      }
+    }
 
-  const dataUrl = await blobToDataUrl(blob);
-  if (dataUrl.length > MAX_IMAGE_DATA_LENGTH) {
-    throw new Error("压缩后的图片仍然过大，请使用尺寸更小的图片。");
+    if (dimensions.width < minimumOutputWidth) {
+      throw new Error(detailSizeError);
+    }
+
+    const maxBlobBytes = Math.floor((maxDataLength - 128) * 0.75);
+
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      const canvas = renderHighQualityCanvas(
+        source,
+        sourceWidth,
+        sourceHeight,
+        dimensions.width,
+        dimensions.height
+      );
+      const encoded = await encodeCanvasWithinBudget(
+        canvas,
+        profile,
+        maxBlobBytes
+      );
+      if (!encoded) {
+        throw new Error("图片压缩失败，请更换图片后重试。");
+      }
+
+      if (encoded.fits) {
+        const dataUrl = await blobToDataUrl(encoded.blob);
+        if (dataUrl.length <= maxDataLength) {
+          return {
+            dataUrl,
+            sourceWidth,
+            sourceHeight,
+            outputWidth: dimensions.width,
+            outputHeight: dimensions.height,
+            outputBytes: encoded.blob.size,
+            quality: encoded.quality,
+            preservedOriginal: false
+          };
+        }
+      }
+
+      const proportionalScale = Math.sqrt(
+        maxBlobBytes / Math.max(1, encoded.blob.size)
+      );
+      const nextScale = Math.min(0.9, Math.max(0.62, proportionalScale * 0.96));
+      const nextWidth =
+        mode === "detail"
+          ? Math.max(
+              minimumOutputWidth,
+              Math.round(dimensions.width * nextScale)
+            )
+          : Math.max(1, Math.round(dimensions.width * nextScale));
+
+      if (nextWidth >= dimensions.width) {
+        throw new Error(
+          mode === "detail"
+            ? detailSizeError
+            : "压缩后的图片仍然过大，请使用尺寸更小的图片。"
+        );
+      }
+
+      dimensions = {
+        width: nextWidth,
+        height: Math.max(
+          1,
+          Math.round(sourceHeight * (nextWidth / sourceWidth))
+        )
+      };
+    }
+
+    throw new Error(
+      mode === "detail"
+        ? detailSizeError
+        : "压缩后的图片仍然过大，请使用尺寸更小的图片。"
+    );
+  } finally {
+    cleanup();
   }
-
-  return dataUrl;
 }
 
 function TextControl({
@@ -288,12 +550,28 @@ function RangeControl({
   );
 }
 
-function ImageControl({ label, value, onChange, hint }) {
+function ImageControl({
+  compressionMode = "standard",
+  hint,
+  label,
+  maxDataLength = MAX_IMAGE_UPLOAD_DATA_LENGTH,
+  onChange,
+  previewMode = "cover",
+  value
+}) {
   const inputId = useId();
   const fileId = useId();
+  const hintId = useId();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
+  const [uploadResult, setUploadResult] = useState(null);
   const previewValue = isSafeImageSource(value) ? value : "";
+
+  useEffect(() => {
+    if (uploadResult && uploadResult.dataUrl !== value) {
+      setUploadResult(null);
+    }
+  }, [uploadResult, value]);
 
   const handleFile = async (event) => {
     const file = event.target.files?.[0];
@@ -304,7 +582,15 @@ function ImageControl({ label, value, onChange, hint }) {
     setError("");
 
     try {
-      onChange(await compressImage(file));
+      const result = await compressImage(file, {
+        mode: compressionMode,
+        maxDataLength
+      });
+      setUploadResult({
+        ...result,
+        sourceBytes: file.size
+      });
+      onChange(result.dataUrl);
     } catch (uploadError) {
       setError(uploadError.message);
     } finally {
@@ -316,23 +602,42 @@ function ImageControl({ label, value, onChange, hint }) {
     <fieldset className="editor-image-field">
       <legend>{label}</legend>
       {previewValue && (
-        <div className="editor-image-preview">
+        <div
+          className={`editor-image-preview ${
+            previewMode === "detail" ? "is-detail" : ""
+          }`}
+        >
           <img
             alt={`${label}预览`}
+            onError={() =>
+              setError("图片无法加载，请检查图片地址或更换图片。")
+            }
             referrerPolicy="no-referrer"
             src={previewValue}
           />
-          <button onClick={() => onChange("")} type="button">
+          <button
+            onClick={() => {
+              setError("");
+              setUploadResult(null);
+              onChange("");
+            }}
+            type="button"
+          >
             移除图片
           </button>
         </div>
       )}
       <div className="editor-image-actions">
         <label className="editor-upload-button" htmlFor={fileId}>
-          {processing ? "正在压缩…" : "选择本地图片"}
+          {processing
+            ? compressionMode === "detail"
+              ? "正在优化长图…"
+              : "正在压缩…"
+            : "选择本地图片"}
         </label>
         <input
           accept="image/*"
+          aria-describedby={hint ? hintId : undefined}
           disabled={processing}
           id={fileId}
           onChange={handleFile}
@@ -345,14 +650,57 @@ function ImageControl({ label, value, onChange, hint }) {
           <span>或填写图片地址</span>
         </span>
         <input
+          aria-describedby={hint ? hintId : undefined}
           id={inputId}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => {
+            setError("");
+            setUploadResult(null);
+            onChange(event.target.value);
+          }}
           placeholder="https://… 或 /assets/…"
           type="url"
           value={value?.startsWith("data:") ? "" : value ?? ""}
         />
       </label>
-      {hint && <small className="editor-field-hint">{hint}</small>}
+      {uploadResult && (
+        <div
+          className={`editor-image-result ${
+            compressionMode === "detail" &&
+            (uploadResult.outputWidth < 750 ||
+              uploadResult.outputHeight / uploadResult.outputWidth < 2)
+              ? "is-warning"
+              : ""
+          }`}
+          role="status"
+        >
+          <strong>
+            原图 {uploadResult.sourceWidth}×{uploadResult.sourceHeight} ·{" "}
+            {formatBytes(uploadResult.sourceBytes)}
+          </strong>
+          <span>
+            输出 {uploadResult.outputWidth}×{uploadResult.outputHeight} ·{" "}
+            文件 {formatBytes(uploadResult.outputBytes)} · 配置约{" "}
+            {formatBytes(
+              new TextEncoder().encode(uploadResult.dataUrl).length
+            )}
+            {uploadResult.preservedOriginal
+              ? " · 保留原图"
+              : ` · WebP ${Math.round(uploadResult.quality * 100)}%`}
+          </span>
+          {compressionMode === "detail" && uploadResult.outputWidth < 750 && (
+            <small>输出宽度低于 750px，详情文字在大屏上可能不够清晰。</small>
+          )}
+          {compressionMode === "detail" &&
+            uploadResult.outputHeight / uploadResult.outputWidth < 2 && (
+              <small>当前图片比例较短，请确认上传的是完整详情长图。</small>
+            )}
+        </div>
+      )}
+      {hint && (
+        <small className="editor-field-hint" id={hintId}>
+          {hint}
+        </small>
+      )}
       {error && (
         <p className="editor-inline-error" role="alert">
           {error}
@@ -400,7 +748,7 @@ export default function PortfolioEditor() {
     const timer = window.setTimeout(() => {
       const size = portfolioConfigSize(config);
 
-      if (size > MAX_CONFIG_BYTES) {
+      if (size > MAX_PORTFOLIO_CONFIG_BYTES) {
         setSaveStatus({
           kind: "error",
           text: "保存失败：配置已超过 4MB，请移除部分图片并先导出备份。"
@@ -463,6 +811,25 @@ export default function PortfolioEditor() {
   );
 
   const configBytes = useMemo(() => portfolioConfigSize(config), [config]);
+  const availableImageDataLength = useCallback(
+    (currentValue) => {
+      const replacedBytes =
+        typeof currentValue === "string" && currentValue.startsWith("data:")
+          ? new TextEncoder().encode(JSON.stringify(currentValue)).length
+          : 0;
+      const remainingBytes =
+        MAX_PORTFOLIO_CONFIG_BYTES -
+        configBytes +
+        replacedBytes -
+        IMAGE_STORAGE_SAFETY_BYTES;
+
+      return Math.max(
+        0,
+        Math.min(MAX_IMAGE_UPLOAD_DATA_LENGTH, remainingBytes)
+      );
+    },
+    [configBytes]
+  );
   const contrast = useMemo(
     () => contrastRatio(config.theme.text, config.theme.background),
     [config.theme.background, config.theme.text]
@@ -490,7 +857,7 @@ export default function PortfolioEditor() {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    if (file.size > MAX_CONFIG_BYTES) {
+    if (file.size > MAX_PORTFOLIO_CONFIG_BYTES) {
       setSaveStatus({
         kind: "error",
         text: "导入失败：配置文件超过 4MB。"
@@ -617,6 +984,7 @@ export default function PortfolioEditor() {
       <ImageControl
         hint="上传后会替换默认制冰机视觉。优先使用横向图片，建议 16:9。"
         label="首屏背景图"
+        maxDataLength={availableImageDataLength(config.siteContent.heroImage)}
         onChange={(value) => updatePath(["siteContent", "heroImage"], value)}
         value={config.siteContent.heroImage}
       />
@@ -633,6 +1001,9 @@ export default function PortfolioEditor() {
       <ImageControl
         hint="优先使用 4:5 竖图，图片只保存在当前浏览器。"
         label="人物图片"
+        maxDataLength={availableImageDataLength(
+          config.siteContent.profile.portraitImage
+        )}
         onChange={(value) =>
           updatePath(["siteContent", "profile", "portraitImage"], value)
         }
@@ -909,9 +1280,18 @@ export default function PortfolioEditor() {
           hint={
             selectedGroup.id === "video"
               ? "这里上传的是视频封面图，不会在网页中播放视频。"
-              : "上传后替换当前概念封面；详情弹窗仍使用现有通用结构。"
+              : selectedGroup.id === "detail"
+                ? "作品列表封面。建议 1200×1500px、4:5，重要内容放在画面中央；桌面和手机端可能有少量裁切。"
+                : "上传后替换当前概念封面，建议使用 4:5 竖图。"
           }
-          label={selectedGroup.id === "video" ? "视频封面图" : "项目封面图"}
+          label={
+            selectedGroup.id === "video"
+              ? "视频封面图"
+              : selectedGroup.id === "detail"
+                ? "作品列表封面图"
+                : "项目封面图"
+          }
+          maxDataLength={availableImageDataLength(selectedProject.image)}
           onChange={(value) =>
             updateProject(
               selectedGroupIndex,
@@ -922,6 +1302,26 @@ export default function PortfolioEditor() {
           }
           value={selectedProject.image}
         />
+        {selectedGroup.id === "detail" && (
+          <ImageControl
+            compressionMode="detail"
+            hint="用于点击作品后的完整展示。建议 JPG/WebP，宽 750–1200px、高不超过 16000px；系统保持完整比例，不裁切。受当前浏览器 4MB 配置空间限制，多张高清长图建议填写图片地址。"
+            label="完整详情长图"
+            maxDataLength={availableImageDataLength(
+              selectedProject.detailImage
+            )}
+            onChange={(value) =>
+              updateProject(
+                selectedGroupIndex,
+                selectedProjectIndex,
+                "detailImage",
+                value
+              )
+            }
+            previewMode="detail"
+            value={selectedProject.detailImage}
+          />
+        )}
       </fieldset>
     </>
   );
@@ -1122,7 +1522,14 @@ export default function PortfolioEditor() {
       <section className="editor-backup">
         <h3>本地配置与备份</h3>
         <div className="editor-storage-meter">
-          <span style={{ width: `${Math.min(100, (configBytes / MAX_CONFIG_BYTES) * 100)}%` }} />
+          <span
+            style={{
+              width: `${Math.min(
+                100,
+                (configBytes / MAX_PORTFOLIO_CONFIG_BYTES) * 100
+              )}%`
+            }}
+          />
         </div>
         <p>
           当前配置 {formatBytes(configBytes)} / 4MB。图片占用较大时，请及时导出

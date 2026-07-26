@@ -933,6 +933,10 @@ button {
   object-position: center;
 }
 
+.detail-card .art-image {
+  object-position: top center;
+}
+
 .work-card:hover .work-art {
   filter: brightness(1.06) contrast(1.03);
   transform: scale(1.05);
@@ -1466,6 +1470,44 @@ button {
   overflow: hidden;
 }
 
+.detail-image-view {
+  width: min(1180px, calc(100vw - 72px));
+  max-height: calc(100svh - 72px);
+  display: grid;
+  grid-template-columns: minmax(0, 860px) minmax(240px, 320px);
+  overflow: hidden;
+}
+
+.detail-page-preview {
+  height: min(840px, calc(100svh - 72px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  scrollbar-color: rgba(7, 16, 19, 0.38) transparent;
+  scrollbar-width: thin;
+}
+
+.detail-page-preview:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -3px;
+}
+
+.detail-page-image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+  object-position: top center;
+}
+
+.detail-image-view .lightbox-meta {
+  align-self: center;
+  padding: 34px;
+}
+
 .long-page-preview {
   height: min(760px, calc(100svh - 72px));
   overflow-x: hidden;
@@ -1875,7 +1917,8 @@ button {
     aspect-ratio: 4 / 3;
   }
 
-  .image-view {
+  .image-view,
+  .detail-image-view {
     width: 100%;
     max-height: 94svh;
     grid-template-columns: 1fr;
@@ -1884,6 +1927,13 @@ button {
     overflow-y: auto;
     border: 0;
     border-radius: 18px 18px 0 0;
+  }
+
+  .detail-page-preview {
+    width: min(720px, 100%);
+    height: auto;
+    overflow: visible;
+    border-radius: 14px;
   }
 
   .long-page-preview {
@@ -1901,6 +1951,11 @@ button {
 
   .image-view .lightbox-meta {
     width: min(342px, 100%);
+    padding: 28px 0 0;
+  }
+
+  .detail-image-view .lightbox-meta {
+    width: min(720px, 100%);
     padding: 28px 0 0;
   }
 }

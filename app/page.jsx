@@ -128,7 +128,9 @@ function WorkCard({ group, project, onOpen }) {
   return (
     <button
       aria-label={`查看项目：${project.title}`}
-      className={`work-card ${isVideo ? "video-card" : "image-card"}`}
+      className={`work-card ${isVideo ? "video-card" : "image-card"} ${
+        group.id === "detail" ? "detail-card" : ""
+      }`}
       onClick={() => onOpen({ ...project, groupId: group.id, typeLabel: group.typeLabel })}
       style={{ "--accent": project.accent }}
       type="button"
@@ -178,6 +180,7 @@ function WorkGroup({ group, hidden, onOpen }) {
 
 function ProjectLightbox({ project, onClose }) {
   const closeRef = useRef(null);
+  const previewRef = useRef(null);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -186,7 +189,19 @@ function ProjectLightbox({ project, onClose }) {
       if (event.key === "Escape") onClose();
       if (event.key === "Tab") {
         event.preventDefault();
-        closeRef.current?.focus();
+        const closeButton = closeRef.current;
+        const detailPreview = previewRef.current;
+
+        if (!detailPreview) {
+          closeButton?.focus();
+          return;
+        }
+
+        if (document.activeElement === closeButton) {
+          detailPreview.focus();
+        } else {
+          closeButton?.focus();
+        }
       }
     };
 
@@ -195,6 +210,8 @@ function ProjectLightbox({ project, onClose }) {
   }, [onClose]);
 
   const isVideo = project.groupId === "video";
+  const hasUploadedDetail =
+    project.groupId === "detail" && Boolean(project.detailImage);
 
   return (
     <div
@@ -216,7 +233,15 @@ function ProjectLightbox({ project, onClose }) {
         ×
       </button>
 
-      <div className={`lightbox-body ${isVideo ? "video-view" : "image-view"}`}>
+      <div
+        className={`lightbox-body ${
+          isVideo
+            ? "video-view"
+            : hasUploadedDetail
+              ? "detail-image-view"
+              : "image-view"
+        }`}
+      >
         {isVideo ? (
           <div className="video-preview">
             <WorkArtwork project={project} />
@@ -226,6 +251,20 @@ function ProjectLightbox({ project, onClose }) {
             <div className="video-progress">
               <i />
             </div>
+          </div>
+        ) : hasUploadedDetail ? (
+          <div
+            aria-label={`${project.title}完整详情长图，可上下滚动浏览`}
+            className="detail-page-preview"
+            ref={previewRef}
+            tabIndex={0}
+          >
+            <img
+              alt={`${project.title}完整详情页设计`}
+              className="detail-page-image"
+              referrerPolicy="no-referrer"
+              src={project.detailImage}
+            />
           </div>
         ) : (
           <div className="long-page-preview">

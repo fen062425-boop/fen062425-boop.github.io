@@ -471,6 +471,26 @@
   object-fit: cover;
 }
 
+.editor-image-preview.is-detail {
+  aspect-ratio: auto;
+  max-height: 460px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background:
+    linear-gradient(45deg, #eef2f2 25%, transparent 25%) 0 0 / 16px 16px,
+    linear-gradient(-45deg, #eef2f2 25%, transparent 25%) 0 8px / 16px 16px,
+    #fff;
+  scrollbar-color: rgba(7, 16, 19, 0.38) transparent;
+  scrollbar-width: thin;
+}
+
+.editor-image-preview.is-detail img {
+  display: block;
+  height: auto;
+  object-fit: contain;
+  object-position: top center;
+}
+
 .editor-image-preview button {
   position: absolute;
   right: 8px;
@@ -484,6 +504,42 @@
   cursor: pointer;
   font-size: 11px;
   font-weight: 800;
+}
+
+.editor-image-result {
+  display: grid;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid rgba(113, 220, 229, 0.22);
+  border-radius: 10px;
+  color: rgba(237, 244, 248, 0.72);
+  background: rgba(113, 220, 229, 0.055);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.editor-image-result strong {
+  color: var(--editor-text);
+  font-size: 11px;
+}
+
+.editor-image-result span {
+  color: var(--editor-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.editor-image-result small {
+  color: var(--editor-muted);
+}
+
+.editor-image-result.is-warning {
+  border-color: rgba(255, 190, 92, 0.34);
+  background: rgba(255, 190, 92, 0.07);
+}
+
+.editor-image-result.is-warning small {
+  color: #ffd28d;
 }
 
 .editor-image-actions {
