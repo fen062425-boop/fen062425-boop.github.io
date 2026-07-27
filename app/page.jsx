@@ -14,6 +14,15 @@ const navItems = [
   { href: "#works", label: "作品" }
 ];
 
+const COVER_SCROLL_THRESHOLD = 8;
+const COVER_SCROLL_SPEED = 420;
+const COVER_SCROLL_MIN_DURATION = 4;
+const COVER_SCROLL_MAX_DURATION = 30;
+const DEFAULT_COVER_MOTION = {
+  canScroll: false,
+  duration: COVER_SCROLL_MIN_DURATION
+};
+
 function roundedCssNumber(value) {
   return Number(value.toFixed(3));
 }
@@ -85,24 +94,112 @@ function getProjectContentImages(project) {
   );
 }
 
+function WorkCoverImage({ accent, src }) {
+  const frameRef = useRef(null);
+  const imageRef = useRef(null);
+  const [coverMotion, setCoverMotion] = useState(DEFAULT_COVER_MOTION);
+
+  const measureCover = useCallback(() => {
+    const frame = frameRef.current;
+    const image = imageRef.current;
+
+    if (
+      !frame ||
+      !image ||
+      !image.complete ||
+      image.naturalWidth <= 0 ||
+      image.naturalHeight <= 0 ||
+      frame.clientWidth <= 0 ||
+      frame.clientHeight <= 0
+    ) {
+      setCoverMotion((current) =>
+        current.canScroll ? DEFAULT_COVER_MOTION : current
+      );
+      return;
+    }
+
+    const coverScale = Math.max(
+      frame.clientWidth / image.naturalWidth,
+      frame.clientHeight / image.naturalHeight
+    );
+    const scrollDistance = Math.max(
+      0,
+      image.naturalHeight * coverScale - frame.clientHeight
+    );
+    const canScroll = scrollDistance > COVER_SCROLL_THRESHOLD;
+    const duration = canScroll
+      ? Math.min(
+          COVER_SCROLL_MAX_DURATION,
+          Math.max(
+            COVER_SCROLL_MIN_DURATION,
+            scrollDistance / COVER_SCROLL_SPEED
+          )
+        )
+      : COVER_SCROLL_MIN_DURATION;
+    const nextMotion = {
+      canScroll,
+      duration: roundedCssNumber(duration)
+    };
+
+    setCoverMotion((current) =>
+      current.canScroll === nextMotion.canScroll &&
+      current.duration === nextMotion.duration
+        ? current
+        : nextMotion
+    );
+  }, []);
+
+  useEffect(() => {
+    setCoverMotion(DEFAULT_COVER_MOTION);
+
+    const frame = frameRef.current;
+    if (!frame) return undefined;
+
+    measureCover();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", measureCover);
+      return () => window.removeEventListener("resize", measureCover);
+    }
+
+    const observer = new ResizeObserver(measureCover);
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [measureCover, src]);
+
+  return (
+    <div
+      aria-hidden="true"
+      className={`work-art work-art--image ${
+        coverMotion.canScroll ? "can-scroll" : ""
+      }`}
+      data-cover-scroll={coverMotion.canScroll ? "true" : "false"}
+      ref={frameRef}
+      style={{
+        "--accent": accent,
+        "--cover-scroll-duration": `${coverMotion.duration}s`
+      }}
+    >
+      <img
+        alt=""
+        className="art-image"
+        draggable="false"
+        onError={() => setCoverMotion(DEFAULT_COVER_MOTION)}
+        onLoad={measureCover}
+        ref={imageRef}
+        referrerPolicy="no-referrer"
+        src={src}
+      />
+    </div>
+  );
+}
+
 function WorkArtwork({ project }) {
   const coverImage = getProjectContentImages(project)[0];
 
   if (coverImage) {
     return (
-      <div
-        aria-hidden="true"
-        className="work-art work-art--image"
-        style={{ "--accent": project.accent }}
-      >
-        <img
-          alt=""
-          className="art-image"
-          draggable="false"
-          referrerPolicy="no-referrer"
-          src={coverImage}
-        />
-      </div>
+      <WorkCoverImage accent={project.accent} src={coverImage} />
     );
   }
 
