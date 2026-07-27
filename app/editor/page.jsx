@@ -15,6 +15,7 @@ import {
   MAX_IMAGE_UPLOAD_DATA_LENGTH,
   MAX_PORTFOLIO_CONFIG_BYTES,
   MAX_PROJECT_CONTENT_IMAGES,
+  MAX_PROJECTS_PER_GROUP,
   MAX_WORK_FILTERS,
   normalizePortfolioConfig,
   portfolioConfigSize,
@@ -93,6 +94,20 @@ function createWorkFilterId(workFilters) {
       ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
       : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
     id = `filter-${token}`;
+  } while (existingIds.has(id));
+
+  return id;
+}
+
+function createProjectId(projects, groupId) {
+  const existingIds = new Set(projects.map((project) => project.id));
+  let id = "";
+
+  do {
+    const token = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    id = `${groupId}-project-${token}`;
   } while (existingIds.has(id));
 
   return id;
@@ -1092,6 +1107,7 @@ export default function PortfolioEditor() {
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
   const [selectedFilterId, setSelectedFilterId] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [workStatus, setWorkStatus] = useState("");
   const [saveStatus, setSaveStatus] = useState({
     kind: "idle",
     text: "正在读取本地配置…"
@@ -1196,6 +1212,78 @@ export default function PortfolioEditor() {
     },
     []
   );
+
+  const addProject = () => {
+    const group = config.workGroups[selectedGroupIndex];
+    if (!group || group.projects.length >= MAX_PROJECTS_PER_GROUP) {
+      setWorkStatus(`每个分组最多可添加 ${MAX_PROJECTS_PER_GROUP} 个作品。`);
+      return;
+    }
+
+    const nextIndex = group.projects.length;
+    const nextProject = {
+      id: createProjectId(group.projects, group.id),
+      title: `新作品 ${nextIndex + 1}`,
+      label: "",
+      artwork: "brand",
+      word: "NEW",
+      code: String(nextIndex + 1).padStart(2, "0"),
+      accent: "#71dce5",
+      contentImages: [],
+      visible: true
+    };
+
+    setConfig((current) => {
+      const next = clone(current);
+      next.workGroups[selectedGroupIndex].projects.push(nextProject);
+      return next;
+    });
+    setSelectedProjectIndex(nextIndex);
+    setWorkStatus(`已新增“${nextProject.title}”，可立即编辑并添加内容图。`);
+    window.requestAnimationFrame(() => {
+      document.querySelector(".editor-project-card input")?.focus();
+    });
+  };
+
+  const deleteProject = () => {
+    const group = config.workGroups[selectedGroupIndex];
+    const project = group?.projects?.[selectedProjectIndex];
+    if (!group || !project) return;
+
+    const projectName = project.title.trim() || `作品 ${selectedProjectIndex + 1}`;
+    if (
+      !window.confirm(
+        `确定删除“${projectName}”吗？该作品的文字和内容图会从当前浏览器配置中移除，此操作无法撤销。`
+      )
+    ) {
+      return;
+    }
+
+    const remainingCount = group.projects.length - 1;
+    const nextSelectedIndex =
+      remainingCount > 0
+        ? Math.min(selectedProjectIndex, remainingCount - 1)
+        : 0;
+
+    setConfig((current) => {
+      const next = clone(current);
+      next.workGroups[selectedGroupIndex].projects.splice(selectedProjectIndex, 1);
+      return next;
+    });
+    setSelectedProjectIndex(nextSelectedIndex);
+    setWorkStatus(
+      remainingCount > 0
+        ? `已删除“${projectName}”，当前分组剩余 ${remainingCount} 个作品。`
+        : `已删除“${projectName}”，当前分组暂时没有作品。`
+    );
+    window.requestAnimationFrame(() => {
+      const target =
+        document.querySelector(
+          '.editor-project-picker button[aria-pressed="true"]'
+        ) ?? document.querySelector(".editor-project-add");
+      target?.focus();
+    });
+  };
 
   const updateWorkFilter = useCallback((filterId, key, value) => {
     setConfig((current) => {
@@ -1366,8 +1454,10 @@ export default function PortfolioEditor() {
     () => JSON.stringify(config.typography) === JSON.stringify(typographyDefaults),
     [config.typography]
   );
-  const selectedGroup = config.workGroups[selectedGroupIndex];
-  const selectedProject = selectedGroup.projects[selectedProjectIndex];
+  const selectedGroup =
+    config.workGroups[selectedGroupIndex] ?? config.workGroups[0];
+  const selectedProject =
+    selectedGroup?.projects?.[selectedProjectIndex] ?? null;
 
   const exportConfig = () => {
     const blob = new Blob([JSON.stringify(config, null, 2)], {
@@ -1403,8 +1493,11 @@ export default function PortfolioEditor() {
       }
       const normalizedConfig = normalizePortfolioConfig(incoming);
       setConfig(normalizedConfig);
+      setSelectedGroupIndex(0);
+      setSelectedProjectIndex(0);
       setSelectedFilterId(normalizedConfig.workFilters?.[0]?.id ?? "");
       setFilterStatus("");
+      setWorkStatus("");
       setSaveStatus({
         kind: "saving",
         text: "配置已导入，正在保存到当前浏览器…"
@@ -1432,6 +1525,7 @@ export default function PortfolioEditor() {
     setSelectedProjectIndex(0);
     setSelectedFilterId(defaultConfig.workFilters?.[0]?.id ?? "");
     setFilterStatus("");
+    setWorkStatus("");
     setSaveStatus({
       kind: "saving",
       text: "正在恢复并保存默认内容…"
@@ -1927,23 +2021,68 @@ export default function PortfolioEditor() {
           value={selectedGroup.typeLabel}
         />
       </fieldset>
-      <div className="editor-project-picker" aria-label="选择作品">
-        {selectedGroup.projects.map((project, index) => (
-          <button
-            aria-pressed={selectedProjectIndex === index}
-            className={selectedProjectIndex === index ? "active" : ""}
-            key={project.id}
-            onClick={() => setSelectedProjectIndex(index)}
-            type="button"
-          >
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {project.title || "未命名项目"}
-            {project.visible === false && <small>已隐藏</small>}
-          </button>
-        ))}
+      <div className="editor-project-toolbar">
+        <div>
+          <span>当前分组</span>
+          <strong>{selectedGroup.projects.length} 个作品</strong>
+        </div>
+        <button
+          className="editor-project-add"
+          disabled={selectedGroup.projects.length >= MAX_PROJECTS_PER_GROUP}
+          onClick={addProject}
+          title={
+            selectedGroup.projects.length >= MAX_PROJECTS_PER_GROUP
+              ? `每个分组最多 ${MAX_PROJECTS_PER_GROUP} 个作品`
+              : "在当前分组新增一个作品"
+          }
+          type="button"
+        >
+          ＋ 新增作品
+        </button>
+        <button
+          className="danger"
+          disabled={!selectedProject}
+          onClick={deleteProject}
+          type="button"
+        >
+          － 删除当前作品
+        </button>
       </div>
-      <fieldset className="editor-fieldset editor-project-card">
-        <legend>作品 {selectedProjectIndex + 1}</legend>
+      {selectedGroup.projects.length > 0 ? (
+        <div className="editor-project-picker" aria-label="选择作品">
+          {selectedGroup.projects.map((project, index) => (
+            <button
+              aria-pressed={selectedProjectIndex === index}
+              className={selectedProjectIndex === index ? "active" : ""}
+              key={project.id}
+              onClick={() => {
+                setSelectedProjectIndex(index);
+                setWorkStatus("");
+              }}
+              type="button"
+            >
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              {project.title || "未命名项目"}
+              {project.visible === false && <small>已隐藏</small>}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="editor-project-empty">
+          <strong>当前分组暂无作品</strong>
+          <p>点击“新增作品”即可添加第一项，保存后网站会自动更新作品数量。</p>
+        </div>
+      )}
+      <p
+        aria-live="polite"
+        className="editor-project-feedback"
+        role="status"
+      >
+        {workStatus}
+      </p>
+      {selectedProject && (
+        <fieldset className="editor-fieldset editor-project-card">
+          <legend>作品 {selectedProjectIndex + 1}</legend>
         <label className="editor-toggle">
           <input
             checked={selectedProject.visible !== false}
@@ -2029,7 +2168,8 @@ export default function PortfolioEditor() {
             )
           }
         />
-      </fieldset>
+        </fieldset>
+      )}
     </>
   );
 
