@@ -77,8 +77,18 @@ function getTypographyVariables(typography) {
   };
 }
 
+function getProjectContentImages(project) {
+  if (!Array.isArray(project.contentImages)) return [];
+
+  return project.contentImages.filter(
+    (image) => typeof image === "string" && image.length > 0
+  );
+}
+
 function WorkArtwork({ project }) {
-  if (project.image) {
+  const coverImage = getProjectContentImages(project)[0];
+
+  if (coverImage) {
     return (
       <div
         aria-hidden="true"
@@ -90,7 +100,7 @@ function WorkArtwork({ project }) {
           className="art-image"
           draggable="false"
           referrerPolicy="no-referrer"
-          src={project.image}
+          src={coverImage}
         />
       </div>
     );
@@ -123,19 +133,36 @@ function WorkArtwork({ project }) {
 
 function WorkCard({ group, project, onOpen }) {
   const isVideo = group.id === "video";
+  const contentImages = getProjectContentImages(project);
+  const hasContent = contentImages.length > 0;
+  const CardElement = hasContent ? "button" : "article";
 
   return (
-    <button
-      aria-label={`查看项目：${project.title}`}
+    <CardElement
+      aria-label={
+        hasContent
+          ? `查看项目：${project.title}`
+          : `项目：${project.title}，暂无详情内容`
+      }
       className={`work-card ${isVideo ? "video-card" : "image-card"} ${
         group.id === "detail" ? "detail-card" : ""
-      }`}
-      onClick={() => onOpen({ ...project, groupId: group.id, typeLabel: group.typeLabel })}
+      } ${hasContent ? "" : "is-static"}`}
+      onClick={
+        hasContent
+          ? () =>
+              onOpen({
+                ...project,
+                contentImages,
+                groupId: group.id,
+                typeLabel: group.typeLabel
+              })
+          : undefined
+      }
       style={{ "--accent": project.accent }}
-      type="button"
+      type={hasContent ? "button" : undefined}
     >
       <WorkArtwork project={project} />
-      {isVideo && (
+      {isVideo && hasContent && (
         <span aria-hidden="true" className="play-badge">
           ▶
         </span>
@@ -146,7 +173,7 @@ function WorkCard({ group, project, onOpen }) {
         </span>
         <strong>{project.title}</strong>
       </span>
-    </button>
+    </CardElement>
   );
 }
 
@@ -180,6 +207,7 @@ function WorkGroup({ group, hidden, onOpen }) {
 function ProjectLightbox({ project, onClose }) {
   const closeRef = useRef(null);
   const previewRef = useRef(null);
+  const contentImages = getProjectContentImages(project);
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -189,15 +217,15 @@ function ProjectLightbox({ project, onClose }) {
       if (event.key === "Tab") {
         event.preventDefault();
         const closeButton = closeRef.current;
-        const detailPreview = previewRef.current;
+        const contentPreview = previewRef.current;
 
-        if (!detailPreview) {
+        if (!contentPreview) {
           closeButton?.focus();
           return;
         }
 
         if (document.activeElement === closeButton) {
-          detailPreview.focus();
+          contentPreview.focus();
         } else {
           closeButton?.focus();
         }
@@ -208,13 +236,9 @@ function ProjectLightbox({ project, onClose }) {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [onClose]);
 
-  const isVideo = project.groupId === "video";
-  const hasUploadedDetail =
-    project.groupId === "detail" && Boolean(project.detailImage);
-
   return (
     <div
-      aria-labelledby="lightbox-title"
+      aria-label={`${project.title}作品详情`}
       aria-modal="true"
       className="lightbox is-open"
       onMouseDown={(event) => {
@@ -233,64 +257,20 @@ function ProjectLightbox({ project, onClose }) {
       </button>
 
       <div
-        className={`lightbox-body ${
-          isVideo
-            ? "video-view"
-            : hasUploadedDetail
-              ? "detail-image-view"
-              : "image-view"
-        }`}
+        aria-label={`${project.title}内容图片，可上下滚动浏览`}
+        className="lightbox-body content-image-view"
+        ref={previewRef}
+        tabIndex={0}
       >
-        {isVideo ? (
-          <div className="video-preview">
-            <WorkArtwork project={project} />
-            <span aria-hidden="true" className="video-preview-play">
-              ▶
-            </span>
-            <div className="video-progress">
-              <i />
-            </div>
-          </div>
-        ) : hasUploadedDetail ? (
-          <div
-            aria-label={`${project.title}完整详情长图，可上下滚动浏览`}
-            className="detail-page-preview"
-            ref={previewRef}
-            tabIndex={0}
-          >
-            <img
-              alt={`${project.title}完整详情页设计`}
-              className="detail-page-image"
-              referrerPolicy="no-referrer"
-              src={project.detailImage}
-            />
-          </div>
-        ) : (
-          <div className="long-page-preview">
-            <div className="long-page-hero">
-              <WorkArtwork project={project} />
-            </div>
-            <section>
-              <span>01 / PRODUCT VALUE</span>
-              <h4>以清晰的视觉节奏，建立产品的第一印象。</h4>
-              <p>此处为详情页长图结构占位，替换为你的完整项目图后可直接纵向浏览。</p>
-            </section>
-            <section className="long-page-dark">
-              <span>02 / KEY FEATURE</span>
-              <strong>{project.word}</strong>
-              <p>核心卖点、技术参数与场景内容可以在这里分屏呈现。</p>
-            </section>
-            <section>
-              <span>03 / EXPERIENCE</span>
-              <h4>让信息、氛围和转化目标保持在同一套系统中。</h4>
-            </section>
-          </div>
-        )}
-        <div className="lightbox-meta">
-          <span>{project.typeLabel}</span>
-          <h2 id="lightbox-title">{project.title}</h2>
-          <p>{project.label}</p>
-        </div>
+        {contentImages.map((image, index) => (
+          <img
+            alt={`${project.title}内容图 ${index + 1}`}
+            className="content-image"
+            key={`${project.id}-${index}`}
+            referrerPolicy="no-referrer"
+            src={image}
+          />
+        ))}
       </div>
     </div>
   );

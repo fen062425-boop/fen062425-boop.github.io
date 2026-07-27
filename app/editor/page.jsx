@@ -14,6 +14,7 @@ import {
   loadPortfolioConfig,
   MAX_IMAGE_UPLOAD_DATA_LENGTH,
   MAX_PORTFOLIO_CONFIG_BYTES,
+  MAX_PROJECT_CONTENT_IMAGES,
   MAX_WORK_FILTERS,
   normalizePortfolioConfig,
   portfolioConfigSize,
@@ -106,6 +107,10 @@ function formatBytes(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+}
+
+function errorMessage(error, fallback = "图片处理失败，请更换图片后重试。") {
+  return error instanceof Error && error.message ? error.message : fallback;
 }
 
 function hexToRgb(hex) {
@@ -328,15 +333,22 @@ async function compressImage(
   try {
     const sourceWidth = source.width || source.naturalWidth;
     const sourceHeight = source.height || source.naturalHeight;
+    const resolvedMode =
+      mode === "auto"
+        ? sourceHeight / Math.max(1, sourceWidth) >= 2
+          ? "detail"
+          : "standard"
+        : mode;
     const profile =
-      imageCompressionProfiles[mode] ?? imageCompressionProfiles.standard;
+      imageCompressionProfiles[resolvedMode] ??
+      imageCompressionProfiles.standard;
     let dimensions = fitImageDimensions(
       sourceWidth,
       sourceHeight,
       profile
     );
     const minimumOutputWidth =
-      mode === "detail"
+      resolvedMode === "detail"
         ? Math.min(sourceWidth, profile.minimumWidth)
         : 1;
     const detailSizeError =
@@ -359,7 +371,8 @@ async function compressImage(
           outputHeight: sourceHeight,
           outputBytes: file.size,
           quality: null,
-          preservedOriginal: true
+          preservedOriginal: true,
+          compressionMode: resolvedMode
         };
       }
     }
@@ -398,7 +411,8 @@ async function compressImage(
             outputHeight: dimensions.height,
             outputBytes: encoded.blob.size,
             quality: encoded.quality,
-            preservedOriginal: false
+            preservedOriginal: false,
+            compressionMode: resolvedMode
           };
         }
       }
@@ -408,7 +422,7 @@ async function compressImage(
       );
       const nextScale = Math.min(0.9, Math.max(0.62, proportionalScale * 0.96));
       const nextWidth =
-        mode === "detail"
+        resolvedMode === "detail"
           ? Math.max(
               minimumOutputWidth,
               Math.round(dimensions.width * nextScale)
@@ -417,7 +431,7 @@ async function compressImage(
 
       if (nextWidth >= dimensions.width) {
         throw new Error(
-          mode === "detail"
+          resolvedMode === "detail"
             ? detailSizeError
             : "压缩后的图片仍然过大，请使用尺寸更小的图片。"
         );
@@ -433,7 +447,7 @@ async function compressImage(
     }
 
     throw new Error(
-      mode === "detail"
+      resolvedMode === "detail"
         ? detailSizeError
         : "压缩后的图片仍然过大，请使用尺寸更小的图片。"
     );
@@ -612,7 +626,7 @@ function ImageControl({
       });
       onChange(result.dataUrl);
     } catch (uploadError) {
-      setError(uploadError.message);
+      setError(errorMessage(uploadError));
     } finally {
       setProcessing(false);
     }
@@ -712,7 +726,7 @@ function ImageControl({
           )}
           {compressionMode === "detail" &&
             uploadResult.outputHeight / uploadResult.outputWidth < 2 && (
-              <small>当前图片比例较短，请确认上传的是完整详情长图。</small>
+              <small>当前图片比例较短，请确认内容是否完整。</small>
             )}
         </div>
       )}
@@ -725,6 +739,335 @@ function ImageControl({
         <p className="editor-inline-error" role="alert">
           {error}
         </p>
+      )}
+    </fieldset>
+  );
+}
+
+function ProjectContentImagesControl({
+  getMaxDataLength,
+  images = [],
+  onChange
+}) {
+  const addressId = useId();
+  const fileId = useId();
+  const hintId = useId();
+  const jobTokenRef = useRef(0);
+  const mountedRef = useRef(true);
+  const [address, setAddress] = useState("");
+  const [processing, setProcessing] = useState({
+    active: false,
+    current: 0,
+    total: 0
+  });
+  const [errors, setErrors] = useState([]);
+  const [batchStatus, setBatchStatus] = useState("");
+  const contentImages = Array.isArray(images) ? images : [];
+  const isFull = contentImages.length >= MAX_PROJECT_CONTENT_IMAGES;
+
+  useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+      jobTokenRef.current += 1;
+    };
+  }, []);
+
+  const moveImage = (index, direction) => {
+    if (processing.active) return;
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= contentImages.length) return;
+
+    const next = [...contentImages];
+    const [movedImage] = next.splice(index, 1);
+    next.splice(targetIndex, 0, movedImage);
+    onChange(next);
+    setBatchStatus(
+      `已将第 ${index + 1} 张内容图${direction < 0 ? "上移" : "下移"}。`
+    );
+  };
+
+  const removeImage = (index) => {
+    if (processing.active) return;
+    onChange(contentImages.filter((_, imageIndex) => imageIndex !== index));
+    setBatchStatus(`已删除第 ${index + 1} 张内容图。`);
+  };
+
+  const addImageAddress = (event) => {
+    event.preventDefault();
+    if (processing.active || isFull) return;
+
+    const nextAddress = address.trim();
+    if (!/^(?:https?:\/\/|\/(?!\/))/i.test(nextAddress)) {
+      setErrors(["图片地址仅支持 http(s):// 或 / 开头的站内路径。"]);
+      setBatchStatus("");
+      return;
+    }
+    if (!isSafeImageSource(nextAddress)) {
+      setErrors(["图片地址格式无效，请检查后重试。"]);
+      setBatchStatus("");
+      return;
+    }
+    if (contentImages.includes(nextAddress)) {
+      setErrors(["该图片地址已经存在，未重复添加。"]);
+      setBatchStatus("");
+      return;
+    }
+
+    onChange([...contentImages, nextAddress]);
+    setAddress("");
+    setErrors([]);
+    setBatchStatus("已将图片地址追加到内容图末尾。");
+  };
+
+  const handleFiles = async (event) => {
+    const selectedFiles = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (!selectedFiles.length || processing.active) return;
+
+    const availableSlots =
+      MAX_PROJECT_CONTENT_IMAGES - contentImages.length;
+    if (availableSlots <= 0) {
+      setErrors([`每个作品最多添加 ${MAX_PROJECT_CONTENT_IMAGES} 张内容图。`]);
+      setBatchStatus("");
+      return;
+    }
+
+    const files = selectedFiles.slice(0, availableSlots);
+    const nextErrors =
+      selectedFiles.length > files.length
+        ? [
+            `已达到 ${MAX_PROJECT_CONTENT_IMAGES} 张上限，本次只处理前 ${files.length} 张。`
+          ]
+        : [];
+    let nextImages = [...contentImages];
+    let pendingDataLength = 0;
+    let addedCount = 0;
+    const jobToken = jobTokenRef.current + 1;
+    jobTokenRef.current = jobToken;
+
+    setErrors([]);
+    setBatchStatus("");
+    setProcessing({ active: true, current: 1, total: files.length });
+
+    try {
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index];
+        setProcessing({
+          active: true,
+          current: index + 1,
+          total: files.length
+        });
+
+        try {
+          const result = await compressImage(file, {
+            mode: "auto",
+            maxDataLength: getMaxDataLength(pendingDataLength)
+          });
+          if (
+            !mountedRef.current ||
+            jobTokenRef.current !== jobToken
+          ) {
+            return;
+          }
+          if (nextImages.includes(result.dataUrl)) {
+            nextErrors.push(`${file.name}：与已有内容图重复，已跳过。`);
+            continue;
+          }
+          nextImages = [...nextImages, result.dataUrl];
+          pendingDataLength += new TextEncoder().encode(
+            JSON.stringify(result.dataUrl)
+          ).length;
+          addedCount += 1;
+          onChange(nextImages);
+        } catch (uploadError) {
+          if (
+            !mountedRef.current ||
+            jobTokenRef.current !== jobToken
+          ) {
+            return;
+          }
+          nextErrors.push(`${file.name}：${errorMessage(uploadError)}`);
+        }
+      }
+    } catch (uploadError) {
+      nextErrors.push(errorMessage(uploadError));
+    } finally {
+      if (mountedRef.current && jobTokenRef.current === jobToken) {
+        setProcessing({ active: false, current: 0, total: 0 });
+        setErrors(nextErrors);
+        setBatchStatus(
+          addedCount > 0
+            ? `已按选择顺序添加 ${addedCount} 张内容图。`
+            : "本次没有添加内容图。"
+        );
+      }
+    }
+  };
+
+  return (
+    <fieldset className="editor-image-field editor-content-images-field">
+      <legend>作品内容图</legend>
+      <div className="editor-content-images-head">
+        <div>
+          <strong>内容图顺序</strong>
+          <small>
+            {contentImages.length}/{MAX_PROJECT_CONTENT_IMAGES}
+          </small>
+        </div>
+        <span>第 1 张自动作为封面</span>
+      </div>
+
+      {contentImages.length > 0 ? (
+        <ol className="editor-content-images-list">
+          {contentImages.map((image, index) => {
+            const safeImage = isSafeImageSource(image);
+
+            return (
+              <li
+                className={`editor-content-image-item ${
+                  index === 0 ? "is-cover" : ""
+                }`}
+                key={`${image.length}-${index}`}
+              >
+                <div className="editor-content-image-thumb">
+                  {safeImage ? (
+                    <img
+                      alt={`作品内容图 ${index + 1} 预览`}
+                      referrerPolicy="no-referrer"
+                      src={image}
+                    />
+                  ) : (
+                    <span>内容图不可用</span>
+                  )}
+                  <b>{String(index + 1).padStart(2, "0")}</b>
+                </div>
+                <div className="editor-content-image-info">
+                  <strong>
+                    {index === 0 ? "第 1 张 · 网站封面" : `内容图 ${index + 1}`}
+                  </strong>
+                  <small>
+                    {index === 0
+                      ? "网站作品列表自动显示此图"
+                      : "按当前顺序展示"}
+                  </small>
+                </div>
+                <div
+                  aria-label={`调整第 ${index + 1} 张内容图`}
+                  className="editor-content-image-actions"
+                >
+                  <button
+                    aria-label={`上移第 ${index + 1} 张内容图`}
+                    disabled={processing.active || index === 0}
+                    onClick={() => moveImage(index, -1)}
+                    type="button"
+                  >
+                    ↑
+                  </button>
+                  <button
+                    aria-label={`下移第 ${index + 1} 张内容图`}
+                    disabled={
+                      processing.active || index === contentImages.length - 1
+                    }
+                    onClick={() => moveImage(index, 1)}
+                    type="button"
+                  >
+                    ↓
+                  </button>
+                  <button
+                    aria-label={`删除第 ${index + 1} 张内容图`}
+                    className="danger"
+                    disabled={processing.active}
+                    onClick={() => removeImage(index)}
+                    type="button"
+                  >
+                    删除
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <div className="editor-content-images-empty">
+          <strong>还没有作品内容图</strong>
+          <span>添加后，第 1 张自动作为网站封面。</span>
+        </div>
+      )}
+
+      <div className="editor-image-actions editor-content-images-upload">
+        <label
+          aria-disabled={processing.active || isFull}
+          className={`editor-upload-button ${
+            processing.active || isFull ? "is-disabled" : ""
+          }`}
+          htmlFor={fileId}
+        >
+          {processing.active
+            ? `正在处理 ${processing.current}/${processing.total}…`
+            : isFull
+              ? "已达到内容图上限"
+              : "一次选择多张内容图"}
+        </label>
+        <input
+          accept="image/*"
+          aria-describedby={hintId}
+          disabled={processing.active || isFull}
+          id={fileId}
+          multiple
+          onChange={handleFiles}
+          type="file"
+        />
+      </div>
+      <small className="editor-field-hint" id={hintId}>
+        最多 {MAX_PROJECT_CONTENT_IMAGES} 张、单张源文件不超过 15MB。系统按选择顺序逐张压缩并追加；
+        长图会自动使用高清长图模式。内容图保存在当前浏览器，全部内容图共用 4MB
+        配置空间。
+      </small>
+      <form
+        className="editor-content-images-address"
+        onSubmit={addImageAddress}
+      >
+        <label htmlFor={addressId}>添加图片地址</label>
+        <div>
+          <input
+            disabled={processing.active || isFull}
+            id={addressId}
+            maxLength={2000}
+            onChange={(event) => {
+              setAddress(event.target.value);
+              setErrors([]);
+            }}
+            placeholder="https://… 或 /assets/…"
+            type="text"
+            value={address}
+          />
+          <button
+            disabled={
+              processing.active || isFull || address.trim().length === 0
+            }
+            type="submit"
+          >
+            添加地址
+          </button>
+        </div>
+        <small>支持 http(s):// 图片地址或 /assets/ 等站内路径。</small>
+      </form>
+      {batchStatus && (
+        <p className="editor-content-images-status" role="status">
+          {batchStatus}
+        </p>
+      )}
+      {errors.length > 0 && (
+        <div className="editor-inline-error" role="alert">
+          <strong>部分图片未能添加：</strong>
+          <ul>
+            {errors.map((message, index) => (
+              <li key={`${message}-${index}`}>{message}</li>
+            ))}
+          </ul>
+        </div>
       )}
     </fieldset>
   );
@@ -996,7 +1339,7 @@ export default function PortfolioEditor() {
 
   const configBytes = useMemo(() => portfolioConfigSize(config), [config]);
   const availableImageDataLength = useCallback(
-    (currentValue) => {
+    (currentValue, pendingDataLength = 0) => {
       const replacedBytes =
         typeof currentValue === "string" && currentValue.startsWith("data:")
           ? new TextEncoder().encode(JSON.stringify(currentValue)).length
@@ -1005,6 +1348,7 @@ export default function PortfolioEditor() {
         MAX_PORTFOLIO_CONFIG_BYTES -
         configBytes +
         replacedBytes -
+        Math.max(0, pendingDataLength) -
         IMAGE_STORAGE_SAFETY_BYTES;
 
       return Math.max(
@@ -1340,7 +1684,7 @@ export default function PortfolioEditor() {
   const renderWorks = () => (
     <>
       <SectionHeader
-        description="管理作品筛选导航、分组信息、封面和文案，或关闭不需要展示的项目。"
+        description="管理作品筛选导航、分组信息、内容图和文案，或关闭不需要展示的项目。"
         eyebrow="04 / Selected Works"
         title="作品管理"
       />
@@ -1670,52 +2014,21 @@ export default function PortfolioEditor() {
           }
           value={selectedProject.accent}
         />
-        <ImageControl
-          hint={
-            selectedGroup.id === "video"
-              ? "这里上传的是视频封面图，不会在网页中播放视频。"
-              : selectedGroup.id === "detail"
-                ? "作品列表封面。建议 1200×1500px、4:5，重要内容放在画面中央；桌面和手机端可能有少量裁切。"
-                : "上传后替换当前概念封面，建议使用 4:5 竖图。"
+        <ProjectContentImagesControl
+          getMaxDataLength={(pendingDataLength) =>
+            availableImageDataLength("", pendingDataLength)
           }
-          label={
-            selectedGroup.id === "video"
-              ? "视频封面图"
-              : selectedGroup.id === "detail"
-                ? "作品列表封面图"
-                : "项目封面图"
-          }
-          maxDataLength={availableImageDataLength(selectedProject.image)}
+          images={selectedProject.contentImages}
+          key={`${selectedGroup.id}:${selectedProject.id}`}
           onChange={(value) =>
             updateProject(
               selectedGroupIndex,
               selectedProjectIndex,
-              "image",
+              "contentImages",
               value
             )
           }
-          value={selectedProject.image}
         />
-        {selectedGroup.id === "detail" && (
-          <ImageControl
-            compressionMode="detail"
-            hint="用于点击作品后的完整展示。建议 JPG/WebP，宽 750–1200px、高不超过 16000px；系统保持完整比例，不裁切。受当前浏览器 4MB 配置空间限制，多张高清长图建议填写图片地址。"
-            label="完整详情长图"
-            maxDataLength={availableImageDataLength(
-              selectedProject.detailImage
-            )}
-            onChange={(value) =>
-              updateProject(
-                selectedGroupIndex,
-                selectedProjectIndex,
-                "detailImage",
-                value
-              )
-            }
-            previewMode="detail"
-            value={selectedProject.detailImage}
-          />
-        )}
       </fieldset>
     </>
   );
