@@ -16,6 +16,7 @@ import {
   MAX_PORTFOLIO_CONFIG_BYTES,
   MAX_PROJECT_CONTENT_IMAGES,
   MAX_PROJECTS_PER_GROUP,
+  MAX_TIMELINE_ITEMS,
   MAX_WORK_FILTERS,
   normalizePortfolioConfig,
   portfolioConfigSize,
@@ -108,6 +109,20 @@ function createProjectId(projects, groupId) {
       ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
       : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
     id = `${groupId}-project-${token}`;
+  } while (existingIds.has(id));
+
+  return id;
+}
+
+function createTimelineId(items) {
+  const existingIds = new Set(items.map((item) => item.id));
+  let id = "";
+
+  do {
+    const token = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    id = `timeline-${token}`;
   } while (existingIds.has(id));
 
   return id;
@@ -1107,6 +1122,7 @@ export default function PortfolioEditor() {
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
   const [selectedFilterId, setSelectedFilterId] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [timelineStatus, setTimelineStatus] = useState("");
   const [workStatus, setWorkStatus] = useState("");
   const [saveStatus, setSaveStatus] = useState({
     kind: "idle",
@@ -1212,6 +1228,61 @@ export default function PortfolioEditor() {
     },
     []
   );
+
+  const addTimelineItem = () => {
+    const timeline = config.siteContent.profile.timeline;
+    if (timeline.length >= MAX_TIMELINE_ITEMS) {
+      setTimelineStatus(`个人经历最多可添加 ${MAX_TIMELINE_ITEMS} 条。`);
+      return;
+    }
+
+    const nextItem = {
+      id: createTimelineId(timeline),
+      period: "",
+      company: "",
+      role: "",
+      description: ""
+    };
+
+    setConfig((current) => {
+      const next = clone(current);
+      next.siteContent.profile.timeline.push(nextItem);
+      return next;
+    });
+    setTimelineStatus(
+      `已新增经历 ${timeline.length + 1}，请填写时间、项目和职责。`
+    );
+    window.requestAnimationFrame(() => {
+      document
+        .querySelector(
+          `.editor-resume-card[data-timeline-id="${nextItem.id}"] input`
+        )
+        ?.focus();
+    });
+  };
+
+  const deleteTimelineItem = (item, index) => {
+    const itemName = item.company.trim() || `经历 ${index + 1}`;
+    if (
+      !window.confirm(
+        `确定删除“${itemName}”吗？该条经历的时间、职责和说明会一并移除，此操作无法撤销。`
+      )
+    ) {
+      return;
+    }
+
+    setConfig((current) => {
+      const next = clone(current);
+      next.siteContent.profile.timeline = next.siteContent.profile.timeline.filter(
+        (timelineItem) => timelineItem.id !== item.id
+      );
+      return next;
+    });
+    setTimelineStatus(`已删除“${itemName}”。`);
+    window.requestAnimationFrame(() => {
+      document.querySelector(".editor-timeline-add")?.focus();
+    });
+  };
 
   const addProject = () => {
     const group = config.workGroups[selectedGroupIndex];
@@ -1497,6 +1568,7 @@ export default function PortfolioEditor() {
       setSelectedProjectIndex(0);
       setSelectedFilterId(normalizedConfig.workFilters?.[0]?.id ?? "");
       setFilterStatus("");
+      setTimelineStatus("");
       setWorkStatus("");
       setSaveStatus({
         kind: "saving",
@@ -1525,6 +1597,7 @@ export default function PortfolioEditor() {
     setSelectedProjectIndex(0);
     setSelectedFilterId(defaultConfig.workFilters?.[0]?.id ?? "");
     setFilterStatus("");
+    setTimelineStatus("");
     setWorkStatus("");
     setSaveStatus({
       kind: "saving",
@@ -1689,13 +1762,57 @@ export default function PortfolioEditor() {
   const renderResume = () => (
     <>
       <SectionHeader
-        description="固定提供 3 段经历和 4 个能力数据槽位。"
+        description="个人经历可自由增减，能力数据保留 4 个可编辑槽位。"
         eyebrow="03 / Resume"
         title="经历与数据"
       />
-      {config.siteContent.profile.timeline.map((item, index) => (
-        <fieldset className="editor-fieldset editor-resume-card" key={index}>
+      <div className="editor-timeline-toolbar">
+        <div>
+          <span>个人经历</span>
+          <strong>{config.siteContent.profile.timeline.length} 条</strong>
+        </div>
+        <button
+          className="editor-timeline-add"
+          disabled={
+            config.siteContent.profile.timeline.length >= MAX_TIMELINE_ITEMS
+          }
+          onClick={addTimelineItem}
+          title={
+            config.siteContent.profile.timeline.length >= MAX_TIMELINE_ITEMS
+              ? `最多可添加 ${MAX_TIMELINE_ITEMS} 条经历`
+              : "新增一条个人经历"
+          }
+          type="button"
+        >
+          ＋ 新增经历
+        </button>
+      </div>
+      <p
+        aria-live="polite"
+        className="editor-timeline-feedback"
+        role="status"
+      >
+        {timelineStatus}
+      </p>
+      {config.siteContent.profile.timeline.length > 0 ? (
+        config.siteContent.profile.timeline.map((item, index) => (
+          <fieldset
+            className="editor-fieldset editor-resume-card"
+            data-timeline-id={item.id}
+            key={item.id}
+          >
           <legend>经历 {index + 1}</legend>
+          <div className="editor-resume-card-actions">
+            <button
+              aria-label={`删除经历 ${index + 1}${
+                item.company.trim() ? `：${item.company.trim()}` : ""
+              }`}
+              onClick={() => deleteTimelineItem(item, index)}
+              type="button"
+            >
+              － 删除这条经历
+            </button>
+          </div>
           <TextControl
             label="时间"
             maxLength={80}
@@ -1742,7 +1859,13 @@ export default function PortfolioEditor() {
             value={item.description}
           />
         </fieldset>
-      ))}
+        ))
+      ) : (
+        <div className="editor-timeline-empty">
+          <strong>暂无个人经历</strong>
+          <p>点击“新增经历”即可添加第一条，前台不会显示空白时间轴。</p>
+        </div>
+      )}
       <div className="editor-stats-grid">
         {config.siteContent.profile.stats.map((item, index) => (
           <fieldset className="editor-fieldset" key={index}>

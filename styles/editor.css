@@ -441,6 +441,103 @@
   margin-bottom: 18px;
 }
 
+.editor-timeline-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 12px;
+  border: 1px solid rgba(113, 220, 229, 0.22);
+  border-radius: 12px;
+  background: rgba(113, 220, 229, 0.045);
+}
+
+.editor-timeline-toolbar > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.editor-timeline-toolbar > div span {
+  color: var(--editor-muted);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.editor-timeline-toolbar > div strong {
+  font-size: 12px;
+}
+
+.editor-timeline-toolbar button,
+.editor-resume-card-actions button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid rgba(113, 220, 229, 0.3);
+  border-radius: 999px;
+  color: var(--editor-accent);
+  background: rgba(113, 220, 229, 0.065);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.editor-timeline-toolbar button:disabled {
+  border-color: var(--editor-line);
+  color: rgba(237, 244, 248, 0.3);
+  background: rgba(255, 255, 255, 0.025);
+  cursor: not-allowed;
+}
+
+.editor-timeline-feedback {
+  min-height: 16px;
+  margin: 0 0 12px;
+  color: var(--editor-accent);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.editor-resume-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -4px 0 14px;
+}
+
+.editor-resume-card-actions button {
+  border-color: rgba(255, 112, 112, 0.3);
+  color: #ffadad;
+  background: rgba(255, 112, 112, 0.055);
+}
+
+.editor-timeline-empty {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 22px 16px;
+  border: 1px dashed rgba(113, 220, 229, 0.24);
+  border-radius: 12px;
+  background: rgba(113, 220, 229, 0.035);
+}
+
+.editor-timeline-empty strong {
+  font-size: 12px;
+}
+
+.editor-timeline-empty p {
+  margin: 0;
+  color: var(--editor-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.editor-timeline-toolbar button:focus-visible,
+.editor-resume-card-actions button:focus-visible {
+  outline: 2px solid rgba(113, 220, 229, 0.82);
+  outline-offset: 2px;
+}
+
 .editor-stats-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

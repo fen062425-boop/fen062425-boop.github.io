@@ -582,18 +582,20 @@ export default function Home() {
                   <p key={index}>{paragraph}</p>
                 ))}
 
-                <div aria-label="工作经历时间轴" className="timeline">
-                  {siteContent.profile.timeline.map((item, index) => (
-                    <article className="timeline-item" key={index}>
-                      <time>{item.period}</time>
-                      <div>
-                        <h3>{item.company}</h3>
-                        <p>{item.role}</p>
-                        <span>{item.description}</span>
-                      </div>
-                    </article>
-                  ))}
-                </div>
+                {siteContent.profile.timeline.length > 0 && (
+                  <div aria-label="工作经历时间轴" className="timeline">
+                    {siteContent.profile.timeline.map((item, index) => (
+                      <article className="timeline-item" key={item.id ?? index}>
+                        <time>{item.period}</time>
+                        <div>
+                          <h3>{item.company}</h3>
+                          <p>{item.role}</p>
+                          <span>{item.description}</span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
 
                 <div className="stats">
                   {siteContent.profile.stats.map((item, index) => (
