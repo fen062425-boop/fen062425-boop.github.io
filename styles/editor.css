@@ -117,10 +117,6 @@
   background: rgba(113, 220, 229, 0.38);
 }
 
-.editor-project-picker::-webkit-scrollbar {
-  display: none;
-}
-
 .editor-nav button {
   display: grid;
   flex: 0 0 auto;
@@ -1353,8 +1349,32 @@
   display: flex;
   gap: 8px;
   margin-bottom: 18px;
+  padding-bottom: 10px;
   overflow-x: auto;
-  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: rgba(113, 220, 229, 0.72) rgba(237, 244, 248, 0.09);
+  scrollbar-width: thin;
+}
+
+.editor-project-picker::-webkit-scrollbar {
+  display: block;
+  height: 8px;
+}
+
+.editor-project-picker::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(237, 244, 248, 0.09);
+}
+
+.editor-project-picker::-webkit-scrollbar-thumb {
+  min-width: 52px;
+  border: 2px solid #14191a;
+  border-radius: 999px;
+  background: rgba(113, 220, 229, 0.78);
+}
+
+.editor-project-picker::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 220, 229, 0.98);
 }
 
 .editor-project-picker button {
