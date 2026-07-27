@@ -15,13 +15,6 @@ const navItems = [
 ];
 
 const COVER_SCROLL_THRESHOLD = 8;
-const COVER_SCROLL_SPEED = 420;
-const COVER_SCROLL_MIN_DURATION = 4;
-const COVER_SCROLL_MAX_DURATION = 30;
-const DEFAULT_COVER_MOTION = {
-  canScroll: false,
-  duration: COVER_SCROLL_MIN_DURATION
-};
 
 function roundedCssNumber(value) {
   return Number(value.toFixed(3));
@@ -97,7 +90,7 @@ function getProjectContentImages(project) {
 function WorkCoverImage({ accent, src }) {
   const frameRef = useRef(null);
   const imageRef = useRef(null);
-  const [coverMotion, setCoverMotion] = useState(DEFAULT_COVER_MOTION);
+  const [canScroll, setCanScroll] = useState(false);
 
   const measureCover = useCallback(() => {
     const frame = frameRef.current;
@@ -112,9 +105,7 @@ function WorkCoverImage({ accent, src }) {
       frame.clientWidth <= 0 ||
       frame.clientHeight <= 0
     ) {
-      setCoverMotion((current) =>
-        current.canScroll ? DEFAULT_COVER_MOTION : current
-      );
+      setCanScroll(false);
       return;
     }
 
@@ -126,31 +117,11 @@ function WorkCoverImage({ accent, src }) {
       0,
       image.naturalHeight * coverScale - frame.clientHeight
     );
-    const canScroll = scrollDistance > COVER_SCROLL_THRESHOLD;
-    const duration = canScroll
-      ? Math.min(
-          COVER_SCROLL_MAX_DURATION,
-          Math.max(
-            COVER_SCROLL_MIN_DURATION,
-            scrollDistance / COVER_SCROLL_SPEED
-          )
-        )
-      : COVER_SCROLL_MIN_DURATION;
-    const nextMotion = {
-      canScroll,
-      duration: roundedCssNumber(duration)
-    };
-
-    setCoverMotion((current) =>
-      current.canScroll === nextMotion.canScroll &&
-      current.duration === nextMotion.duration
-        ? current
-        : nextMotion
-    );
+    setCanScroll(scrollDistance > COVER_SCROLL_THRESHOLD);
   }, []);
 
   useEffect(() => {
-    setCoverMotion(DEFAULT_COVER_MOTION);
+    setCanScroll(false);
 
     const frame = frameRef.current;
     if (!frame) return undefined;
@@ -171,20 +142,17 @@ function WorkCoverImage({ accent, src }) {
     <div
       aria-hidden="true"
       className={`work-art work-art--image ${
-        coverMotion.canScroll ? "can-scroll" : ""
+        canScroll ? "can-scroll" : ""
       }`}
-      data-cover-scroll={coverMotion.canScroll ? "true" : "false"}
+      data-cover-scroll={canScroll ? "true" : "false"}
       ref={frameRef}
-      style={{
-        "--accent": accent,
-        "--cover-scroll-duration": `${coverMotion.duration}s`
-      }}
+      style={{ "--accent": accent }}
     >
       <img
         alt=""
         className="art-image"
         draggable="false"
-        onError={() => setCoverMotion(DEFAULT_COVER_MOTION)}
+        onError={() => setCanScroll(false)}
         onLoad={measureCover}
         ref={imageRef}
         referrerPolicy="no-referrer"

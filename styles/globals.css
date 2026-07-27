@@ -984,7 +984,7 @@ button {
   .work-card:not(.is-static):hover .work-art--image.can-scroll .art-image {
     object-position: center bottom;
     transition:
-      object-position var(--cover-scroll-duration, 9s) linear,
+      object-position 3s linear,
       filter 260ms ease;
   }
 }
