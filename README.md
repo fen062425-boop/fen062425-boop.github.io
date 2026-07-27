@@ -4,6 +4,20 @@
 
 ## 本地运行
 
+Windows 用户可直接双击项目根目录中的：
+
+```text
+打开本地编辑器.cmd
+```
+
+启动器会在后台运行本地服务，确认页面可访问后自动打开：
+
+```text
+http://localhost:3000/editor
+```
+
+也可以手动运行：
+
 ```powershell
 pnpm.cmd install
 pnpm.cmd dev
