@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { workFilters } from "../data/portfolio";
 import {
   getDefaultPortfolioConfig,
   loadPortfolioConfig,
@@ -301,11 +300,17 @@ export default function Home() {
   const [portfolioConfig, setPortfolioConfig] = useState(
     getDefaultPortfolioConfig
   );
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [copied, setCopied] = useState(false);
   const lastFocusedRef = useRef(null);
-  const { siteContent, theme, typography, workGroups } = portfolioConfig;
+  const {
+    siteContent,
+    theme,
+    typography,
+    workFilters = [],
+    workGroups
+  } = portfolioConfig;
 
   useEffect(() => {
     const syncConfig = () => {
@@ -342,19 +347,6 @@ export default function Home() {
     return () => document.body.classList.remove("is-locked");
   }, [selectedProject]);
 
-  useEffect(() => {
-    if (
-      activeFilter !== "all" &&
-      !workGroups.some(
-        (group) =>
-          group.id === activeFilter &&
-          group.projects.some((project) => project.visible !== false)
-      )
-    ) {
-      setActiveFilter("all");
-    }
-  }, [activeFilter, workGroups]);
-
   const openProject = (project) => {
     lastFocusedRef.current = document.activeElement;
     setSelectedProject(project);
@@ -386,15 +378,29 @@ export default function Home() {
     window.setTimeout(() => setCopied(false), 1800);
   };
 
+  const visibleWorkGroups = workGroups.filter((group) =>
+    group.projects.some((project) => project.visible !== false)
+  );
+  const visibleGroupIds = new Set(visibleWorkGroups.map((group) => group.id));
   const availableFilters = workFilters.filter(
     (filter) =>
-      filter.id === "all" ||
-      workGroups.some(
-        (group) =>
-          group.id === filter.id &&
-          group.projects.some((project) => project.visible !== false)
-      )
+      filter.visible !== false &&
+      filter.groupIds.some((groupId) => visibleGroupIds.has(groupId))
   );
+  const activeFilterConfig =
+    availableFilters.find((filter) => filter.id === activeFilter) ??
+    availableFilters[0] ??
+    null;
+  const activeFilterId = activeFilterConfig?.id ?? null;
+  const activeGroupIds = activeFilterConfig
+    ? new Set(activeFilterConfig.groupIds)
+    : null;
+
+  useEffect(() => {
+    if (activeFilter !== activeFilterId) {
+      setActiveFilter(activeFilterId);
+    }
+  }, [activeFilter, activeFilterId]);
 
   return (
     <div
@@ -563,33 +569,33 @@ export default function Home() {
                   <p className="kicker">Selected Works</p>
                   <h2>作品集</h2>
                 </div>
-                <div aria-label="作品分类" className="filters">
-                  {availableFilters.map((filter) => (
-                    <button
-                      aria-pressed={activeFilter === filter.id}
-                      className={`filter ${activeFilter === filter.id ? "active" : ""}`}
-                      key={filter.id}
-                      onClick={() => setActiveFilter(filter.id)}
-                      type="button"
-                    >
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
+                {availableFilters.length > 0 && (
+                  <div aria-label="作品分类" className="filters">
+                    {availableFilters.map((filter) => (
+                      <button
+                        aria-pressed={activeFilterId === filter.id}
+                        className={`filter ${activeFilterId === filter.id ? "active" : ""}`}
+                        key={filter.id}
+                        onClick={() => setActiveFilter(filter.id)}
+                        type="button"
+                      >
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {workGroups
-                .filter((group) =>
-                  group.projects.some((project) => project.visible !== false)
-                )
-                .map((group) => (
-                  <WorkGroup
-                    group={group}
-                    hidden={activeFilter !== "all" && activeFilter !== group.id}
-                    key={group.id}
-                    onOpen={openProject}
-                  />
-                ))}
+              {visibleWorkGroups.map((group) => (
+                <WorkGroup
+                  group={group}
+                  hidden={
+                    activeGroupIds !== null && !activeGroupIds.has(group.id)
+                  }
+                  key={group.id}
+                  onOpen={openProject}
+                />
+              ))}
             </div>
           </section>
 

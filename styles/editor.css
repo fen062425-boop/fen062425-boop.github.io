@@ -720,6 +720,255 @@
   color: #ffadad;
 }
 
+.editor-filter-manager {
+  border-color: rgba(113, 220, 229, 0.24);
+}
+
+.editor-filter-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editor-filter-toolbar > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.editor-filter-toolbar strong {
+  font-size: 12px;
+}
+
+.editor-filter-toolbar small {
+  color: var(--editor-muted);
+  font-size: 10px;
+}
+
+.editor-filter-add,
+.editor-filter-actions button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid rgba(113, 220, 229, 0.3);
+  border-radius: 999px;
+  color: var(--editor-accent);
+  background: rgba(113, 220, 229, 0.075);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.editor-filter-add {
+  flex: 0 0 auto;
+}
+
+.editor-filter-add:disabled,
+.editor-filter-actions button:disabled {
+  border-color: var(--editor-line);
+  color: rgba(237, 244, 248, 0.3);
+  background: rgba(255, 255, 255, 0.025);
+  cursor: not-allowed;
+}
+
+.editor-filter-intro {
+  margin: 12px 0 14px;
+  color: var(--editor-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.editor-filter-picker {
+  display: flex;
+  gap: 8px;
+  margin: 0 -2px 18px;
+  padding: 2px 2px 7px;
+  overflow-x: auto;
+  scrollbar-color: rgba(113, 220, 229, 0.35) transparent;
+  scrollbar-width: thin;
+}
+
+.editor-filter-picker button {
+  display: grid;
+  flex: 0 0 142px;
+  min-width: 0;
+  min-height: 72px;
+  align-content: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--editor-line);
+  border-radius: 10px;
+  color: var(--editor-text);
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+  text-align: left;
+}
+
+.editor-filter-picker button > span {
+  color: var(--editor-accent);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.editor-filter-picker button strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-filter-picker button small {
+  color: var(--editor-muted);
+  font-size: 9px;
+}
+
+.editor-filter-picker button.active {
+  border-color: rgba(113, 220, 229, 0.48);
+  background: rgba(113, 220, 229, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(113, 220, 229, 0.08);
+}
+
+.editor-filter-picker button.is-hidden:not(.active) {
+  opacity: 0.62;
+}
+
+.editor-filter-picker button.is-hidden small {
+  color: #ffb069;
+}
+
+.editor-filter-detail {
+  padding-top: 2px;
+}
+
+.editor-filter-visibility {
+  margin-bottom: 18px;
+}
+
+.editor-filter-groups {
+  min-width: 0;
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid var(--editor-line);
+  border-radius: 12px;
+  background: rgba(4, 7, 8, 0.36);
+}
+
+.editor-filter-groups legend {
+  padding: 0 7px;
+  color: rgba(237, 244, 248, 0.9);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.editor-filter-group-help {
+  margin: 0 0 11px;
+  color: var(--editor-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.editor-filter-group-list {
+  display: grid;
+  gap: 8px;
+}
+
+.editor-filter-group-option {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--editor-line);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+}
+
+.editor-filter-group-option input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--editor-accent);
+}
+
+.editor-filter-group-option input:disabled {
+  cursor: not-allowed;
+}
+
+.editor-filter-group-option span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.editor-filter-group-option strong {
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-filter-group-option small {
+  color: var(--editor-muted);
+  font-size: 9px;
+}
+
+.editor-filter-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.editor-filter-actions button {
+  min-width: 0;
+  padding-right: 8px;
+  padding-left: 8px;
+}
+
+.editor-filter-actions button.danger {
+  border-color: rgba(255, 112, 112, 0.3);
+  color: #ffadad;
+  background: rgba(255, 112, 112, 0.055);
+}
+
+.editor-filter-empty {
+  display: grid;
+  gap: 7px;
+  padding: 22px 16px;
+  border: 1px dashed rgba(113, 220, 229, 0.24);
+  border-radius: 12px;
+  background: rgba(113, 220, 229, 0.035);
+  text-align: center;
+}
+
+.editor-filter-empty strong {
+  font-size: 12px;
+}
+
+.editor-filter-empty p {
+  margin: 0;
+  color: var(--editor-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.editor-filter-feedback {
+  min-height: 16px;
+  margin: 10px 0 -4px;
+  color: #8ee3be;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.editor-filter-add:focus-visible,
+.editor-filter-picker button:focus-visible,
+.editor-filter-actions button:focus-visible,
+.editor-filter-group-option input:focus-visible {
+  outline: 2px solid rgba(113, 220, 229, 0.82);
+  outline-offset: 2px;
+}
+
 .editor-segmented {
   display: inline-flex;
   padding: 3px;
@@ -1030,6 +1279,37 @@
   .editor-controls {
     padding-right: 16px;
     padding-left: 16px;
+  }
+
+  .editor-filter-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .editor-filter-toolbar > div {
+    justify-content: space-between;
+  }
+
+  .editor-filter-add {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .editor-filter-picker button {
+    flex-basis: 132px;
+    min-height: 76px;
+  }
+
+  .editor-filter-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .editor-filter-actions button {
+    min-height: 44px;
+  }
+
+  .editor-filter-actions button.danger {
+    grid-column: 1 / -1;
   }
 
   .editor-stats-grid,

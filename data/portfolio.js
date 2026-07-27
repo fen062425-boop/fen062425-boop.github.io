@@ -59,10 +59,30 @@ export const siteContent = {
 };
 
 export const workFilters = [
-  { id: "all", label: "全部" },
-  { id: "video", label: "视频" },
-  { id: "detail", label: "详情页" },
-  { id: "home", label: "首页" }
+  {
+    id: "all",
+    label: "全部",
+    groupIds: ["video", "detail", "home"],
+    visible: true
+  },
+  {
+    id: "video",
+    label: "视频",
+    groupIds: ["video"],
+    visible: true
+  },
+  {
+    id: "detail",
+    label: "详情页",
+    groupIds: ["detail"],
+    visible: true
+  },
+  {
+    id: "home",
+    label: "首页",
+    groupIds: ["home"],
+    visible: true
+  }
 ];
 
 export const workGroups = [

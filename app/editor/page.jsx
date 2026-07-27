@@ -14,6 +14,7 @@ import {
   loadPortfolioConfig,
   MAX_IMAGE_UPLOAD_DATA_LENGTH,
   MAX_PORTFOLIO_CONFIG_BYTES,
+  MAX_WORK_FILTERS,
   normalizePortfolioConfig,
   portfolioConfigSize,
   PORTFOLIO_PREVIEW_MESSAGE,
@@ -80,6 +81,25 @@ const imageCompressionProfiles = {
 function clone(value) {
   if (typeof structuredClone === "function") return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
+}
+
+function createWorkFilterId(workFilters) {
+  const existingIds = new Set(workFilters.map((filter) => filter.id));
+  let id = "";
+
+  do {
+    const token = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    id = `filter-${token}`;
+  } while (existingIds.has(id));
+
+  return id;
+}
+
+function workFilterDisplayLabel(filter, index) {
+  const label = typeof filter?.label === "string" ? filter.label.trim() : "";
+  return label || `分类 ${Math.max(0, index) + 1}`;
 }
 
 function formatBytes(bytes) {
@@ -727,18 +747,42 @@ export default function PortfolioEditor() {
   const [previewMode, setPreviewMode] = useState("desktop");
   const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
   const [selectedProjectIndex, setSelectedProjectIndex] = useState(0);
+  const [selectedFilterId, setSelectedFilterId] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
   const [saveStatus, setSaveStatus] = useState({
     kind: "idle",
     text: "正在读取本地配置…"
   });
   const iframeRef = useRef(null);
   const importInputRef = useRef(null);
+  const workFilters = useMemo(
+    () => (Array.isArray(config.workFilters) ? config.workFilters : []),
+    [config.workFilters]
+  );
+  const selectedFilter = useMemo(
+    () =>
+      workFilters.find((filter) => filter.id === selectedFilterId) ?? null,
+    [selectedFilterId, workFilters]
+  );
+  const selectedFilterIndex = selectedFilter
+    ? workFilters.findIndex((filter) => filter.id === selectedFilter.id)
+    : -1;
 
   useEffect(() => {
-    setConfig(loadPortfolioConfig());
+    const loadedConfig = loadPortfolioConfig();
+    setConfig(loadedConfig);
+    setSelectedFilterId(loadedConfig.workFilters?.[0]?.id ?? "");
     if (window.innerWidth <= 820) setPreviewMode("mobile");
     setReady(true);
   }, []);
+
+  useEffect(() => {
+    setSelectedFilterId((current) =>
+      workFilters.some((filter) => filter.id === current)
+        ? current
+        : (workFilters[0]?.id ?? "")
+    );
+  }, [workFilters]);
 
   useEffect(() => {
     if (!ready) return undefined;
@@ -810,6 +854,146 @@ export default function PortfolioEditor() {
     []
   );
 
+  const updateWorkFilter = useCallback((filterId, key, value) => {
+    setConfig((current) => {
+      const filterIndex = current.workFilters.findIndex(
+        (filter) => filter.id === filterId
+      );
+      if (filterIndex < 0) return current;
+
+      const next = clone(current);
+      next.workFilters[filterIndex][key] = value;
+      return next;
+    });
+  }, []);
+
+  const updateFilterGroup = useCallback((filterId, groupId, checked) => {
+    setConfig((current) => {
+      const filterIndex = current.workFilters.findIndex(
+        (filter) => filter.id === filterId
+      );
+      if (filterIndex < 0) return current;
+
+      const filter = current.workFilters[filterIndex];
+      const groupIds = Array.isArray(filter.groupIds) ? filter.groupIds : [];
+
+      if (checked && groupIds.includes(groupId)) return current;
+      if (!checked && (!groupIds.includes(groupId) || groupIds.length <= 1)) {
+        return current;
+      }
+
+      const next = clone(current);
+      next.workFilters[filterIndex].groupIds = checked
+        ? [...groupIds, groupId]
+        : groupIds.filter((id) => id !== groupId);
+      return next;
+    });
+  }, []);
+
+  const addWorkFilter = () => {
+    if (workFilters.length >= MAX_WORK_FILTERS) {
+      setFilterStatus(`最多可添加 ${MAX_WORK_FILTERS} 个导航项。`);
+      return;
+    }
+
+    const groupIds = config.workGroups.map((group) => group.id);
+    if (!groupIds.length) {
+      setFilterStatus("当前没有可关联的作品分组，无法新增导航。");
+      return;
+    }
+
+    const id = createWorkFilterId(workFilters);
+    const nextFilter = {
+      id,
+      label: `新导航 ${workFilters.length + 1}`,
+      groupIds,
+      visible: true
+    };
+
+    setConfig((current) =>
+      current.workFilters.length >= MAX_WORK_FILTERS
+        ? current
+        : {
+            ...current,
+            workFilters: [...current.workFilters, nextFilter]
+          }
+    );
+    setSelectedFilterId(id);
+    setFilterStatus(`已新增“${nextFilter.label}”，并关联全部作品分组。`);
+  };
+
+  const deleteWorkFilter = (filter) => {
+    const deletedIndex = workFilters.findIndex((item) => item.id === filter.id);
+    const label = workFilterDisplayLabel(filter, deletedIndex);
+    if (
+      !window.confirm(
+        `确定删除导航“${label}”吗？只会删除这个导航项，作品分组和作品内容都会保留。`
+      )
+    ) {
+      return;
+    }
+
+    const remainingFilters = workFilters.filter((item) => item.id !== filter.id);
+    const fallbackId =
+      remainingFilters[Math.min(deletedIndex, remainingFilters.length - 1)]?.id ??
+      "";
+
+    setConfig((current) => ({
+      ...current,
+      workFilters: current.workFilters.filter((item) => item.id !== filter.id)
+    }));
+    setSelectedFilterId((current) =>
+      current === filter.id ||
+      !remainingFilters.some((item) => item.id === current)
+        ? fallbackId
+        : current
+    );
+    setFilterStatus(`已删除导航“${label}”，作品内容未受影响。`);
+    window.requestAnimationFrame(() => {
+      const target =
+        document.querySelector(
+          '.editor-filter-picker button[aria-pressed="true"]'
+        ) ?? document.querySelector(".editor-filter-add");
+      target?.focus();
+    });
+  };
+
+  const moveWorkFilter = (filterId, direction) => {
+    const currentIndex = workFilters.findIndex(
+      (filter) => filter.id === filterId
+    );
+    const nextIndex = currentIndex + direction;
+    if (
+      currentIndex < 0 ||
+      nextIndex < 0 ||
+      nextIndex >= workFilters.length
+    ) {
+      return;
+    }
+
+    setConfig((current) => {
+      const filters = [...current.workFilters];
+      const index = filters.findIndex((filter) => filter.id === filterId);
+      const targetIndex = index + direction;
+      if (index < 0 || targetIndex < 0 || targetIndex >= filters.length) {
+        return current;
+      }
+
+      const [movedFilter] = filters.splice(index, 1);
+      filters.splice(targetIndex, 0, movedFilter);
+      return { ...current, workFilters: filters };
+    });
+    setSelectedFilterId(filterId);
+    setFilterStatus(
+      `已将“${workFilterDisplayLabel(
+        selectedFilter,
+        selectedFilterIndex
+      )}”${
+        direction < 0 ? "上移" : "下移"
+      }。`
+    );
+  };
+
   const configBytes = useMemo(() => portfolioConfigSize(config), [config]);
   const availableImageDataLength = useCallback(
     (currentValue) => {
@@ -873,7 +1057,10 @@ export default function PortfolioEditor() {
       if (incoming?.version !== 1) {
         throw new Error("unsupported");
       }
-      setConfig(normalizePortfolioConfig(incoming));
+      const normalizedConfig = normalizePortfolioConfig(incoming);
+      setConfig(normalizedConfig);
+      setSelectedFilterId(normalizedConfig.workFilters?.[0]?.id ?? "");
+      setFilterStatus("");
       setSaveStatus({
         kind: "saving",
         text: "配置已导入，正在保存到当前浏览器…"
@@ -895,9 +1082,12 @@ export default function PortfolioEditor() {
       return;
     }
 
-    setConfig(getDefaultPortfolioConfig());
+    const defaultConfig = getDefaultPortfolioConfig();
+    setConfig(defaultConfig);
     setSelectedGroupIndex(0);
     setSelectedProjectIndex(0);
+    setSelectedFilterId(defaultConfig.workFilters?.[0]?.id ?? "");
+    setFilterStatus("");
     setSaveStatus({
       kind: "saving",
       text: "正在恢复并保存默认内容…"
@@ -1150,10 +1340,214 @@ export default function PortfolioEditor() {
   const renderWorks = () => (
     <>
       <SectionHeader
-        description="共 18 个固定作品槽位，可修改封面和文案，或关闭不需要展示的项目。"
+        description="管理作品筛选导航、分组信息、封面和文案，或关闭不需要展示的项目。"
         eyebrow="04 / Selected Works"
         title="作品管理"
       />
+      <fieldset className="editor-fieldset editor-filter-manager">
+        <legend>筛选导航</legend>
+        <div className="editor-filter-toolbar">
+          <div>
+            <strong>导航项</strong>
+            <small>
+              {workFilters.length}/{MAX_WORK_FILTERS}
+            </small>
+          </div>
+          <button
+            aria-label="新增筛选导航"
+            className="editor-filter-add"
+            disabled={
+              workFilters.length >= MAX_WORK_FILTERS ||
+              config.workGroups.length === 0
+            }
+            onClick={addWorkFilter}
+            title={
+              workFilters.length >= MAX_WORK_FILTERS
+                ? `最多可添加 ${MAX_WORK_FILTERS} 个导航项`
+                : config.workGroups.length === 0
+                  ? "当前没有可关联的作品分组"
+                  : "新增筛选导航"
+            }
+            type="button"
+          >
+            ＋ 新增导航
+          </button>
+        </div>
+        <p className="editor-filter-intro">
+          导航项可以关联一个或多个作品分组。隐藏或删除导航不会删除任何作品内容。
+        </p>
+
+        {workFilters.length > 0 ? (
+          <>
+            <div
+              aria-label="选择要编辑的筛选导航"
+              className="editor-filter-picker"
+            >
+              {workFilters.map((filter, index) => {
+                const filterLabel = workFilterDisplayLabel(filter, index);
+
+                return (
+                  <button
+                    aria-pressed={selectedFilterId === filter.id}
+                    className={`${selectedFilterId === filter.id ? "active" : ""}${
+                      filter.visible === false ? " is-hidden" : ""
+                    }`}
+                    key={filter.id}
+                    onClick={() => {
+                      setSelectedFilterId(filter.id);
+                      setFilterStatus("");
+                    }}
+                    type="button"
+                  >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{filterLabel}</strong>
+                    <small>
+                      {filter.visible === false ? "已隐藏" : "显示中"} ·{" "}
+                      {filter.groupIds.length} 个分组
+                    </small>
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedFilter && (
+              <div className="editor-filter-detail">
+                <TextControl
+                  hint="显示在作品区顶部的筛选按钮中，最多 24 个字符。"
+                  label="导航名称"
+                  maxLength={24}
+                  onChange={(value) =>
+                    updateWorkFilter(selectedFilter.id, "label", value)
+                  }
+                  value={selectedFilter.label}
+                />
+                <label className="editor-toggle editor-filter-visibility">
+                  <input
+                    checked={selectedFilter.visible !== false}
+                    onChange={(event) =>
+                      updateWorkFilter(
+                        selectedFilter.id,
+                        "visible",
+                        event.target.checked
+                      )
+                    }
+                    type="checkbox"
+                  />
+                  <span>
+                    <strong>在网站导航中显示</strong>
+                    <small>
+                      关闭后仅隐藏这个导航按钮，关联分组及作品内容仍会保留。
+                    </small>
+                  </span>
+                </label>
+
+                <fieldset
+                  aria-describedby="editor-filter-group-help"
+                  className="editor-filter-groups"
+                >
+                  <legend>关联作品分组</legend>
+                  <p
+                    className="editor-filter-group-help"
+                    id="editor-filter-group-help"
+                  >
+                    至少选择一个分组；同一导航可以汇总多个分组。
+                  </p>
+                  <div className="editor-filter-group-list">
+                    {config.workGroups.map((group) => {
+                      const isChecked =
+                        selectedFilter.groupIds.includes(group.id);
+                      const isLastChecked =
+                        isChecked && selectedFilter.groupIds.length <= 1;
+
+                      return (
+                        <label
+                          className="editor-filter-group-option"
+                          key={group.id}
+                        >
+                          <input
+                            checked={isChecked}
+                            disabled={isLastChecked}
+                            onChange={(event) =>
+                              updateFilterGroup(
+                                selectedFilter.id,
+                                group.id,
+                                event.target.checked
+                              )
+                            }
+                            type="checkbox"
+                          />
+                          <span>
+                            <strong>{group.title}</strong>
+                            <small>
+                              {isLastChecked
+                                ? "至少保留此分组"
+                                : group.typeLabel}
+                            </small>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+
+                <div className="editor-filter-actions">
+                  <button
+                    aria-label={`上移导航“${workFilterDisplayLabel(
+                      selectedFilter,
+                      selectedFilterIndex
+                    )}”`}
+                    disabled={selectedFilterIndex <= 0}
+                    onClick={() => moveWorkFilter(selectedFilter.id, -1)}
+                    type="button"
+                  >
+                    ↑ 上移
+                  </button>
+                  <button
+                    aria-label={`下移导航“${workFilterDisplayLabel(
+                      selectedFilter,
+                      selectedFilterIndex
+                    )}”`}
+                    disabled={
+                      selectedFilterIndex < 0 ||
+                      selectedFilterIndex >= workFilters.length - 1
+                    }
+                    onClick={() => moveWorkFilter(selectedFilter.id, 1)}
+                    type="button"
+                  >
+                    ↓ 下移
+                  </button>
+                  <button
+                    aria-label={`删除导航“${workFilterDisplayLabel(
+                      selectedFilter,
+                      selectedFilterIndex
+                    )}”`}
+                    className="danger"
+                    onClick={() => deleteWorkFilter(selectedFilter)}
+                    type="button"
+                  >
+                    删除导航
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="editor-filter-empty">
+            <strong>暂无筛选导航</strong>
+            <p>
+              网站会直接显示作品列表。点击“新增导航”即可重新创建筛选入口。
+            </p>
+          </div>
+        )}
+
+        <p
+          aria-live="polite"
+          className="editor-filter-feedback"
+          role="status"
+        >
+          {filterStatus}
+        </p>
+      </fieldset>
       <div className="editor-segmented wide" aria-label="作品分组">
         {config.workGroups.map((group, index) => (
           <button

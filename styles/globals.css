@@ -816,20 +816,35 @@ button {
 
 .filters {
   display: flex;
+  flex: 0 1 auto;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.035);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.filters::-webkit-scrollbar {
+  display: none;
 }
 
 .filter {
+  flex: 0 0 auto;
   min-height: 42px;
   padding: 0 18px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .filter.active {
@@ -1835,12 +1850,6 @@ button {
 
   .filters {
     width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .filter {
-    flex: 0 0 auto;
   }
 
   .video-grid,
