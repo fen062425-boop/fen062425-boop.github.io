@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "vinext dev",
-    "build": "vinext build",
+    "assets:sync": "node ./scripts/sync-portfolio-assets.mjs",
+    "assets:validate": "node ./scripts/validate-portfolio-assets.mjs",
+    "assets:prepare": "pnpm run assets:sync && pnpm run assets:validate",
+    "build": "pnpm run assets:prepare && vinext build",
     "start": "vinext start",
     "check": "vinext check"
   },

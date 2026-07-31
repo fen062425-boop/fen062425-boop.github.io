@@ -1,5 +1,6 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
+import { localEditorStorage } from "./build/local-editor-vite-plugin.js";
 import { sites } from "./build/sites-vite-plugin.js";
 
 export default defineConfig(async () => {
@@ -10,7 +11,13 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    server: {
+      host: "127.0.0.1",
+      port: 3000,
+      strictPort: true
+    },
     plugins: [
+      localEditorStorage(),
       vinext(),
       sites(),
       cloudflare({

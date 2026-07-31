@@ -2,8 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  getImageAlt,
+  getImageDimensions,
+  getImageSource,
   getDefaultPortfolioConfig,
   loadPortfolioConfig,
+  normalizePortfolioConfig,
   PORTFOLIO_PREVIEW_MESSAGE,
   PORTFOLIO_STORAGE_KEY,
   PORTFOLIO_UPDATE_EVENT
@@ -82,15 +86,15 @@ function getTypographyVariables(typography) {
 function getProjectContentImages(project) {
   if (!Array.isArray(project.contentImages)) return [];
 
-  return project.contentImages.filter(
-    (image) => typeof image === "string" && image.length > 0
-  );
+  return project.contentImages.filter((image) => getImageSource(image));
 }
 
-function WorkCoverImage({ accent, src }) {
+function WorkCoverImage({ accent, image }) {
   const frameRef = useRef(null);
   const imageRef = useRef(null);
   const [canScroll, setCanScroll] = useState(false);
+  const src = getImageSource(image, "cover");
+  const { width, height } = getImageDimensions(image);
 
   const measureCover = useCallback(() => {
     const frame = frameRef.current;
@@ -151,12 +155,16 @@ function WorkCoverImage({ accent, src }) {
       <img
         alt=""
         className="art-image"
+        decoding="async"
         draggable="false"
+        height={height || undefined}
+        loading="lazy"
         onError={() => setCanScroll(false)}
         onLoad={measureCover}
         ref={imageRef}
         referrerPolicy="no-referrer"
         src={src}
+        width={width || undefined}
       />
     </div>
   );
@@ -167,7 +175,7 @@ function WorkArtwork({ project }) {
 
   if (coverImage) {
     return (
-      <WorkCoverImage accent={project.accent} src={coverImage} />
+      <WorkCoverImage accent={project.accent} image={coverImage} />
     );
   }
 
@@ -269,6 +277,24 @@ function WorkGroup({ group, hidden, onOpen }) {
   );
 }
 
+function ProjectContentImage({ image, index, project }) {
+  const src = getImageSource(image);
+  const { width, height } = getImageDimensions(image);
+
+  return (
+    <img
+      alt={getImageAlt(image, `${project.title}内容图 ${index + 1}`)}
+      className="content-image"
+      decoding="async"
+      height={height || undefined}
+      loading={index === 0 ? "eager" : "lazy"}
+      referrerPolicy="no-referrer"
+      src={src}
+      width={width || undefined}
+    />
+  );
+}
+
 function ProjectLightbox({ project, onClose }) {
   const closeRef = useRef(null);
   const previewRef = useRef(null);
@@ -328,12 +354,11 @@ function ProjectLightbox({ project, onClose }) {
         tabIndex={0}
       >
         {contentImages.map((image, index) => (
-          <img
-            alt={`${project.title}内容图 ${index + 1}`}
-            className="content-image"
+          <ProjectContentImage
+            image={image}
+            index={index}
             key={`${project.id}-${index}`}
-            referrerPolicy="no-referrer"
-            src={image}
+            project={project}
           />
         ))}
       </div>
@@ -356,6 +381,12 @@ export default function Home() {
     workFilters = [],
     workGroups
   } = portfolioConfig;
+  const heroImage = siteContent.heroImage;
+  const heroImageSource = getImageSource(heroImage);
+  const heroImageDimensions = getImageDimensions(heroImage);
+  const portraitImage = siteContent.profile.portraitImage;
+  const portraitImageSource = getImageSource(portraitImage);
+  const portraitImageDimensions = getImageDimensions(portraitImage);
 
   useEffect(() => {
     const syncConfig = () => {
@@ -371,7 +402,8 @@ export default function Home() {
         event.source === window.parent &&
         event.data?.type === PORTFOLIO_PREVIEW_MESSAGE
       ) {
-        syncConfig();
+        setPortfolioConfig(normalizePortfolioConfig(event.data.config));
+        setSelectedProject(null);
       }
     };
 
@@ -477,13 +509,18 @@ export default function Home() {
       <main id="top">
         <section aria-labelledby="hero-title" className="hero">
           <div aria-hidden="true" className="hero-media">
-            {siteContent.heroImage ? (
+            {heroImageSource ? (
               <img
-                alt=""
+                alt={getImageAlt(heroImage)}
                 className="hero-background-image"
+                decoding="async"
                 draggable="false"
+                fetchPriority="high"
+                height={heroImageDimensions.height || undefined}
+                loading="eager"
                 referrerPolicy="no-referrer"
-                src={siteContent.heroImage}
+                src={heroImageSource}
+                width={heroImageDimensions.width || undefined}
               />
             ) : (
               <>
@@ -541,13 +578,17 @@ export default function Home() {
             <div className="section-shell profile-layout">
               <div className="profile-card">
                 <div aria-hidden="true" className="portrait-scene">
-                  {siteContent.profile.portraitImage ? (
+                  {portraitImageSource ? (
                     <img
-                      alt=""
+                      alt={getImageAlt(portraitImage)}
                       className="portrait-image"
+                      decoding="async"
                       draggable="false"
+                      height={portraitImageDimensions.height || undefined}
+                      loading="lazy"
                       referrerPolicy="no-referrer"
-                      src={siteContent.profile.portraitImage}
+                      src={portraitImageSource}
+                      width={portraitImageDimensions.width || undefined}
                     />
                   ) : (
                     <>

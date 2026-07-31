@@ -984,7 +984,7 @@ button {
   .work-card:not(.is-static):hover .work-art--image.can-scroll .art-image {
     object-position: center bottom;
     transition:
-      object-position 1s linear,
+      object-position 0.1s linear,
       filter 260ms ease;
   }
 }
@@ -1428,22 +1428,38 @@ button {
 
 .lightbox-body {
   position: relative;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--bg);
-  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(238, 247, 248, 0.12);
+  border-radius: 18px;
+  background: #0a0d0f;
+  box-shadow:
+    0 0 0 10px rgba(107, 221, 233, 0.035),
+    0 30px 100px rgba(0, 0, 0, 0.58);
   animation: lightbox-in 420ms var(--ease) both;
 }
 
 .content-image-view {
-  width: min(1200px, calc(100vw - 72px));
-  max-height: calc(100svh - 72px);
+  width: min(550px, calc(100vw - 72px));
+  height: min(900px, calc(100svh - 72px));
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: #fff;
-  scrollbar-color: rgba(7, 16, 19, 0.38) transparent;
+  background: #0a0d0f;
+  scrollbar-color: rgba(238, 247, 248, 0.42) #0a0d0f;
   scrollbar-width: thin;
+}
+
+.content-image-view::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-image-view::-webkit-scrollbar-track {
+  background: #0a0d0f;
+}
+
+.content-image-view::-webkit-scrollbar-thumb {
+  border: 2px solid #0a0d0f;
+  border-radius: 999px;
+  background: rgba(238, 247, 248, 0.42);
 }
 
 .content-image-view:focus-visible {
@@ -1453,10 +1469,11 @@ button {
 
 .content-image {
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
   height: auto;
-  margin: 0 auto;
+  margin: 0;
+  image-rendering: auto;
 }
 
 @keyframes hero-drift {
@@ -1785,6 +1802,7 @@ button {
 
   .content-image-view {
     width: 100%;
+    height: auto;
     max-height: 94svh;
     overflow-y: auto;
     border: 0;

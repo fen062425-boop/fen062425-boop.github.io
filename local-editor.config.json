@@ -1,0 +1,9 @@
+{
+  "root": "E:\\本地编辑器存图",
+  "maxOriginalBytes": 104857600,
+  "maxWebVariantBytes": 26214400,
+  "maxRequestBytes": 157286400,
+  "deploymentWarnBytes": 209715200,
+  "backupIntervalMinutes": 10,
+  "backupRetention": 72
+}

@@ -8,6 +8,7 @@ $ErrorActionPreference = "Stop"
 $scriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectDirectory = Split-Path -Parent $scriptDirectory
 $editorUrl = "http://localhost:3000/editor"
+$storageStatusUrl = "http://localhost:3000/__local-editor/status"
 $vinextCommand = Join-Path $projectDirectory "node_modules\.bin\vinext.cmd"
 
 function Test-EditorReady {
@@ -111,3 +112,28 @@ if (-not $NoBrowser) {
 }
 
 Write-Output "Local editor ready: $editorUrl"
+
+try {
+  $storageResponse = Invoke-WebRequest `
+    -UseBasicParsing `
+    -Uri $storageStatusUrl `
+    -TimeoutSec 10
+  $storageStatus = $storageResponse.Content | ConvertFrom-Json
+
+  if ($storageStatus.available) {
+    $freeSpaceText = if ($null -ne $storageStatus.freeBytes) {
+      "{0:N1} GB free" -f ($storageStatus.freeBytes / 1GB)
+    }
+    else {
+      "free space unavailable"
+    }
+
+    Write-Output "Image library ready: $($storageStatus.root) ($freeSpaceText)"
+  }
+  else {
+    Write-Warning "Image library is unavailable. The editor will be read-only: $($storageStatus.error)"
+  }
+}
+catch {
+  Write-Warning "Could not read local image-library status. The editor may be read-only."
+}

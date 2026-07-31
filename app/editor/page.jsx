@@ -9,15 +9,18 @@ import {
   useState
 } from "react";
 import {
+  getImageAlt,
+  getImageSource,
   getDefaultPortfolioConfig,
+  getStarterPortfolioConfig,
   isSafeImageSource,
   loadPortfolioConfig,
-  MAX_IMAGE_UPLOAD_DATA_LENGTH,
-  MAX_PORTFOLIO_CONFIG_BYTES,
+  loadLegacyPortfolioConfig,
   MAX_PROJECT_CONTENT_IMAGES,
   MAX_PROJECTS_PER_GROUP,
   MAX_TIMELINE_ITEMS,
   MAX_WORK_FILTERS,
+  normalizeImageAsset,
   normalizePortfolioConfig,
   portfolioConfigSize,
   PORTFOLIO_PREVIEW_MESSAGE,
@@ -59,25 +62,38 @@ const typographyGroups = [
   }
 ];
 
-const MAX_SOURCE_IMAGE_BYTES = 15_000_000;
-const IMAGE_STORAGE_SAFETY_BYTES = 100_000;
-const MIN_IMAGE_DATA_BUDGET = 160_000;
+const MAX_SOURCE_IMAGE_BYTES = 100_000_000;
+const MAX_CONFIG_IMPORT_BYTES = 150_000_000;
+const LOCAL_EDITOR_CONFIG_API = "/__local-editor/config";
+const LOCAL_EDITOR_STATUS_API = "/__local-editor/status";
+const LOCAL_EDITOR_ASSETS_API = "/__local-editor/assets";
+const LOCAL_EDITOR_CLEANUP_API = "/__local-editor/assets/cleanup";
 
 const imageCompressionProfiles = {
+  cover: {
+    maxWidth: 1200,
+    maxHeight: 1200,
+    maxPixels: 1_440_000,
+    quality: 0.82
+  },
+  longCover: {
+    maxWidth: 1200,
+    maxHeight: 16000,
+    maxPixels: 12_000_000,
+    quality: 0.8
+  },
   standard: {
     maxWidth: 1920,
     maxHeight: 1920,
     maxPixels: 4_000_000,
-    initialQuality: 0.86,
-    minimumQuality: 0.62
+    quality: 0.88
   },
   detail: {
-    maxWidth: 1200,
-    maxHeight: 16000,
-    maxPixels: 16_000_000,
+    maxWidth: 1920,
+    maxHeight: 32000,
+    maxPixels: 32_000_000,
     minimumWidth: 750,
-    initialQuality: 0.92,
-    minimumQuality: 0.72
+    quality: 0.9
   }
 };
 
@@ -134,9 +150,13 @@ function workFilterDisplayLabel(filter, index) {
 }
 
 function formatBytes(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+  const value = Number(bytes);
+  if (!Number.isFinite(value) || value <= 0) return "0 B";
+  if (value < 1024) return `${Math.round(value)} B`;
+  if (value < 1024 ** 2) return `${(value / 1024).toFixed(1)} KB`;
+  if (value < 1024 ** 3) return `${(value / 1024 ** 2).toFixed(2)} MB`;
+  if (value < 1024 ** 4) return `${(value / 1024 ** 3).toFixed(2)} GB`;
+  return `${(value / 1024 ** 4).toFixed(2)} TB`;
 }
 
 function errorMessage(error, fallback = "图片处理失败，请更换图片后重试。") {
@@ -175,15 +195,6 @@ function contrastRatio(foreground, background) {
   const lighter = Math.max(first, second);
   const darker = Math.min(first, second);
   return (lighter + 0.05) / (darker + 0.05);
-}
-
-function blobToDataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error("图片读取失败，请重新选择。"));
-    reader.readAsDataURL(blob);
-  });
 }
 
 function fitImageDimensions(sourceWidth, sourceHeight, profile) {
@@ -271,73 +282,12 @@ function canvasToWebpBlob(canvas, quality) {
   );
 }
 
-async function encodeCanvasWithinBudget(canvas, profile, maxBlobBytes) {
-  const highQualityBlob = await canvasToWebpBlob(
-    canvas,
-    profile.initialQuality
-  );
-  if (!highQualityBlob) return null;
-  if (highQualityBlob.size <= maxBlobBytes) {
-    return {
-      blob: highQualityBlob,
-      fits: true,
-      quality: profile.initialQuality
-    };
-  }
-
-  const minimumQualityBlob = await canvasToWebpBlob(
-    canvas,
-    profile.minimumQuality
-  );
-  if (!minimumQualityBlob) return null;
-  if (minimumQualityBlob.size > maxBlobBytes) {
-    return {
-      blob: minimumQualityBlob,
-      fits: false,
-      quality: profile.minimumQuality
-    };
-  }
-
-  let lowerQuality = profile.minimumQuality;
-  let upperQuality = profile.initialQuality;
-  let bestBlob = minimumQualityBlob;
-  let bestQuality = lowerQuality;
-
-  for (let index = 0; index < 5; index += 1) {
-    const quality = (lowerQuality + upperQuality) / 2;
-    const blob = await canvasToWebpBlob(canvas, quality);
-    if (!blob) break;
-
-    if (blob.size <= maxBlobBytes) {
-      bestBlob = blob;
-      bestQuality = quality;
-      lowerQuality = quality;
-    } else {
-      upperQuality = quality;
-    }
-  }
-
-  return {
-    blob: bestBlob,
-    fits: true,
-    quality: bestQuality
-  };
-}
-
-async function compressImage(
-  file,
-  { mode = "standard", maxDataLength = MAX_IMAGE_UPLOAD_DATA_LENGTH } = {}
-) {
+async function prepareImageUpload(file, { mode = "standard" } = {}) {
   if (!file?.type?.startsWith("image/")) {
     throw new Error("请选择 PNG、JPG、WebP 或其他常见图片格式。");
   }
   if (file.size > MAX_SOURCE_IMAGE_BYTES) {
-    throw new Error("源图片不能超过 15MB，请先压缩后再上传。");
-  }
-  if (maxDataLength < MIN_IMAGE_DATA_BUDGET) {
-    throw new Error(
-      "当前浏览器配置空间不足，请先移除部分本地图片，或改用图片地址。"
-    );
+    throw new Error("源图片不能超过 100MB，请先压缩后再上传。");
   }
 
   let source;
@@ -372,118 +322,193 @@ async function compressImage(
     const profile =
       imageCompressionProfiles[resolvedMode] ??
       imageCompressionProfiles.standard;
-    let dimensions = fitImageDimensions(
+    const dimensions = fitImageDimensions(sourceWidth, sourceHeight, profile);
+    const coverProfile =
+      resolvedMode === "detail"
+        ? imageCompressionProfiles.longCover
+        : imageCompressionProfiles.cover;
+    const coverDimensions = fitImageDimensions(
       sourceWidth,
       sourceHeight,
-      profile
+      coverProfile
     );
     const minimumOutputWidth =
       resolvedMode === "detail"
         ? Math.min(sourceWidth, profile.minimumWidth)
         : 1;
     const detailSizeError =
-      "长图在至少 750px 宽的清晰度下仍超过本地空间，请拆分长图或填写图片地址。";
-    const supportedOriginalType =
-      /^image\/(?:png|jpe?g|webp|gif)$/i.test(file.type);
-
-    if (
-      supportedOriginalType &&
-      dimensions.width === sourceWidth &&
-      dimensions.height === sourceHeight
-    ) {
-      const originalDataUrl = await blobToDataUrl(file);
-      if (originalDataUrl.length <= maxDataLength) {
-        return {
-          dataUrl: originalDataUrl,
-          sourceWidth,
-          sourceHeight,
-          outputWidth: sourceWidth,
-          outputHeight: sourceHeight,
-          outputBytes: file.size,
-          quality: null,
-          preservedOriginal: true,
-          compressionMode: resolvedMode
-        };
-      }
-    }
+      "长图在至少 750px 宽的清晰度下仍无法安全处理，请拆分长图后再上传。";
 
     if (dimensions.width < minimumOutputWidth) {
       throw new Error(detailSizeError);
     }
 
-    const maxBlobBytes = Math.floor((maxDataLength - 128) * 0.75);
+    const detailCanvas = renderHighQualityCanvas(
+      source,
+      sourceWidth,
+      sourceHeight,
+      dimensions.width,
+      dimensions.height
+    );
+    const coverCanvas = renderHighQualityCanvas(
+      source,
+      sourceWidth,
+      sourceHeight,
+      coverDimensions.width,
+      coverDimensions.height
+    );
+    const [detailBlob, coverBlob] = await Promise.all([
+      canvasToWebpBlob(detailCanvas, profile.quality),
+      canvasToWebpBlob(coverCanvas, coverProfile.quality)
+    ]);
 
-    for (let attempt = 0; attempt < 6; attempt += 1) {
-      const canvas = renderHighQualityCanvas(
-        source,
-        sourceWidth,
-        sourceHeight,
-        dimensions.width,
-        dimensions.height
-      );
-      const encoded = await encodeCanvasWithinBudget(
-        canvas,
-        profile,
-        maxBlobBytes
-      );
-      if (!encoded) {
-        throw new Error("图片压缩失败，请更换图片后重试。");
-      }
-
-      if (encoded.fits) {
-        const dataUrl = await blobToDataUrl(encoded.blob);
-        if (dataUrl.length <= maxDataLength) {
-          return {
-            dataUrl,
-            sourceWidth,
-            sourceHeight,
-            outputWidth: dimensions.width,
-            outputHeight: dimensions.height,
-            outputBytes: encoded.blob.size,
-            quality: encoded.quality,
-            preservedOriginal: false,
-            compressionMode: resolvedMode
-          };
-        }
-      }
-
-      const proportionalScale = Math.sqrt(
-        maxBlobBytes / Math.max(1, encoded.blob.size)
-      );
-      const nextScale = Math.min(0.9, Math.max(0.62, proportionalScale * 0.96));
-      const nextWidth =
-        resolvedMode === "detail"
-          ? Math.max(
-              minimumOutputWidth,
-              Math.round(dimensions.width * nextScale)
-            )
-          : Math.max(1, Math.round(dimensions.width * nextScale));
-
-      if (nextWidth >= dimensions.width) {
-        throw new Error(
-          resolvedMode === "detail"
-            ? detailSizeError
-            : "压缩后的图片仍然过大，请使用尺寸更小的图片。"
-        );
-      }
-
-      dimensions = {
-        width: nextWidth,
-        height: Math.max(
-          1,
-          Math.round(sourceHeight * (nextWidth / sourceWidth))
-        )
-      };
+    if (!detailBlob || !coverBlob) {
+      throw new Error("浏览器无法生成 WebP 图片，请更换浏览器后重试。");
     }
 
-    throw new Error(
-      resolvedMode === "detail"
-        ? detailSizeError
-        : "压缩后的图片仍然过大，请使用尺寸更小的图片。"
-    );
+    return {
+      coverBlob,
+      coverHeight: coverDimensions.height,
+      coverWidth: coverDimensions.width,
+      detailBlob,
+      outputHeight: dimensions.height,
+      outputWidth: dimensions.width,
+      sourceHeight,
+      sourceWidth,
+      compressionMode: resolvedMode
+    };
   } finally {
     cleanup();
   }
+}
+
+async function readJsonResponse(response, fallbackMessage) {
+  let payload = null;
+
+  try {
+    payload = await response.json();
+  } catch {
+    // The local service may be unavailable before it can return JSON.
+  }
+
+  if (!response.ok) {
+    const apiError =
+      typeof payload?.error === "string"
+        ? payload.error
+        : payload?.error?.message;
+    throw new Error(apiError || payload?.message || fallbackMessage);
+  }
+
+  return payload;
+}
+
+async function uploadImageAsset(file, { alt = "", mode = "standard" } = {}) {
+  const prepared = await prepareImageUpload(file, { mode });
+  const formData = new FormData();
+  formData.append("original", file, file.name || "source-image");
+  formData.append("detail", prepared.detailBlob, "detail.webp");
+  formData.append("cover", prepared.coverBlob, "cover.webp");
+  formData.append("width", String(prepared.outputWidth));
+  formData.append("height", String(prepared.outputHeight));
+  formData.append("alt", alt);
+
+  const response = await fetch(LOCAL_EDITOR_ASSETS_API, {
+    method: "POST",
+    body: formData
+  });
+  const payload = await readJsonResponse(
+    response,
+    "图片写入 E:\\本地编辑器存图 失败。"
+  );
+  const asset = normalizeImageAsset(payload?.asset);
+
+  if (!asset) {
+    throw new Error("本地服务未返回有效的图片资源。");
+  }
+
+  return {
+    asset,
+    ...prepared,
+    coverBytes: prepared.coverBlob.size,
+    detailBytes: prepared.detailBlob.size,
+    sourceBytes: file.size
+  };
+}
+
+function dataUrlToFile(dataUrl, name = "legacy-image") {
+  return fetch(dataUrl)
+    .then((response) => {
+      if (!response.ok) throw new Error("内嵌图片读取失败。");
+      return response.blob();
+    })
+    .then((blob) => {
+      const extension = blob.type.split("/")[1]?.replace("jpeg", "jpg") || "png";
+      return new File([blob], `${name}.${extension}`, { type: blob.type });
+    });
+}
+
+function imageValueKey(value) {
+  return getImageSource(value) || "";
+}
+
+async function migrateInlineImages(candidate, onProgress = () => {}) {
+  const next = normalizePortfolioConfig(candidate);
+  const jobs = [];
+
+  const queueImage = (read, write, mode, fallbackAlt) => {
+    const current = read();
+    const source = getImageSource(current);
+    if (!source?.startsWith("data:image/")) return;
+    const jobNumber = jobs.length + 1;
+
+    jobs.push(async () => {
+      const file = await dataUrlToFile(source, `migrated-${jobNumber}`);
+      const result = await uploadImageAsset(file, {
+        alt: getImageAlt(current, fallbackAlt),
+        mode
+      });
+      write(result.asset);
+    });
+  };
+
+  queueImage(
+    () => next.siteContent.heroImage,
+    (asset) => {
+      next.siteContent.heroImage = asset;
+    },
+    "standard",
+    "首屏背景图"
+  );
+  queueImage(
+    () => next.siteContent.profile.portraitImage,
+    (asset) => {
+      next.siteContent.profile.portraitImage = asset;
+    },
+    "standard",
+    "人物图片"
+  );
+
+  next.workGroups.forEach((group) => {
+    group.projects.forEach((project) => {
+      project.contentImages.forEach((image, imageIndex) => {
+        queueImage(
+          () => project.contentImages[imageIndex],
+          (asset) => {
+            project.contentImages[imageIndex] = asset;
+          },
+          "auto",
+          `${project.title || "作品"} 内容图 ${imageIndex + 1}`
+        );
+      });
+    });
+  });
+
+  for (let index = 0; index < jobs.length; index += 1) {
+    onProgress(index + 1, jobs.length);
+    await jobs[index]();
+  }
+
+  return { config: normalizePortfolioConfig(next), migratedCount: jobs.length };
 }
 
 function TextControl({
@@ -618,7 +643,6 @@ function ImageControl({
   compressionMode = "standard",
   hint,
   label,
-  maxDataLength = MAX_IMAGE_UPLOAD_DATA_LENGTH,
   onChange,
   previewMode = "cover",
   value
@@ -629,13 +653,27 @@ function ImageControl({
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [uploadResult, setUploadResult] = useState(null);
-  const previewValue = isSafeImageSource(value) ? value : "";
+  const detailValue = getImageSource(value);
+  const [addressValue, setAddressValue] = useState(
+    detailValue.startsWith("data:") ? "" : detailValue
+  );
+  const previewValue = getImageSource(
+    value,
+    previewMode === "cover" ? "cover" : "detail"
+  );
 
   useEffect(() => {
-    if (uploadResult && uploadResult.dataUrl !== value) {
+    if (
+      uploadResult &&
+      getImageSource(uploadResult.asset) !== getImageSource(value)
+    ) {
       setUploadResult(null);
     }
   }, [uploadResult, value]);
+
+  useEffect(() => {
+    setAddressValue(detailValue.startsWith("data:") ? "" : detailValue);
+  }, [detailValue]);
 
   const handleFile = async (event) => {
     const file = event.target.files?.[0];
@@ -646,15 +684,14 @@ function ImageControl({
     setError("");
 
     try {
-      const result = await compressImage(file, {
-        mode: compressionMode,
-        maxDataLength
+      const result = await uploadImageAsset(file, {
+        alt: getImageAlt(value, label) || label,
+        mode: compressionMode
       });
       setUploadResult({
-        ...result,
-        sourceBytes: file.size
+        ...result
       });
-      onChange(result.dataUrl);
+      onChange(result.asset);
     } catch (uploadError) {
       setError(errorMessage(uploadError));
     } finally {
@@ -683,7 +720,8 @@ function ImageControl({
             onClick={() => {
               setError("");
               setUploadResult(null);
-              onChange("");
+              setAddressValue("");
+              onChange(null);
             }}
             type="button"
           >
@@ -719,11 +757,31 @@ function ImageControl({
           onChange={(event) => {
             setError("");
             setUploadResult(null);
-            onChange(event.target.value);
+            setAddressValue(event.target.value);
+          }}
+          onBlur={() => {
+            const source = addressValue.trim();
+            if (!source) {
+              onChange(null);
+              return;
+            }
+            if (!isSafeImageSource(source) || source.startsWith("data:")) {
+              setError("图片地址仅支持 http(s):// 或 / 开头的站内路径。");
+              return;
+            }
+            onChange(
+              normalizeImageAsset({
+                src: source,
+                alt: getImageAlt(value, label)
+              })
+            );
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.currentTarget.blur();
           }}
           placeholder="https://… 或 /assets/…"
-          type="url"
-          value={value?.startsWith("data:") ? "" : value ?? ""}
+          type="text"
+          value={addressValue}
         />
       </label>
       {uploadResult && (
@@ -742,15 +800,12 @@ function ImageControl({
             {formatBytes(uploadResult.sourceBytes)}
           </strong>
           <span>
-            输出 {uploadResult.outputWidth}×{uploadResult.outputHeight} ·{" "}
-            文件 {formatBytes(uploadResult.outputBytes)} · 配置约{" "}
-            {formatBytes(
-              new TextEncoder().encode(uploadResult.dataUrl).length
-            )}
-            {uploadResult.preservedOriginal
-              ? " · 保留原图"
-              : ` · WebP ${Math.round(uploadResult.quality * 100)}%`}
+            详情图 {uploadResult.outputWidth}×{uploadResult.outputHeight} ·{" "}
+            {formatBytes(uploadResult.detailBytes)}；封面图{" "}
+            {uploadResult.coverWidth}×{uploadResult.coverHeight} ·{" "}
+            {formatBytes(uploadResult.coverBytes)}
           </span>
+          <small>原图已归档到 E 盘，配置中仅保存网页图片路径。</small>
           {compressionMode === "detail" && uploadResult.outputWidth < 750 && (
             <small>输出宽度低于 750px，详情文字在大屏上可能不够清晰。</small>
           )}
@@ -774,11 +829,7 @@ function ImageControl({
   );
 }
 
-function ProjectContentImagesControl({
-  getMaxDataLength,
-  images = [],
-  onChange
-}) {
+function ProjectContentImagesControl({ images = [], onChange }) {
   const addressId = useId();
   const fileId = useId();
   const hintId = useId();
@@ -839,13 +890,18 @@ function ProjectContentImagesControl({
       setBatchStatus("");
       return;
     }
-    if (contentImages.includes(nextAddress)) {
+    if (
+      contentImages.some((image) => imageValueKey(image) === nextAddress)
+    ) {
       setErrors(["该图片地址已经存在，未重复添加。"]);
       setBatchStatus("");
       return;
     }
 
-    onChange([...contentImages, nextAddress]);
+    onChange([
+      ...contentImages,
+      normalizeImageAsset({ src: nextAddress, alt: "" })
+    ]);
     setAddress("");
     setErrors([]);
     setBatchStatus("已将图片地址追加到内容图末尾。");
@@ -872,7 +928,6 @@ function ProjectContentImagesControl({
           ]
         : [];
     let nextImages = [...contentImages];
-    let pendingDataLength = 0;
     let addedCount = 0;
     const jobToken = jobTokenRef.current + 1;
     jobTokenRef.current = jobToken;
@@ -891,9 +946,9 @@ function ProjectContentImagesControl({
         });
 
         try {
-          const result = await compressImage(file, {
-            mode: "auto",
-            maxDataLength: getMaxDataLength(pendingDataLength)
+          const result = await uploadImageAsset(file, {
+            alt: file.name.replace(/\.[^.]+$/, ""),
+            mode: "auto"
           });
           if (
             !mountedRef.current ||
@@ -901,14 +956,15 @@ function ProjectContentImagesControl({
           ) {
             return;
           }
-          if (nextImages.includes(result.dataUrl)) {
+          if (
+            nextImages.some(
+              (image) => imageValueKey(image) === imageValueKey(result.asset)
+            )
+          ) {
             nextErrors.push(`${file.name}：与已有内容图重复，已跳过。`);
             continue;
           }
-          nextImages = [...nextImages, result.dataUrl];
-          pendingDataLength += new TextEncoder().encode(
-            JSON.stringify(result.dataUrl)
-          ).length;
+          nextImages = [...nextImages, result.asset];
           addedCount += 1;
           onChange(nextImages);
         } catch (uploadError) {
@@ -952,21 +1008,25 @@ function ProjectContentImagesControl({
       {contentImages.length > 0 ? (
         <ol className="editor-content-images-list">
           {contentImages.map((image, index) => {
-            const safeImage = isSafeImageSource(image);
+            const imageSource = getImageSource(
+              image,
+              index === 0 ? "cover" : "detail"
+            );
+            const safeImage = isSafeImageSource(imageSource);
 
             return (
               <li
                 className={`editor-content-image-item ${
                   index === 0 ? "is-cover" : ""
                 }`}
-                key={`${image.length}-${index}`}
+                key={`${imageValueKey(image) || "missing"}-${index}`}
               >
                 <div className="editor-content-image-thumb">
                   {safeImage ? (
                     <img
                       alt={`作品内容图 ${index + 1} 预览`}
                       referrerPolicy="no-referrer"
-                      src={image}
+                      src={imageSource}
                     />
                   ) : (
                     <span>内容图不可用</span>
@@ -1051,9 +1111,8 @@ function ProjectContentImagesControl({
         />
       </div>
       <small className="editor-field-hint" id={hintId}>
-        最多 {MAX_PROJECT_CONTENT_IMAGES} 张、单张源文件不超过 15MB。系统按选择顺序逐张压缩并追加；
-        长图会自动使用高清长图模式。内容图保存在当前浏览器，全部内容图共用 4MB
-        配置空间。
+        最多 {MAX_PROJECT_CONTENT_IMAGES} 张、单张源文件不超过 100MB。系统按选择顺序逐张生成封面图和高清详情图；
+        原图与网页图保存在 E:\本地编辑器存图，不占浏览器空间。
       </small>
       <form
         className="editor-content-images-address"
@@ -1128,8 +1187,21 @@ export default function PortfolioEditor() {
     kind: "idle",
     text: "正在读取本地配置…"
   });
+  const [storageStatus, setStorageStatus] = useState({
+    available: false,
+    readOnly: true,
+    loading: true
+  });
+  const [legacyConfigAvailable, setLegacyConfigAvailable] = useState(true);
+  const [cleanupStatus, setCleanupStatus] = useState("");
   const iframeRef = useRef(null);
   const importInputRef = useRef(null);
+  const autosaveTimerRef = useRef(null);
+  const lastSavedJsonRef = useRef("");
+  const saveQueueRef = useRef(Promise.resolve());
+  const saveSequenceRef = useRef(0);
+  const storageWritable =
+    storageStatus.available === true && storageStatus.readOnly !== true;
   const workFilters = useMemo(
     () => (Array.isArray(config.workFilters) ? config.workFilters : []),
     [config.workFilters]
@@ -1143,13 +1215,170 @@ export default function PortfolioEditor() {
     ? workFilters.findIndex((filter) => filter.id === selectedFilter.id)
     : -1;
 
-  useEffect(() => {
-    const loadedConfig = loadPortfolioConfig();
-    setConfig(loadedConfig);
-    setSelectedFilterId(loadedConfig.workFilters?.[0]?.id ?? "");
-    if (window.innerWidth <= 820) setPreviewMode("mobile");
-    setReady(true);
+  const refreshStorageStatus = useCallback(async () => {
+    try {
+      const response = await fetch(LOCAL_EDITOR_STATUS_API, {
+        cache: "no-store"
+      });
+      const payload = await readJsonResponse(
+        response,
+        "无法读取 E 盘图片库状态。"
+      );
+      const nextStatus = {
+        ...payload,
+        available: payload?.available === true,
+        readOnly: payload?.readOnly !== false,
+        loading: false
+      };
+      setStorageStatus(nextStatus);
+      return nextStatus;
+    } catch (statusError) {
+      const nextStatus = {
+        available: false,
+        readOnly: true,
+        loading: false,
+        error: errorMessage(statusError, "本地文件服务不可用。")
+      };
+      setStorageStatus(nextStatus);
+      return nextStatus;
+    }
   }, []);
+
+  const persistConfig = useCallback(
+    (candidate, { label = "正在保存到本地项目…" } = {}) => {
+      const normalized = normalizePortfolioConfig({
+        ...candidate,
+        version: 2
+      });
+      const serialized = JSON.stringify(normalized);
+      const sequence = saveSequenceRef.current + 1;
+      saveSequenceRef.current = sequence;
+      setSaveStatus({ kind: "saving", text: label });
+
+      const operation = saveQueueRef.current
+        .catch(() => undefined)
+        .then(async () => {
+          const response = await fetch(LOCAL_EDITOR_CONFIG_API, {
+            method: "PUT",
+            headers: { "content-type": "application/json" },
+            body: serialized
+          });
+          const payload = await readJsonResponse(
+            response,
+            "配置写入项目文件失败。"
+          );
+
+          lastSavedJsonRef.current = serialized;
+          savePortfolioConfig(normalized);
+          iframeRef.current?.contentWindow?.postMessage(
+            { type: PORTFOLIO_PREVIEW_MESSAGE, config: normalized },
+            window.location.origin
+          );
+          setStorageStatus((current) => ({
+            ...current,
+            available: true,
+            readOnly: false,
+            lastSavedAt: payload?.savedAt ?? new Date().toISOString()
+          }));
+
+          if (sequence === saveSequenceRef.current) {
+            const savedAt = new Date(
+              payload?.savedAt || Date.now()
+            ).toLocaleTimeString("zh-CN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit"
+            });
+            setSaveStatus({
+              kind: "saved",
+              text: `已保存到本地项目 · ${savedAt}`
+            });
+          }
+
+          return payload;
+        })
+        .catch((saveError) => {
+          if (sequence === saveSequenceRef.current) {
+            setSaveStatus({
+              kind: "error",
+              text: `保存失败：${errorMessage(
+                saveError,
+                "请检查 E 盘和本地文件服务。"
+              )}`
+            });
+          }
+          throw saveError;
+        });
+
+      saveQueueRef.current = operation;
+      return operation;
+    },
+    []
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const initialize = async () => {
+      const status = await refreshStorageStatus();
+      let loadedConfig = loadPortfolioConfig();
+
+      try {
+        const response = await fetch(LOCAL_EDITOR_CONFIG_API, {
+          cache: "no-store"
+        });
+        const payload = await readJsonResponse(
+          response,
+          "无法读取项目配置文件。"
+        );
+        loadedConfig = normalizePortfolioConfig(payload?.config ?? payload);
+      } catch (loadError) {
+        if (status.available) {
+          setSaveStatus({
+            kind: "error",
+            text: `配置读取失败：${errorMessage(loadError)}`
+          });
+        }
+      }
+
+      if (cancelled) return;
+      const serialized = JSON.stringify(loadedConfig);
+      lastSavedJsonRef.current = serialized;
+      setConfig(loadedConfig);
+      setSelectedFilterId(loadedConfig.workFilters?.[0]?.id ?? "");
+      if (window.innerWidth <= 820) setPreviewMode("mobile");
+      setReady(true);
+
+      iframeRef.current?.contentWindow?.postMessage(
+        { type: PORTFOLIO_PREVIEW_MESSAGE, config: loadedConfig },
+        window.location.origin
+      );
+
+      if (!status.available || status.readOnly) {
+        setSaveStatus({
+          kind: "error",
+          text:
+            status.error ||
+            "E 盘图片库不可写，编辑器已进入只读模式。"
+        });
+      } else {
+        const savedAt = status.lastSavedAt
+          ? new Date(status.lastSavedAt).toLocaleString("zh-CN")
+          : "";
+        setSaveStatus({
+          kind: "saved",
+          text: savedAt
+            ? `已读取本地项目 · 上次保存 ${savedAt}`
+            : "已读取本地项目，可开始编辑。"
+        });
+      }
+    };
+
+    initialize();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshStorageStatus]);
 
   useEffect(() => {
     setSelectedFilterId((current) =>
@@ -1161,40 +1390,28 @@ export default function PortfolioEditor() {
 
   useEffect(() => {
     if (!ready) return undefined;
+    const serialized = JSON.stringify(normalizePortfolioConfig(config));
+    if (serialized === lastSavedJsonRef.current) return undefined;
 
-    setSaveStatus({ kind: "saving", text: "正在保存到当前浏览器…" });
+    if (!storageWritable) {
+      setSaveStatus({
+        kind: "error",
+        text: "存在未保存修改：E 盘图片库不可写。"
+      });
+      return undefined;
+    }
 
-    const timer = window.setTimeout(() => {
-      const size = portfolioConfigSize(config);
+    setSaveStatus({ kind: "saving", text: "检测到修改，等待自动保存…" });
+    autosaveTimerRef.current = window.setTimeout(() => {
+      persistConfig(config).catch(() => undefined);
+    }, 600);
 
-      if (size > MAX_PORTFOLIO_CONFIG_BYTES) {
-        setSaveStatus({
-          kind: "error",
-          text: "保存失败：配置已超过 4MB，请移除部分图片并先导出备份。"
-        });
-        return;
+    return () => {
+      if (autosaveTimerRef.current) {
+        window.clearTimeout(autosaveTimerRef.current);
       }
-
-      try {
-        savePortfolioConfig(config);
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: PORTFOLIO_PREVIEW_MESSAGE },
-          window.location.origin
-        );
-        setSaveStatus({
-          kind: "saved",
-          text: "已保存到当前浏览器，线上版本未改变。"
-        });
-      } catch {
-        setSaveStatus({
-          kind: "error",
-          text: "保存失败：浏览器存储空间不足，请导出备份后移除部分图片。"
-        });
-      }
-    }, 260);
-
-    return () => window.clearTimeout(timer);
-  }, [config, ready]);
+    };
+  }, [config, persistConfig, ready, storageWritable]);
 
   const updatePath = useCallback((path, value) => {
     setConfig((current) => {
@@ -1324,7 +1541,7 @@ export default function PortfolioEditor() {
     const projectName = project.title.trim() || `作品 ${selectedProjectIndex + 1}`;
     if (
       !window.confirm(
-        `确定删除“${projectName}”吗？该作品的文字和内容图会从当前浏览器配置中移除，此操作无法撤销。`
+        `确定删除“${projectName}”吗？该作品的文字和内容图引用会从本地项目中移除，此操作无法撤销。`
       )
     ) {
       return;
@@ -1497,26 +1714,6 @@ export default function PortfolioEditor() {
   };
 
   const configBytes = useMemo(() => portfolioConfigSize(config), [config]);
-  const availableImageDataLength = useCallback(
-    (currentValue, pendingDataLength = 0) => {
-      const replacedBytes =
-        typeof currentValue === "string" && currentValue.startsWith("data:")
-          ? new TextEncoder().encode(JSON.stringify(currentValue)).length
-          : 0;
-      const remainingBytes =
-        MAX_PORTFOLIO_CONFIG_BYTES -
-        configBytes +
-        replacedBytes -
-        Math.max(0, pendingDataLength) -
-        IMAGE_STORAGE_SAFETY_BYTES;
-
-      return Math.max(
-        0,
-        Math.min(MAX_IMAGE_UPLOAD_DATA_LENGTH, remainingBytes)
-      );
-    },
-    [configBytes]
-  );
   const contrast = useMemo(
     () => contrastRatio(config.theme.text, config.theme.background),
     [config.theme.background, config.theme.text]
@@ -1529,6 +1726,144 @@ export default function PortfolioEditor() {
     config.workGroups[selectedGroupIndex] ?? config.workGroups[0];
   const selectedProject =
     selectedGroup?.projects?.[selectedProjectIndex] ?? null;
+  const driveUsedPercent =
+    storageStatus.totalBytes > 0
+      ? Math.min(
+          100,
+          Math.max(
+            0,
+            ((storageStatus.totalBytes - storageStatus.freeBytes) /
+              storageStatus.totalBytes) *
+              100
+          )
+        )
+      : 0;
+
+  const saveNow = async () => {
+    if (!storageWritable) {
+      setSaveStatus({
+        kind: "error",
+        text: "无法保存：E 盘图片库或本地文件服务不可写。"
+      });
+      return;
+    }
+
+    if (autosaveTimerRef.current) {
+      window.clearTimeout(autosaveTimerRef.current);
+    }
+    try {
+      await persistConfig(config, { label: "正在立即保存到本地项目…" });
+      await refreshStorageStatus();
+    } catch {
+      // persistConfig already exposes the actionable error.
+    }
+  };
+
+  const migrateLegacyConfig = async () => {
+    const legacyConfig = loadLegacyPortfolioConfig();
+    if (!legacyConfig) {
+      setLegacyConfigAvailable(false);
+      setSaveStatus({
+        kind: "idle",
+        text: "当前浏览器没有可迁移的旧版编辑内容。"
+      });
+      return;
+    }
+    if (
+      !window.confirm(
+        "迁移会用旧浏览器内容替换当前编辑内容，并把其中的内嵌图片写入 E 盘。旧浏览器数据会保留，是否继续？"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const result = await migrateInlineImages(
+        legacyConfig,
+        (current, total) => {
+          setSaveStatus({
+            kind: "saving",
+            text: `正在迁移旧版图片 ${current}/${total}…`
+          });
+        }
+      );
+      setConfig(result.config);
+      setSelectedGroupIndex(0);
+      setSelectedProjectIndex(0);
+      setSelectedFilterId(result.config.workFilters?.[0]?.id ?? "");
+      await persistConfig(result.config, {
+        label: "正在保存迁移后的本地项目…"
+      });
+      setLegacyConfigAvailable(false);
+      setSaveStatus({
+        kind: "saved",
+        text: `迁移完成：已写入 ${result.migratedCount} 张内嵌图片；旧浏览器数据仍保留。`
+      });
+      await refreshStorageStatus();
+    } catch (migrationError) {
+      setSaveStatus({
+        kind: "error",
+        text: `迁移失败：${errorMessage(migrationError)}`
+      });
+    }
+  };
+
+  const cleanupUnusedAssets = async () => {
+    if (!storageWritable) {
+      setCleanupStatus("无法清理：E 盘图片库不可写。");
+      return;
+    }
+
+    setCleanupStatus("正在检查未使用的网页图…");
+    try {
+      await persistConfig(config, { label: "清理前正在保存配置…" });
+      const previewResponse = await fetch(LOCAL_EDITOR_CLEANUP_API, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ dryRun: true })
+      });
+      const preview = await readJsonResponse(
+        previewResponse,
+        "无法检查未使用网页图。"
+      );
+
+      if (!preview?.unreferencedCount) {
+        setCleanupStatus("没有未使用的网页图，不需要清理。");
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `发现 ${preview.unreferencedCount} 个未使用文件，共 ${formatBytes(
+          preview.unreferencedBytes || 0
+        )}。继续后会移动到 E 盘回收站，不会永久删除。是否继续？`
+      );
+      if (!confirmed) {
+        setCleanupStatus("已取消清理，未移动任何文件。");
+        return;
+      }
+
+      const applyResponse = await fetch(LOCAL_EDITOR_CLEANUP_API, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          dryRun: false,
+          previewToken: preview.previewToken
+        })
+      });
+      const result = await readJsonResponse(
+        applyResponse,
+        "未使用网页图移动失败。"
+      );
+      setCleanupStatus(
+        `已将 ${result?.movedCount || 0} 个文件（${formatBytes(
+          result?.movedBytes || 0
+        )}）移入 E 盘回收站。`
+      );
+      await refreshStorageStatus();
+    } catch (cleanupError) {
+      setCleanupStatus(`清理失败：${errorMessage(cleanupError)}`);
+    }
+  };
 
   const exportConfig = () => {
     const blob = new Blob([JSON.stringify(config, null, 2)], {
@@ -1546,23 +1881,38 @@ export default function PortfolioEditor() {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    if (file.size > MAX_PORTFOLIO_CONFIG_BYTES) {
+    if (file.size > MAX_CONFIG_IMPORT_BYTES) {
       setSaveStatus({
         kind: "error",
-        text: "导入失败：配置文件超过 4MB。"
+        text: "导入失败：配置文件超过 150MB。"
       });
       return;
     }
-    if (!window.confirm("导入会替换当前浏览器中的编辑内容，是否继续？")) {
+    if (!window.confirm("导入会替换当前本地项目中的编辑内容，是否继续？")) {
       return;
     }
 
     try {
       const incoming = JSON.parse(await file.text());
-      if (incoming?.version !== 1) {
-        throw new Error("unsupported");
+      if (
+        !incoming ||
+        typeof incoming !== "object" ||
+        Array.isArray(incoming) ||
+        !incoming.siteContent ||
+        !Array.isArray(incoming.workGroups)
+      ) {
+        throw new Error("文件缺少作品集配置结构。");
       }
-      const normalizedConfig = normalizePortfolioConfig(incoming);
+      const result = await migrateInlineImages(
+        incoming,
+        (current, total) => {
+          setSaveStatus({
+            kind: "saving",
+            text: `正在导入并迁移内嵌图片 ${current}/${total}…`
+          });
+        }
+      );
+      const normalizedConfig = result.config;
       setConfig(normalizedConfig);
       setSelectedGroupIndex(0);
       setSelectedProjectIndex(0);
@@ -1570,14 +1920,24 @@ export default function PortfolioEditor() {
       setFilterStatus("");
       setTimelineStatus("");
       setWorkStatus("");
-      setSaveStatus({
-        kind: "saving",
-        text: "配置已导入，正在保存到当前浏览器…"
+      await persistConfig(normalizedConfig, {
+        label: "配置已导入，正在保存到本地项目…"
       });
-    } catch {
+      setSaveStatus({
+        kind: "saved",
+        text:
+          result.migratedCount > 0
+            ? `导入完成，并迁移 ${result.migratedCount} 张内嵌图片。`
+            : "配置导入并保存完成。"
+      });
+      await refreshStorageStatus();
+    } catch (importError) {
       setSaveStatus({
         kind: "error",
-        text: "导入失败：文件不是有效的作品集配置。"
+        text: `导入失败：${errorMessage(
+          importError,
+          "文件不是有效的作品集配置。"
+        )}`
       });
     }
   };
@@ -1585,13 +1945,13 @@ export default function PortfolioEditor() {
   const resetConfig = () => {
     if (
       !window.confirm(
-        "确定恢复默认内容吗？当前浏览器中的修改会被替换，建议先导出备份。"
+        "确定恢复默认内容吗？当前本地项目中的修改会被替换，建议先导出备份。"
       )
     ) {
       return;
     }
 
-    const defaultConfig = getDefaultPortfolioConfig();
+    const defaultConfig = getStarterPortfolioConfig();
     setConfig(defaultConfig);
     setSelectedGroupIndex(0);
     setSelectedProjectIndex(0);
@@ -1601,7 +1961,7 @@ export default function PortfolioEditor() {
     setWorkStatus("");
     setSaveStatus({
       kind: "saving",
-      text: "正在恢复并保存默认内容…"
+      text: "已恢复默认内容，等待自动保存…"
     });
   };
 
@@ -1621,7 +1981,7 @@ export default function PortfolioEditor() {
     }));
     setSaveStatus({
       kind: "saving",
-      text: "已恢复默认排版，正在保存到当前浏览器…"
+      text: "已恢复默认排版，等待自动保存…"
     });
   };
 
@@ -1685,7 +2045,6 @@ export default function PortfolioEditor() {
       <ImageControl
         hint="上传后会替换默认制冰机视觉。优先使用横向图片，建议 16:9。"
         label="首屏背景图"
-        maxDataLength={availableImageDataLength(config.siteContent.heroImage)}
         onChange={(value) => updatePath(["siteContent", "heroImage"], value)}
         value={config.siteContent.heroImage}
       />
@@ -1700,11 +2059,8 @@ export default function PortfolioEditor() {
         title="个人介绍"
       />
       <ImageControl
-        hint="优先使用 4:5 竖图，图片只保存在当前浏览器。"
+        hint="优先使用 4:5 竖图；原图和网页图保存到 E 盘图片库。"
         label="人物图片"
-        maxDataLength={availableImageDataLength(
-          config.siteContent.profile.portraitImage
-        )}
         onChange={(value) =>
           updatePath(["siteContent", "profile", "portraitImage"], value)
         }
@@ -2277,9 +2633,6 @@ export default function PortfolioEditor() {
           value={selectedProject.accent}
         />
         <ProjectContentImagesControl
-          getMaxDataLength={(pendingDataLength) =>
-            availableImageDataLength("", pendingDataLength)
-          }
           images={selectedProject.contentImages}
           key={`${selectedGroup.id}:${selectedProject.id}`}
           onChange={(value) =>
@@ -2450,7 +2803,7 @@ export default function PortfolioEditor() {
   const renderTheme = () => (
     <>
       <SectionHeader
-        description="修改基础色彩，并管理当前浏览器中的配置备份。"
+        description="修改基础色彩，并管理项目配置与 E 盘图片库。"
         eyebrow="07 / Theme & Backup"
         title="主题与备份"
       />
@@ -2490,22 +2843,31 @@ export default function PortfolioEditor() {
         </p>
       </div>
       <section className="editor-backup">
-        <h3>本地配置与备份</h3>
+        <h3>E 盘图片库与项目配置</h3>
         <div className="editor-storage-meter">
           <span
             style={{
-              width: `${Math.min(
-                100,
-                (configBytes / MAX_PORTFOLIO_CONFIG_BYTES) * 100
-              )}%`
+              width: `${driveUsedPercent}%`
             }}
           />
         </div>
         <p>
-          当前配置 {formatBytes(configBytes)} / 4MB。图片占用较大时，请及时导出
-          JSON 备份。
+          {storageStatus.available
+            ? `${storageStatus.root || "E:\\本地编辑器存图"} · 剩余 ${formatBytes(
+                storageStatus.freeBytes || 0
+              )} · 图片库 ${formatBytes(
+                storageStatus.libraryBytes || 0
+              )} · ${storageStatus.assetCount || 0} 组资源`
+            : "E 盘图片库当前不可用，编辑器不会回退到浏览器存储。"}
+        </p>
+        <p>
+          当前配置 {formatBytes(configBytes)}。配置只保存图片路径，原图不会写入
+          JSON 或发布包。
         </p>
         <div className="editor-backup-actions">
+          <button disabled={!storageWritable} onClick={saveNow} type="button">
+            立即保存
+          </button>
           <button onClick={exportConfig} type="button">
             导出配置
           </button>
@@ -2516,6 +2878,33 @@ export default function PortfolioEditor() {
             恢复默认
           </button>
         </div>
+        <div className="editor-backup-actions">
+          {legacyConfigAvailable && (
+            <button onClick={migrateLegacyConfig} type="button">
+              迁移旧浏览器内容
+            </button>
+          )}
+          <button
+            disabled={!storageWritable}
+            onClick={cleanupUnusedAssets}
+            type="button"
+          >
+            清理未使用网页图
+          </button>
+          <button onClick={refreshStorageStatus} type="button">
+            刷新容量
+          </button>
+        </div>
+        {legacyConfigAvailable && (
+          <p>
+            如果以前使用过浏览器版编辑器，可手动迁移；旧数据不会自动读取或删除。
+          </p>
+        )}
+        {cleanupStatus && (
+          <p aria-live="polite" role="status">
+            {cleanupStatus}
+          </p>
+        )}
         <input
           accept="application/json,.json"
           hidden
@@ -2549,7 +2938,28 @@ export default function PortfolioEditor() {
         </header>
 
         <div className="editor-local-note">
-          修改会自动保存到当前浏览器，并实时显示在右侧预览中；不会更新线上源码。
+          {storageWritable
+            ? `配置自动保存到项目，图片保存到 ${
+                storageStatus.root || "E:\\本地编辑器存图"
+              }，右侧同步预览；线上版本需另行发布。`
+            : storageStatus.loading
+              ? "正在连接 E 盘本地文件服务…"
+              : `只读模式：${
+                  storageStatus.error ||
+                  "E 盘图片库不可用或不可写，请恢复磁盘后刷新状态。"
+                }`}
+          <div className="editor-backup-actions">
+            <button
+              disabled={!storageWritable}
+              onClick={saveNow}
+              type="button"
+            >
+              立即保存
+            </button>
+            <button onClick={refreshStorageStatus} type="button">
+              刷新存储状态
+            </button>
+          </div>
         </div>
 
         <nav aria-label="编辑器分区" className="editor-nav">
@@ -2567,7 +2977,19 @@ export default function PortfolioEditor() {
           ))}
         </nav>
 
-        <section className="editor-controls">{renderActiveSection()}</section>
+        <section className="editor-controls">
+          <fieldset
+            disabled={!storageWritable}
+            style={{
+              border: 0,
+              margin: 0,
+              minInlineSize: 0,
+              padding: 0
+            }}
+          >
+            {renderActiveSection()}
+          </fieldset>
+        </section>
 
         <footer className="editor-status-bar">
           <span
@@ -2577,7 +2999,12 @@ export default function PortfolioEditor() {
           >
             {saveStatus.text}
           </span>
-          <span>{formatBytes(configBytes)}</span>
+          <span>
+            配置 {formatBytes(configBytes)}
+            {storageStatus.available
+              ? ` · 图片 ${formatBytes(storageStatus.libraryBytes || 0)}`
+              : ""}
+          </span>
         </footer>
       </aside>
 
@@ -2625,6 +3052,13 @@ export default function PortfolioEditor() {
         <div className={`editor-frame-stage is-${previewMode}`}>
           <div className="editor-device-frame">
             <iframe
+              onLoad={() => {
+                if (!ready) return;
+                iframeRef.current?.contentWindow?.postMessage(
+                  { type: PORTFOLIO_PREVIEW_MESSAGE, config },
+                  window.location.origin
+                );
+              }}
               ref={iframeRef}
               src="/?editorPreview=1"
               title="作品集网站实时预览"
