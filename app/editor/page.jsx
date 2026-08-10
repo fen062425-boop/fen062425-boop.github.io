@@ -20,6 +20,7 @@ import {
   MAX_PROJECTS_PER_GROUP,
   MAX_TIMELINE_ITEMS,
   MAX_WORK_FILTERS,
+  MAX_WORK_GROUPS,
   normalizeImageAsset,
   normalizePortfolioConfig,
   portfolioConfigSize,
@@ -111,6 +112,20 @@ function createWorkFilterId(workFilters) {
       ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
       : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
     id = `filter-${token}`;
+  } while (existingIds.has(id));
+
+  return id;
+}
+
+function createWorkGroupId(workGroups) {
+  const existingIds = new Set(workGroups.map((group) => group.id));
+  let id = "";
+
+  do {
+    const token = globalThis.crypto?.randomUUID
+      ? globalThis.crypto.randomUUID().replaceAll("-", "").slice(0, 24)
+      : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    id = `group-${token}`;
   } while (existingIds.has(id));
 
   return id;
@@ -490,6 +505,14 @@ async function migrateInlineImages(candidate, onProgress = () => {}) {
 
   next.workGroups.forEach((group) => {
     group.projects.forEach((project) => {
+      queueImage(
+        () => project.coverImage,
+        (asset) => {
+          project.coverImage = asset;
+        },
+        "standard",
+        `${project.title || "作品"} 独立封面图`
+      );
       project.contentImages.forEach((image, imageIndex) => {
         queueImage(
           () => project.contentImages[imageIndex],
@@ -829,7 +852,11 @@ function ImageControl({
   );
 }
 
-function ProjectContentImagesControl({ images = [], onChange }) {
+function ProjectContentImagesControl({
+  images = [],
+  onChange,
+  usesStandaloneCover = false
+}) {
   const addressId = useId();
   const fileId = useId();
   const hintId = useId();
@@ -1002,7 +1029,9 @@ function ProjectContentImagesControl({ images = [], onChange }) {
             {contentImages.length}/{MAX_PROJECT_CONTENT_IMAGES}
           </small>
         </div>
-        <span>第 1 张自动作为封面</span>
+        <span>
+          {usesStandaloneCover ? "封面由上方独立设置" : "第 1 张自动作为封面"}
+        </span>
       </div>
 
       {contentImages.length > 0 ? (
@@ -1010,14 +1039,14 @@ function ProjectContentImagesControl({ images = [], onChange }) {
           {contentImages.map((image, index) => {
             const imageSource = getImageSource(
               image,
-              index === 0 ? "cover" : "detail"
+              index === 0 && !usesStandaloneCover ? "cover" : "detail"
             );
             const safeImage = isSafeImageSource(imageSource);
 
             return (
               <li
                 className={`editor-content-image-item ${
-                  index === 0 ? "is-cover" : ""
+                  index === 0 && !usesStandaloneCover ? "is-cover" : ""
                 }`}
                 key={`${imageValueKey(image) || "missing"}-${index}`}
               >
@@ -1035,11 +1064,17 @@ function ProjectContentImagesControl({ images = [], onChange }) {
                 </div>
                 <div className="editor-content-image-info">
                   <strong>
-                    {index === 0 ? "第 1 张 · 网站封面" : `内容图 ${index + 1}`}
+                    {index === 0
+                      ? usesStandaloneCover
+                        ? "第 1 张 · 详情内容"
+                        : "第 1 张 · 网站封面"
+                      : `内容图 ${index + 1}`}
                   </strong>
                   <small>
                     {index === 0
-                      ? "网站作品列表自动显示此图"
+                      ? usesStandaloneCover
+                        ? "用于点击后的详情页；独立封面为空时作为回退封面"
+                        : "网站作品列表自动显示此图"
                       : "按当前顺序展示"}
                   </small>
                 </div>
@@ -1202,6 +1237,7 @@ export default function PortfolioEditor() {
   const saveSequenceRef = useRef(0);
   const storageWritable =
     storageStatus.available === true && storageStatus.readOnly !== true;
+  const configWritable = storageStatus.configWritable === true;
   const workFilters = useMemo(
     () => (Array.isArray(config.workFilters) ? config.workFilters : []),
     [config.workFilters]
@@ -1354,12 +1390,12 @@ export default function PortfolioEditor() {
         window.location.origin
       );
 
-      if (!status.available || status.readOnly) {
+      if (!status.configWritable) {
         setSaveStatus({
           kind: "error",
           text:
-            status.error ||
-            "E 盘图片库不可写，编辑器已进入只读模式。"
+            status.configError ||
+            "项目配置文件不可写，编辑器已进入只读模式。"
         });
       } else {
         const savedAt = status.lastSavedAt
@@ -1393,10 +1429,10 @@ export default function PortfolioEditor() {
     const serialized = JSON.stringify(normalizePortfolioConfig(config));
     if (serialized === lastSavedJsonRef.current) return undefined;
 
-    if (!storageWritable) {
+    if (!configWritable) {
       setSaveStatus({
         kind: "error",
-        text: "存在未保存修改：E 盘图片库不可写。"
+        text: "存在未保存修改：项目配置文件不可写。"
       });
       return undefined;
     }
@@ -1411,7 +1447,7 @@ export default function PortfolioEditor() {
         window.clearTimeout(autosaveTimerRef.current);
       }
     };
-  }, [config, persistConfig, ready, storageWritable]);
+  }, [config, configWritable, persistConfig, ready]);
 
   const updatePath = useCallback((path, value) => {
     setConfig((current) => {
@@ -1533,6 +1569,36 @@ export default function PortfolioEditor() {
     });
   };
 
+  const moveProject = (direction) => {
+    const group = config.workGroups[selectedGroupIndex];
+    const project = group?.projects?.[selectedProjectIndex];
+    const targetIndex = selectedProjectIndex + direction;
+    if (
+      !group ||
+      !project ||
+      targetIndex < 0 ||
+      targetIndex >= group.projects.length
+    ) {
+      return;
+    }
+
+    setConfig((current) => {
+      const next = clone(current);
+      const projects = next.workGroups[selectedGroupIndex]?.projects;
+      if (!projects || targetIndex >= projects.length) return current;
+
+      const [movedProject] = projects.splice(selectedProjectIndex, 1);
+      projects.splice(targetIndex, 0, movedProject);
+      return next;
+    });
+    setSelectedProjectIndex(targetIndex);
+    setWorkStatus(
+      `已将“${project.title.trim() || `作品 ${selectedProjectIndex + 1}`}”${
+        direction < 0 ? "左移" : "右移"
+      }。`
+    );
+  };
+
   const deleteProject = () => {
     const group = config.workGroups[selectedGroupIndex];
     const project = group?.projects?.[selectedProjectIndex];
@@ -1586,6 +1652,49 @@ export default function PortfolioEditor() {
     });
   }, []);
 
+  const updateWorkFilterLabel = useCallback((filterId, value) => {
+    setConfig((current) => {
+      const filterIndex = current.workFilters.findIndex(
+        (filter) => filter.id === filterId
+      );
+      if (filterIndex < 0) return current;
+
+      const filter = current.workFilters[filterIndex];
+      const next = clone(current);
+      next.workFilters[filterIndex].label = value;
+
+      if (filter.groupIds.length === 1) {
+        const groupIndex = current.workGroups.findIndex(
+          (group) => group.id === filter.groupIds[0]
+        );
+        if (
+          groupIndex >= 0 &&
+          current.workGroups[groupIndex].title === filter.label
+        ) {
+          next.workGroups[groupIndex].title = value;
+        }
+      }
+
+      return next;
+    });
+  }, []);
+
+  const selectWorkFilter = useCallback(
+    (filter) => {
+      setSelectedFilterId(filter.id);
+      setFilterStatus("");
+
+      const linkedGroupIndex = config.workGroups.findIndex((group) =>
+        filter.groupIds.includes(group.id)
+      );
+      if (linkedGroupIndex >= 0) {
+        setSelectedGroupIndex(linkedGroupIndex);
+        setSelectedProjectIndex(0);
+      }
+    },
+    [config.workGroups]
+  );
+
   const updateFilterGroup = useCallback((filterId, groupId, checked) => {
     setConfig((current) => {
       const filterIndex = current.workFilters.findIndex(
@@ -1615,30 +1724,44 @@ export default function PortfolioEditor() {
       return;
     }
 
-    const groupIds = config.workGroups.map((group) => group.id);
-    if (!groupIds.length) {
-      setFilterStatus("当前没有可关联的作品分组，无法新增导航。");
+    if (config.workGroups.length >= MAX_WORK_GROUPS) {
+      setFilterStatus(`作品分组最多可添加 ${MAX_WORK_GROUPS} 个。`);
       return;
     }
 
     const id = createWorkFilterId(workFilters);
+    const groupId = createWorkGroupId(config.workGroups);
+    const label = `新导航 ${workFilters.length + 1}`;
+    const nextGroup = {
+      id: groupId,
+      index: String(config.workGroups.length + 1).padStart(2, "0"),
+      title: label,
+      typeLabel: "Gallery",
+      projects: []
+    };
     const nextFilter = {
       id,
-      label: `新导航 ${workFilters.length + 1}`,
-      groupIds,
+      label,
+      groupIds: [groupId],
       visible: true
     };
 
     setConfig((current) =>
-      current.workFilters.length >= MAX_WORK_FILTERS
+      current.workFilters.length >= MAX_WORK_FILTERS ||
+      current.workGroups.length >= MAX_WORK_GROUPS
         ? current
         : {
             ...current,
-            workFilters: [...current.workFilters, nextFilter]
+            workFilters: [...current.workFilters, nextFilter],
+            workGroups: [...current.workGroups, nextGroup]
           }
     );
     setSelectedFilterId(id);
-    setFilterStatus(`已新增“${nextFilter.label}”，并关联全部作品分组。`);
+    setSelectedGroupIndex(config.workGroups.length);
+    setSelectedProjectIndex(0);
+    setFilterStatus(
+      `已新增“${nextFilter.label}”及其作品分组，可在下方直接新增作品。`
+    );
   };
 
   const deleteWorkFilter = (filter) => {
@@ -1708,7 +1831,7 @@ export default function PortfolioEditor() {
         selectedFilter,
         selectedFilterIndex
       )}”${
-        direction < 0 ? "上移" : "下移"
+        direction < 0 ? "左移" : "右移"
       }。`
     );
   };
@@ -1726,6 +1849,7 @@ export default function PortfolioEditor() {
     config.workGroups[selectedGroupIndex] ?? config.workGroups[0];
   const selectedProject =
     selectedGroup?.projects?.[selectedProjectIndex] ?? null;
+  const isUiDetailProject = selectedGroup?.id === "ui-detail";
   const driveUsedPercent =
     storageStatus.totalBytes > 0
       ? Math.min(
@@ -1740,10 +1864,10 @@ export default function PortfolioEditor() {
       : 0;
 
   const saveNow = async () => {
-    if (!storageWritable) {
+    if (!configWritable) {
       setSaveStatus({
         kind: "error",
-        text: "无法保存：E 盘图片库或本地文件服务不可写。"
+        text: "无法保存：项目配置文件不可写。"
       });
       return;
     }
@@ -2275,14 +2399,14 @@ export default function PortfolioEditor() {
             className="editor-filter-add"
             disabled={
               workFilters.length >= MAX_WORK_FILTERS ||
-              config.workGroups.length === 0
+              config.workGroups.length >= MAX_WORK_GROUPS
             }
             onClick={addWorkFilter}
             title={
               workFilters.length >= MAX_WORK_FILTERS
                 ? `最多可添加 ${MAX_WORK_FILTERS} 个导航项`
-                : config.workGroups.length === 0
-                  ? "当前没有可关联的作品分组"
+                : config.workGroups.length >= MAX_WORK_GROUPS
+                  ? `最多可添加 ${MAX_WORK_GROUPS} 个作品分组`
                   : "新增筛选导航"
             }
             type="button"
@@ -2291,7 +2415,7 @@ export default function PortfolioEditor() {
           </button>
         </div>
         <p className="editor-filter-intro">
-          导航项可以关联一个或多个作品分组。隐藏或删除导航不会删除任何作品内容。
+          新增导航会同时创建一个同名作品分组。导航仍可关联多个分组；隐藏或删除导航不会删除任何作品内容。
         </p>
 
         {workFilters.length > 0 ? (
@@ -2310,10 +2434,7 @@ export default function PortfolioEditor() {
                       filter.visible === false ? " is-hidden" : ""
                     }`}
                     key={filter.id}
-                    onClick={() => {
-                      setSelectedFilterId(filter.id);
-                      setFilterStatus("");
-                    }}
+                    onClick={() => selectWorkFilter(filter)}
                     type="button"
                   >
                     <span>{String(index + 1).padStart(2, "0")}</span>
@@ -2334,7 +2455,7 @@ export default function PortfolioEditor() {
                   label="导航名称"
                   maxLength={24}
                   onChange={(value) =>
-                    updateWorkFilter(selectedFilter.id, "label", value)
+                    updateWorkFilterLabel(selectedFilter.id, value)
                   }
                   value={selectedFilter.label}
                 />
@@ -2409,7 +2530,7 @@ export default function PortfolioEditor() {
 
                 <div className="editor-filter-actions">
                   <button
-                    aria-label={`上移导航“${workFilterDisplayLabel(
+                    aria-label={`左移导航“${workFilterDisplayLabel(
                       selectedFilter,
                       selectedFilterIndex
                     )}”`}
@@ -2417,10 +2538,10 @@ export default function PortfolioEditor() {
                     onClick={() => moveWorkFilter(selectedFilter.id, -1)}
                     type="button"
                   >
-                    ↑ 上移
+                    ← 左移
                   </button>
                   <button
-                    aria-label={`下移导航“${workFilterDisplayLabel(
+                    aria-label={`右移导航“${workFilterDisplayLabel(
                       selectedFilter,
                       selectedFilterIndex
                     )}”`}
@@ -2431,7 +2552,7 @@ export default function PortfolioEditor() {
                     onClick={() => moveWorkFilter(selectedFilter.id, 1)}
                     type="button"
                   >
-                    ↓ 下移
+                    → 右移
                   </button>
                   <button
                     aria-label={`删除导航“${workFilterDisplayLabel(
@@ -2528,24 +2649,44 @@ export default function PortfolioEditor() {
         </button>
       </div>
       {selectedGroup.projects.length > 0 ? (
-        <div className="editor-project-picker" aria-label="选择作品">
-          {selectedGroup.projects.map((project, index) => (
+        <>
+          <div className="editor-project-picker" aria-label="选择作品">
+            {selectedGroup.projects.map((project, index) => (
+              <button
+                aria-pressed={selectedProjectIndex === index}
+                className={selectedProjectIndex === index ? "active" : ""}
+                key={project.id}
+                onClick={() => {
+                  setSelectedProjectIndex(index);
+                  setWorkStatus("");
+                }}
+                type="button"
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {project.title || "未命名项目"}
+                {project.visible === false && <small>已隐藏</small>}
+              </button>
+            ))}
+          </div>
+          <div className="editor-project-order-actions">
             <button
-              aria-pressed={selectedProjectIndex === index}
-              className={selectedProjectIndex === index ? "active" : ""}
-              key={project.id}
-              onClick={() => {
-                setSelectedProjectIndex(index);
-                setWorkStatus("");
-              }}
+              aria-label={`左移作品“${selectedProject?.title || "未命名项目"}”`}
+              disabled={selectedProjectIndex <= 0}
+              onClick={() => moveProject(-1)}
               type="button"
             >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {project.title || "未命名项目"}
-              {project.visible === false && <small>已隐藏</small>}
+              ← 左移
             </button>
-          ))}
-        </div>
+            <button
+              aria-label={`右移作品“${selectedProject?.title || "未命名项目"}”`}
+              disabled={selectedProjectIndex >= selectedGroup.projects.length - 1}
+              onClick={() => moveProject(1)}
+              type="button"
+            >
+              → 右移
+            </button>
+          </div>
+        </>
       ) : (
         <div className="editor-project-empty">
           <strong>当前分组暂无作品</strong>
@@ -2632,6 +2773,23 @@ export default function PortfolioEditor() {
           }
           value={selectedProject.accent}
         />
+        {isUiDetailProject && (
+          <ImageControl
+            compressionMode="standard"
+            hint="仅用于当前 UI 作品的列表封面，不会替换作品内容图。封面统一按 720×280px 展示，建议上传相同比例图片。"
+            label="UI 作品独立封面图"
+            onChange={(value) =>
+              updateProject(
+                selectedGroupIndex,
+                selectedProjectIndex,
+                "coverImage",
+                value
+              )
+            }
+            previewMode="cover"
+            value={selectedProject.coverImage}
+          />
+        )}
         <ProjectContentImagesControl
           images={selectedProject.contentImages}
           key={`${selectedGroup.id}:${selectedProject.id}`}
@@ -2643,6 +2801,7 @@ export default function PortfolioEditor() {
               value
             )
           }
+          usesStandaloneCover={isUiDetailProject}
         />
         </fieldset>
       )}
@@ -2865,7 +3024,7 @@ export default function PortfolioEditor() {
           JSON 或发布包。
         </p>
         <div className="editor-backup-actions">
-          <button disabled={!storageWritable} onClick={saveNow} type="button">
+          <button disabled={!configWritable} onClick={saveNow} type="button">
             立即保存
           </button>
           <button onClick={exportConfig} type="button">
@@ -2950,7 +3109,7 @@ export default function PortfolioEditor() {
                 }`}
           <div className="editor-backup-actions">
             <button
-              disabled={!storageWritable}
+              disabled={!configWritable}
               onClick={saveNow}
               type="button"
             >
@@ -2979,7 +3138,7 @@ export default function PortfolioEditor() {
 
         <section className="editor-controls">
           <fieldset
-            disabled={!storageWritable}
+            disabled={!configWritable}
             style={{
               border: 0,
               margin: 0,

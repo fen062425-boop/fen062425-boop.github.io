@@ -171,7 +171,7 @@ function WorkCoverImage({ accent, image }) {
 }
 
 function WorkArtwork({ project }) {
-  const coverImage = getProjectContentImages(project)[0];
+  const coverImage = project.coverImage || getProjectContentImages(project)[0];
 
   if (coverImage) {
     return (
@@ -206,6 +206,7 @@ function WorkArtwork({ project }) {
 
 function WorkCard({ group, project, onOpen }) {
   const isVideo = group.id === "video";
+  const isUiDetail = group.id === "ui-detail";
   const contentImages = getProjectContentImages(project);
   const hasContent = contentImages.length > 0;
   const CardElement = hasContent ? "button" : "article";
@@ -219,7 +220,9 @@ function WorkCard({ group, project, onOpen }) {
       }
       className={`work-card ${isVideo ? "video-card" : "image-card"} ${
         group.id === "detail" ? "detail-card" : ""
-      } ${hasContent ? "" : "is-static"}`}
+      } ${isUiDetail ? "ui-detail-card" : ""} ${
+        hasContent ? "" : "is-static"
+      }`}
       onClick={
         hasContent
           ? () =>
@@ -299,6 +302,7 @@ function ProjectLightbox({ project, onClose }) {
   const closeRef = useRef(null);
   const previewRef = useRef(null);
   const contentImages = getProjectContentImages(project);
+  const isUiDetail = project.groupId === "ui-detail";
 
   useEffect(() => {
     closeRef.current?.focus();
@@ -349,7 +353,9 @@ function ProjectLightbox({ project, onClose }) {
 
       <div
         aria-label={`${project.title}内容图片，可上下滚动浏览`}
-        className="lightbox-body content-image-view"
+        className={`lightbox-body content-image-view ${
+          isUiDetail ? "content-image-view--ui-detail" : ""
+        }`}
         ref={previewRef}
         tabIndex={0}
       >

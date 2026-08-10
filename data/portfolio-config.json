@@ -33,7 +33,7 @@
     }
   },
   "siteContent": {
-    "brand": "YOUR NAME",
+    "brand": "刘芬",
     "role": "AI 电商设计师 × 品牌视觉设计师",
     "heroLines": [
       "Creative",
@@ -44,10 +44,17 @@
       "让产品视觉更高级，",
       "也更高效。"
     ],
-    "heroDescription": "聚焦品牌策略、电商视觉、产品表现与 AIGC 设计工作流，把卖点、审美、转化诉求和生产效率整合成清晰可落地的视觉系统。",
+    "heroDescription": "聚焦品牌策略、产品表现与 AIGC 设计工作流，把卖点、审美、转化诉求和生产效率整合成清晰可落地的视觉系统。",
     "heroImage": null,
     "profile": {
-      "portraitImage": null,
+      "portraitImage": {
+        "id": "bac22ced81e780c61c91ee7b719c3a5dda2aeece97e420fbb9c163b3aab3f5a0",
+        "src": "/assets/portfolio/bac22ced81e780c61c91ee7b719c3a5dda2aeece97e420fbb9c163b3aab3f5a0-detail.webp",
+        "coverSrc": "/assets/portfolio/bac22ced81e780c61c91ee7b719c3a5dda2aeece97e420fbb9c163b3aab3f5a0-cover.webp",
+        "width": 1440,
+        "height": 1920,
+        "alt": ""
+      },
       "captionTitle": "Design Director",
       "captionText": "AIGC Workflow / Brand Upgrade / Ecommerce Visual",
       "titlePhrases": [
@@ -57,30 +64,37 @@
         "可持续的生产系统。"
       ],
       "paragraphs": [
-        "你好，我是一名专注商业视觉与电商内容的设计师。擅长从产品定位和核心卖点出发，建立兼顾品牌感、信息效率与转化目标的视觉表达。",
-        "目前页面中的经历、项目和联系方式均为演示内容。替换为你的真实资料后，即可作为正式个人作品集使用。"
+        "我是一名专注商业视觉平面设计师。擅长从产品定位和核心卖点出发，建立兼顾品牌感、信息效率与转化目标视觉表达。",
+        "8年线上线下平面设计经验，精通 PS/AI/CDR，掌握产品摄影、手绘、剪映、AIGC 辅助设计；兼具电商运营、营销策划、私域运营复合能力，可独立完成视觉策划、拍摄、设计、活动落地全流程。"
       ],
       "timeline": [
         {
           "id": "timeline-1",
-          "period": "2023 — NOW",
-          "company": "独立设计项目",
-          "role": "视觉方向 / AIGC 工作流",
-          "description": "负责品牌视觉方向、电商页面规划、核心创意与 AI 辅助生产流程搭建。"
+          "period": "2023/10-2026/06",
+          "company": "成都嘉运通商贸有限公司",
+          "role": "平面策划/平面设计兼微商城运营活动策划",
+          "description": "负责 30 家女装连锁 + 小程序商城全渠道视觉及小程序后台运营管理：门店广告、线上海报、商城首页 / 商品图拍摄精修上架\n营销全案：活动策划、公众号图文排版、短视频制作，会员数据复盘 + 私域彩信推送提升复购"
         },
         {
           "id": "timeline-2",
-          "period": "2020 — 2023",
-          "company": "品牌设计团队",
-          "role": "高级视觉设计",
-          "description": "参与消费品牌视觉升级、平台活动页面和产品内容体系的设计与落地。"
+          "period": "2023/10-2026/06",
+          "company": "江中粤通医药有限公司",
+          "role": "电商平面设计师",
+          "description": "搭建官网 / APP / 小程序电商视觉：主图、轮播、大促专题页、简易 UI 迭代优化体验；统筹线上 DM / 展架等线下物料，负责公众号日常内容设计输出"
         },
         {
           "id": "timeline-3",
-          "period": "2018 — 2020",
-          "company": "创意设计机构",
-          "role": "视觉设计",
-          "description": "负责电商详情页、店铺首页、活动视觉与线下传播物料等商业设计项目。"
+          "period": "2018 — 2026",
+          "company": "多家三方外包公司",
+          "role": "视觉平面设计",
+          "description": "商品海报、详情页设计，Word图文设计、PPT制作，线下物料的设计制作"
+        },
+        {
+          "id": "timeline-1ff35fa2d1ac45249ad7df49",
+          "period": "2008-2018",
+          "company": "国内旅行社服务公司",
+          "role": "电商部主管/OP操作计调",
+          "description": "电商部主管：美团、去哪儿平台店铺全流程运营，流量、活动、订单转化管理；OP/操作：旅游线路操作，微信私域图文宣传与客户维护"
         }
       ],
       "stats": [
@@ -108,8 +122,8 @@
         "推进到更高效、",
         "更有判断力的版本。"
       ],
-      "email": "hello@yourname.com",
-      "wechat": "your_wechat",
+      "email": "邮箱16325361@qq.com",
+      "wechat": "18583683631",
       "availability": "Open for selected projects"
     }
   },
@@ -118,9 +132,10 @@
       "id": "all",
       "label": "全部",
       "groupIds": [
-        "video",
         "detail",
-        "home"
+        "home",
+        "group-82acc3721a9c453c98a66c9f",
+        "ui-detail"
       ],
       "visible": true
     },
@@ -130,7 +145,7 @@
       "groupIds": [
         "video"
       ],
-      "visible": true
+      "visible": false
     },
     {
       "id": "detail",
@@ -142,9 +157,25 @@
     },
     {
       "id": "home",
-      "label": "首页",
+      "label": "海报",
       "groupIds": [
         "home"
+      ],
+      "visible": true
+    },
+    {
+      "id": "filter-9378ca878b7b4b01bf0cc69e",
+      "label": "网站/APP",
+      "groupIds": [
+        "ui-detail"
+      ],
+      "visible": true
+    },
+    {
+      "id": "filter-3dfdfc8911af4be1906d51c3",
+      "label": "旅游专栏",
+      "groupIds": [
+        "group-82acc3721a9c453c98a66c9f"
       ],
       "visible": true
     }
@@ -158,7 +189,7 @@
       "projects": [
         {
           "id": "ice-01",
-          "title": "制冰机产品视觉",
+          "title": "数码产品视觉",
           "label": "产品主图视频 / 功能卖点",
           "artwork": "ice",
           "word": "ICE",
@@ -221,6 +252,17 @@
           "accent": "#9bb5ff",
           "contentImages": [],
           "visible": true
+        },
+        {
+          "id": "video-project-c4dcc2216d9b45e08e939a3d",
+          "title": "新作品 7",
+          "label": "",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "07",
+          "accent": "#71dce5",
+          "contentImages": [],
+          "visible": false
         }
       ]
     },
@@ -232,68 +274,618 @@
       "projects": [
         {
           "id": "detail-clean",
-          "title": "净护产品详情页",
+          "title": "数码产品详情页",
           "label": "AIGC 产品视觉 / 卖点规划",
           "artwork": "fresh",
           "word": "CLEAN",
           "code": "01",
           "accent": "#76dfc4",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "520b997d9def5e2e250ee5d8b685740fc79757128255f92a70fe1cccbd470591",
+              "src": "/assets/portfolio/520b997d9def5e2e250ee5d8b685740fc79757128255f92a70fe1cccbd470591-detail.webp",
+              "coverSrc": "/assets/portfolio/520b997d9def5e2e250ee5d8b685740fc79757128255f92a70fe1cccbd470591-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "0247d83cfb0c9d08259608cffd85fde7090801ba1c5262a849c0143b7f58cfbc",
+              "src": "/assets/portfolio/0247d83cfb0c9d08259608cffd85fde7090801ba1c5262a849c0143b7f58cfbc-detail.webp",
+              "coverSrc": "/assets/portfolio/0247d83cfb0c9d08259608cffd85fde7090801ba1c5262a849c0143b7f58cfbc-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "db7e5f3aaa8f6d1c5fc289b09a38a82e8d1a67fbcc33b400520e90ed76d4ba64",
+              "src": "/assets/portfolio/db7e5f3aaa8f6d1c5fc289b09a38a82e8d1a67fbcc33b400520e90ed76d4ba64-detail.webp",
+              "coverSrc": "/assets/portfolio/db7e5f3aaa8f6d1c5fc289b09a38a82e8d1a67fbcc33b400520e90ed76d4ba64-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "ac41f6d4cc7978008a2852fe6172e85f67f8e9b895ad638a8494809e504e553c",
+              "src": "/assets/portfolio/ac41f6d4cc7978008a2852fe6172e85f67f8e9b895ad638a8494809e504e553c-detail.webp",
+              "coverSrc": "/assets/portfolio/ac41f6d4cc7978008a2852fe6172e85f67f8e9b895ad638a8494809e504e553c-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "7b071f121d08a9d0f9b16f7483f9a30ac8263336b3c5301b942f28e52df8971f",
+              "src": "/assets/portfolio/7b071f121d08a9d0f9b16f7483f9a30ac8263336b3c5301b942f28e52df8971f-detail.webp",
+              "coverSrc": "/assets/portfolio/7b071f121d08a9d0f9b16f7483f9a30ac8263336b3c5301b942f28e52df8971f-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "83968185542325a3c0ac39eae8cc958302145181df92263f624db9f6e44b334d",
+              "src": "/assets/portfolio/83968185542325a3c0ac39eae8cc958302145181df92263f624db9f6e44b334d-detail.webp",
+              "coverSrc": "/assets/portfolio/83968185542325a3c0ac39eae8cc958302145181df92263f624db9f6e44b334d-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "3e0e3d88886abdc4ec83dbb9a64b355ca329d64f24b436e8463cfdd7761ab177",
+              "src": "/assets/portfolio/3e0e3d88886abdc4ec83dbb9a64b355ca329d64f24b436e8463cfdd7761ab177-detail.webp",
+              "coverSrc": "/assets/portfolio/3e0e3d88886abdc4ec83dbb9a64b355ca329d64f24b436e8463cfdd7761ab177-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "8f4a0207593dc9e009691884a72ddd7c6f1e8f495a8ec6fe1e769dddb684d6ff",
+              "src": "/assets/portfolio/8f4a0207593dc9e009691884a72ddd7c6f1e8f495a8ec6fe1e769dddb684d6ff-detail.webp",
+              "coverSrc": "/assets/portfolio/8f4a0207593dc9e009691884a72ddd7c6f1e8f495a8ec6fe1e769dddb684d6ff-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            },
+            {
+              "id": "f2c2ead8695d5396a5f11707b4019d222d85e93589f9f22b970f6c7f3e026c03",
+              "src": "/assets/portfolio/f2c2ead8695d5396a5f11707b4019d222d85e93589f9f22b970f6c7f3e026c03-detail.webp",
+              "coverSrc": "/assets/portfolio/f2c2ead8695d5396a5f11707b4019d222d85e93589f9f22b970f6c7f3e026c03-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": ""
+            }
+          ],
           "visible": true
         },
         {
           "id": "detail-ice",
-          "title": "制冰机详情页",
-          "label": "小家电 / 清凉场景",
+          "title": "潮鞋品牌详情页",
+          "label": "潮牌 / 运动场景",
           "artwork": "ice",
           "word": "ICE",
           "code": "02",
           "accent": "#71dce5",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "a87b8bec6ade8d93eef2ae281bab8ad24c10348fd84277937c704469e0f28248",
+              "src": "/assets/portfolio/a87b8bec6ade8d93eef2ae281bab8ad24c10348fd84277937c704469e0f28248-detail.webp",
+              "coverSrc": "/assets/portfolio/a87b8bec6ade8d93eef2ae281bab8ad24c10348fd84277937c704469e0f28248-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "1"
+            },
+            {
+              "id": "c8844c834f1fe089ee721e4250e93948767c354868c3d7f6a1ec64bb159cfb6e",
+              "src": "/assets/portfolio/c8844c834f1fe089ee721e4250e93948767c354868c3d7f6a1ec64bb159cfb6e-detail.webp",
+              "coverSrc": "/assets/portfolio/c8844c834f1fe089ee721e4250e93948767c354868c3d7f6a1ec64bb159cfb6e-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "2"
+            },
+            {
+              "id": "50d7ceda5b8afd24fdae365085519e0b8f3befbc04f6e848f283629c768968ad",
+              "src": "/assets/portfolio/50d7ceda5b8afd24fdae365085519e0b8f3befbc04f6e848f283629c768968ad-detail.webp",
+              "coverSrc": "/assets/portfolio/50d7ceda5b8afd24fdae365085519e0b8f3befbc04f6e848f283629c768968ad-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "3"
+            },
+            {
+              "id": "e99ed6e8c443b2fc851b7d6566374b235ddfe6eff05b73a9df83cdcf148df28a",
+              "src": "/assets/portfolio/e99ed6e8c443b2fc851b7d6566374b235ddfe6eff05b73a9df83cdcf148df28a-detail.webp",
+              "coverSrc": "/assets/portfolio/e99ed6e8c443b2fc851b7d6566374b235ddfe6eff05b73a9df83cdcf148df28a-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "4"
+            },
+            {
+              "id": "eeeb92c0ff9cf583324eaf17cef02d9808c924dbadc099d6e9361f0ca9017d14",
+              "src": "/assets/portfolio/eeeb92c0ff9cf583324eaf17cef02d9808c924dbadc099d6e9361f0ca9017d14-detail.webp",
+              "coverSrc": "/assets/portfolio/eeeb92c0ff9cf583324eaf17cef02d9808c924dbadc099d6e9361f0ca9017d14-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "5"
+            },
+            {
+              "id": "752e758bbb333315ddf84a5144f84761c097f3e7d67515b9ac55f48bb60ba7fd",
+              "src": "/assets/portfolio/752e758bbb333315ddf84a5144f84761c097f3e7d67515b9ac55f48bb60ba7fd-detail.webp",
+              "coverSrc": "/assets/portfolio/752e758bbb333315ddf84a5144f84761c097f3e7d67515b9ac55f48bb60ba7fd-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "6"
+            },
+            {
+              "id": "69fc27d4fa636cca723a815c774d44e60d56cfa6fd9174e74ce68356ff9cd5ca",
+              "src": "/assets/portfolio/69fc27d4fa636cca723a815c774d44e60d56cfa6fd9174e74ce68356ff9cd5ca-detail.webp",
+              "coverSrc": "/assets/portfolio/69fc27d4fa636cca723a815c774d44e60d56cfa6fd9174e74ce68356ff9cd5ca-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "7"
+            },
+            {
+              "id": "557f156bee03f9357f0ae9befed51c0290c06355ecc59ccf74ed4cb8f1a1df66",
+              "src": "/assets/portfolio/557f156bee03f9357f0ae9befed51c0290c06355ecc59ccf74ed4cb8f1a1df66-detail.webp",
+              "coverSrc": "/assets/portfolio/557f156bee03f9357f0ae9befed51c0290c06355ecc59ccf74ed4cb8f1a1df66-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "8"
+            },
+            {
+              "id": "2f8181902a1b11e76572f5ac3ea3bf1fd2c712e1b984663011f96d331e2c5073",
+              "src": "/assets/portfolio/2f8181902a1b11e76572f5ac3ea3bf1fd2c712e1b984663011f96d331e2c5073-detail.webp",
+              "coverSrc": "/assets/portfolio/2f8181902a1b11e76572f5ac3ea3bf1fd2c712e1b984663011f96d331e2c5073-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "9"
+            },
+            {
+              "id": "57ffc820fffc73326ca0fd4656885017cdd49f1146ccfa259abe32bd8cd62b42",
+              "src": "/assets/portfolio/57ffc820fffc73326ca0fd4656885017cdd49f1146ccfa259abe32bd8cd62b42-detail.webp",
+              "coverSrc": "/assets/portfolio/57ffc820fffc73326ca0fd4656885017cdd49f1146ccfa259abe32bd8cd62b42-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "10"
+            },
+            {
+              "id": "568c713139f9091cd16e66337028b2867d32dddffada975a6570f45df11d582b",
+              "src": "/assets/portfolio/568c713139f9091cd16e66337028b2867d32dddffada975a6570f45df11d582b-detail.webp",
+              "coverSrc": "/assets/portfolio/568c713139f9091cd16e66337028b2867d32dddffada975a6570f45df11d582b-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "11"
+            },
+            {
+              "id": "83d7a5793ba63d1130d7ba37cacf5cb8301a028bbfd40354bbcd0323506b0315",
+              "src": "/assets/portfolio/83d7a5793ba63d1130d7ba37cacf5cb8301a028bbfd40354bbcd0323506b0315-detail.webp",
+              "coverSrc": "/assets/portfolio/83d7a5793ba63d1130d7ba37cacf5cb8301a028bbfd40354bbcd0323506b0315-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "12"
+            }
+          ],
           "visible": true
         },
         {
           "id": "detail-air",
-          "title": "空气系统详情页",
-          "label": "家电 / 科技表达",
+          "title": "美妆产品详情页",
+          "label": "护肤品/ 女性产品",
           "artwork": "air",
           "word": "AIR",
           "code": "03",
           "accent": "#a3c1ff",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "b654720db96c44f5cce8b3213c860b41661211646d51e30c2ed7d5b3625a512a",
+              "src": "/assets/portfolio/b654720db96c44f5cce8b3213c860b41661211646d51e30c2ed7d5b3625a512a-detail.webp",
+              "coverSrc": "/assets/portfolio/b654720db96c44f5cce8b3213c860b41661211646d51e30c2ed7d5b3625a512a-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "1"
+            },
+            {
+              "id": "9147e25c0b9ce8a6202868acc9b44a44209f777b7e230b5d08a4fd8a318aa072",
+              "src": "/assets/portfolio/9147e25c0b9ce8a6202868acc9b44a44209f777b7e230b5d08a4fd8a318aa072-detail.webp",
+              "coverSrc": "/assets/portfolio/9147e25c0b9ce8a6202868acc9b44a44209f777b7e230b5d08a4fd8a318aa072-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "2"
+            },
+            {
+              "id": "af0e2b4ac08a84904839c1e118c214b42b29e8b3e205cdbd630aec4c8d38d5cf",
+              "src": "/assets/portfolio/af0e2b4ac08a84904839c1e118c214b42b29e8b3e205cdbd630aec4c8d38d5cf-detail.webp",
+              "coverSrc": "/assets/portfolio/af0e2b4ac08a84904839c1e118c214b42b29e8b3e205cdbd630aec4c8d38d5cf-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "3"
+            },
+            {
+              "id": "ce6e5b973d5c5c23e76e871aa47194c5086619839fbcb5533be9139574bcb6dc",
+              "src": "/assets/portfolio/ce6e5b973d5c5c23e76e871aa47194c5086619839fbcb5533be9139574bcb6dc-detail.webp",
+              "coverSrc": "/assets/portfolio/ce6e5b973d5c5c23e76e871aa47194c5086619839fbcb5533be9139574bcb6dc-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "4"
+            },
+            {
+              "id": "c24ca9ce1cc41107d50638781ebeb4bdb51926b41ca3cf50198ac6023e014551",
+              "src": "/assets/portfolio/c24ca9ce1cc41107d50638781ebeb4bdb51926b41ca3cf50198ac6023e014551-detail.webp",
+              "coverSrc": "/assets/portfolio/c24ca9ce1cc41107d50638781ebeb4bdb51926b41ca3cf50198ac6023e014551-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "5"
+            },
+            {
+              "id": "2c6e044aa7830658a6e5fde4901e7685118c0a16de2c2dfcf00739b075dc5b09",
+              "src": "/assets/portfolio/2c6e044aa7830658a6e5fde4901e7685118c0a16de2c2dfcf00739b075dc5b09-detail.webp",
+              "coverSrc": "/assets/portfolio/2c6e044aa7830658a6e5fde4901e7685118c0a16de2c2dfcf00739b075dc5b09-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "6"
+            },
+            {
+              "id": "ed1255863fc3c5b26fbb5c308eab430f11d1cd3655f2cd4462ee6e12ba434337",
+              "src": "/assets/portfolio/ed1255863fc3c5b26fbb5c308eab430f11d1cd3655f2cd4462ee6e12ba434337-detail.webp",
+              "coverSrc": "/assets/portfolio/ed1255863fc3c5b26fbb5c308eab430f11d1cd3655f2cd4462ee6e12ba434337-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "7"
+            },
+            {
+              "id": "12091569e5b34e02b2949bcfb7b39f271a9fc694442f65def593e7c2b626b0ec",
+              "src": "/assets/portfolio/12091569e5b34e02b2949bcfb7b39f271a9fc694442f65def593e7c2b626b0ec-detail.webp",
+              "coverSrc": "/assets/portfolio/12091569e5b34e02b2949bcfb7b39f271a9fc694442f65def593e7c2b626b0ec-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "8"
+            },
+            {
+              "id": "b478bf8be47e1094a691d224a77405fe7d510c90fc55e5ba259452c406c705aa",
+              "src": "/assets/portfolio/b478bf8be47e1094a691d224a77405fe7d510c90fc55e5ba259452c406c705aa-detail.webp",
+              "coverSrc": "/assets/portfolio/b478bf8be47e1094a691d224a77405fe7d510c90fc55e5ba259452c406c705aa-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "9"
+            },
+            {
+              "id": "bd8be9669dfbc1a003aa4481390b98a8d0c67ace605017bd09ab70ada552cfaf",
+              "src": "/assets/portfolio/bd8be9669dfbc1a003aa4481390b98a8d0c67ace605017bd09ab70ada552cfaf-detail.webp",
+              "coverSrc": "/assets/portfolio/bd8be9669dfbc1a003aa4481390b98a8d0c67ace605017bd09ab70ada552cfaf-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "10"
+            },
+            {
+              "id": "1337e1c00a4c8e782ed0af6f1029718d00b7e138cb354a7a170c24c2f15ddcef",
+              "src": "/assets/portfolio/1337e1c00a4c8e782ed0af6f1029718d00b7e138cb354a7a170c24c2f15ddcef-detail.webp",
+              "coverSrc": "/assets/portfolio/1337e1c00a4c8e782ed0af6f1029718d00b7e138cb354a7a170c24c2f15ddcef-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "11"
+            },
+            {
+              "id": "d74a7d2c894726c25047679fa4913a68998507163ac473fae351b3e98966bf6d",
+              "src": "/assets/portfolio/d74a7d2c894726c25047679fa4913a68998507163ac473fae351b3e98966bf6d-detail.webp",
+              "coverSrc": "/assets/portfolio/d74a7d2c894726c25047679fa4913a68998507163ac473fae351b3e98966bf6d-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "12"
+            }
+          ],
           "visible": true
         },
         {
           "id": "detail-water",
-          "title": "净饮产品详情页",
+          "title": "数码产品详情页",
           "label": "小家电 / 纯净视觉",
           "artwork": "water",
           "word": "PURE",
           "code": "04",
           "accent": "#9de6ef",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "64bcf171a26bac82bafae7ac4dce0fe9a5d4cb636f913d6c0cb4ca42853929f7",
+              "src": "/assets/portfolio/64bcf171a26bac82bafae7ac4dce0fe9a5d4cb636f913d6c0cb4ca42853929f7-detail.webp",
+              "coverSrc": "/assets/portfolio/64bcf171a26bac82bafae7ac4dce0fe9a5d4cb636f913d6c0cb4ca42853929f7-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (2)"
+            },
+            {
+              "id": "46a0dfeb0183804315128f3b42620670860c1528398aff48463512d5262f9d6d",
+              "src": "/assets/portfolio/46a0dfeb0183804315128f3b42620670860c1528398aff48463512d5262f9d6d-detail.webp",
+              "coverSrc": "/assets/portfolio/46a0dfeb0183804315128f3b42620670860c1528398aff48463512d5262f9d6d-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (3)"
+            },
+            {
+              "id": "ed089bade5fb9abcfcc3d9eb340c50c6fc8dadad97069a8cd72d1281a21403b3",
+              "src": "/assets/portfolio/ed089bade5fb9abcfcc3d9eb340c50c6fc8dadad97069a8cd72d1281a21403b3-detail.webp",
+              "coverSrc": "/assets/portfolio/ed089bade5fb9abcfcc3d9eb340c50c6fc8dadad97069a8cd72d1281a21403b3-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (4)"
+            },
+            {
+              "id": "61d41799e1d49d3917a51d68615e6723f146d9dfc044cb5100862c898590d36a",
+              "src": "/assets/portfolio/61d41799e1d49d3917a51d68615e6723f146d9dfc044cb5100862c898590d36a-detail.webp",
+              "coverSrc": "/assets/portfolio/61d41799e1d49d3917a51d68615e6723f146d9dfc044cb5100862c898590d36a-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (5)"
+            },
+            {
+              "id": "038273772045963423eae35f2bf2f6f7032e6dc2663d13e70152dffc8d18c346",
+              "src": "/assets/portfolio/038273772045963423eae35f2bf2f6f7032e6dc2663d13e70152dffc8d18c346-detail.webp",
+              "coverSrc": "/assets/portfolio/038273772045963423eae35f2bf2f6f7032e6dc2663d13e70152dffc8d18c346-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (6)"
+            },
+            {
+              "id": "60ffd872ee06a4a7f51e367d1d20e05ecc0ac29da6256cd262619479f62ad867",
+              "src": "/assets/portfolio/60ffd872ee06a4a7f51e367d1d20e05ecc0ac29da6256cd262619479f62ad867-detail.webp",
+              "coverSrc": "/assets/portfolio/60ffd872ee06a4a7f51e367d1d20e05ecc0ac29da6256cd262619479f62ad867-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (7)"
+            },
+            {
+              "id": "fed8c4907242c5ce8be069a7bfa2d97a7c6ced0035b28e97478fe361e2f9b9a8",
+              "src": "/assets/portfolio/fed8c4907242c5ce8be069a7bfa2d97a7c6ced0035b28e97478fe361e2f9b9a8-detail.webp",
+              "coverSrc": "/assets/portfolio/fed8c4907242c5ce8be069a7bfa2d97a7c6ced0035b28e97478fe361e2f9b9a8-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (8)"
+            },
+            {
+              "id": "b04e10eb6b9c5803959472a252d32fd59d6dcaaa5db9535822a32a0e24a62536",
+              "src": "/assets/portfolio/b04e10eb6b9c5803959472a252d32fd59d6dcaaa5db9535822a32a0e24a62536-detail.webp",
+              "coverSrc": "/assets/portfolio/b04e10eb6b9c5803959472a252d32fd59d6dcaaa5db9535822a32a0e24a62536-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (9)"
+            },
+            {
+              "id": "938cfdb39fdb9a67a7e4da8774662f902b125a015c4ae71efb93aaffe78ee4c0",
+              "src": "/assets/portfolio/938cfdb39fdb9a67a7e4da8774662f902b125a015c4ae71efb93aaffe78ee4c0-detail.webp",
+              "coverSrc": "/assets/portfolio/938cfdb39fdb9a67a7e4da8774662f902b125a015c4ae71efb93aaffe78ee4c0-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (10)"
+            },
+            {
+              "id": "ce9db80ca1d4e08ccda6d41f257bd118421b9fc3f343b26e0f698482890fadab",
+              "src": "/assets/portfolio/ce9db80ca1d4e08ccda6d41f257bd118421b9fc3f343b26e0f698482890fadab-detail.webp",
+              "coverSrc": "/assets/portfolio/ce9db80ca1d4e08ccda6d41f257bd118421b9fc3f343b26e0f698482890fadab-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (11)"
+            },
+            {
+              "id": "15d180b073bc9c6a64578e610459c0d0d04c40115f76164720ac9bfde807b0a7",
+              "src": "/assets/portfolio/15d180b073bc9c6a64578e610459c0d0d04c40115f76164720ac9bfde807b0a7-detail.webp",
+              "coverSrc": "/assets/portfolio/15d180b073bc9c6a64578e610459c0d0d04c40115f76164720ac9bfde807b0a7-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (12)"
+            },
+            {
+              "id": "a62925027fb687a3d3100ffbde0f61ef41bf66f09919fde9218d50b462b63d67",
+              "src": "/assets/portfolio/a62925027fb687a3d3100ffbde0f61ef41bf66f09919fde9218d50b462b63d67-detail.webp",
+              "coverSrc": "/assets/portfolio/a62925027fb687a3d3100ffbde0f61ef41bf66f09919fde9218d50b462b63d67-cover.webp",
+              "width": 1440,
+              "height": 1920,
+              "alt": "Banner_13 (13)"
+            }
+          ],
           "visible": true
         },
         {
           "id": "detail-winter",
-          "title": "冬季场景详情页",
-          "label": "场景视觉 / 季节内容",
+          "title": "日用品详情页",
+          "label": "场景视觉 / 生活用品",
           "artwork": "winter",
           "word": "WINTER",
           "code": "05",
           "accent": "#d4e6ef",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "77c0f3f271bec385f4ed1d223170d0df420bf9e655c3b28f415baef6003dbbd3",
+              "src": "/assets/portfolio/77c0f3f271bec385f4ed1d223170d0df420bf9e655c3b28f415baef6003dbbd3-detail.webp",
+              "coverSrc": "/assets/portfolio/77c0f3f271bec385f4ed1d223170d0df420bf9e655c3b28f415baef6003dbbd3-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "1"
+            },
+            {
+              "id": "b13f446175f06c7169ca9d8b40dd21bd7abfb476299a5e0aa99caa3490b95592",
+              "src": "/assets/portfolio/b13f446175f06c7169ca9d8b40dd21bd7abfb476299a5e0aa99caa3490b95592-detail.webp",
+              "coverSrc": "/assets/portfolio/b13f446175f06c7169ca9d8b40dd21bd7abfb476299a5e0aa99caa3490b95592-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "3"
+            },
+            {
+              "id": "b7bb40698d9f4ec98456888ed18825cb88fec9912f5bc2f4ef21533e4cc5f9a0",
+              "src": "/assets/portfolio/b7bb40698d9f4ec98456888ed18825cb88fec9912f5bc2f4ef21533e4cc5f9a0-detail.webp",
+              "coverSrc": "/assets/portfolio/b7bb40698d9f4ec98456888ed18825cb88fec9912f5bc2f4ef21533e4cc5f9a0-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "4"
+            },
+            {
+              "id": "60d0e58af6173118618a3aee0e6f782905b896d78a956be3e7df80c5d6c7a9d6",
+              "src": "/assets/portfolio/60d0e58af6173118618a3aee0e6f782905b896d78a956be3e7df80c5d6c7a9d6-detail.webp",
+              "coverSrc": "/assets/portfolio/60d0e58af6173118618a3aee0e6f782905b896d78a956be3e7df80c5d6c7a9d6-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "5"
+            },
+            {
+              "id": "656a8b5830356f64073ea1b1a8c087432fba207a6ada291150d9470861e5abe5",
+              "src": "/assets/portfolio/656a8b5830356f64073ea1b1a8c087432fba207a6ada291150d9470861e5abe5-detail.webp",
+              "coverSrc": "/assets/portfolio/656a8b5830356f64073ea1b1a8c087432fba207a6ada291150d9470861e5abe5-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "6"
+            },
+            {
+              "id": "dafc108f1f9f938d874081b040efa956a1606819168686265eed337b43ddd5a4",
+              "src": "/assets/portfolio/dafc108f1f9f938d874081b040efa956a1606819168686265eed337b43ddd5a4-detail.webp",
+              "coverSrc": "/assets/portfolio/dafc108f1f9f938d874081b040efa956a1606819168686265eed337b43ddd5a4-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "7"
+            },
+            {
+              "id": "f5e6f64bd4f1dd8bee98b71d6d920e431466e32e3a9070c6d95a34428d64602a",
+              "src": "/assets/portfolio/f5e6f64bd4f1dd8bee98b71d6d920e431466e32e3a9070c6d95a34428d64602a-detail.webp",
+              "coverSrc": "/assets/portfolio/f5e6f64bd4f1dd8bee98b71d6d920e431466e32e3a9070c6d95a34428d64602a-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "8"
+            },
+            {
+              "id": "7bee9cf987133db7621ba1ffa013dde708f0ee95c618907f60a844e34012d9fc",
+              "src": "/assets/portfolio/7bee9cf987133db7621ba1ffa013dde708f0ee95c618907f60a844e34012d9fc-detail.webp",
+              "coverSrc": "/assets/portfolio/7bee9cf987133db7621ba1ffa013dde708f0ee95c618907f60a844e34012d9fc-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "9"
+            },
+            {
+              "id": "c152eee5e955cff15ef8e39a802deb90924e4234cdccf526e8c065d60d8f7c15",
+              "src": "/assets/portfolio/c152eee5e955cff15ef8e39a802deb90924e4234cdccf526e8c065d60d8f7c15-detail.webp",
+              "coverSrc": "/assets/portfolio/c152eee5e955cff15ef8e39a802deb90924e4234cdccf526e8c065d60d8f7c15-cover.webp",
+              "width": 1024,
+              "height": 1536,
+              "alt": "10"
+            },
+            {
+              "id": "92603df0b8017468c5a953f1e378125a7e59a037b339e3bf6a2e80e23635edc3",
+              "src": "/assets/portfolio/92603df0b8017468c5a953f1e378125a7e59a037b339e3bf6a2e80e23635edc3-detail.webp",
+              "coverSrc": "/assets/portfolio/92603df0b8017468c5a953f1e378125a7e59a037b339e3bf6a2e80e23635edc3-cover.webp",
+              "width": 1024,
+              "height": 1536,
+              "alt": "11"
+            },
+            {
+              "id": "6df6a1b5ef03804e92bc20f6b06daa7b5fa22464aeeae9c5a3e243e4e92933af",
+              "src": "/assets/portfolio/6df6a1b5ef03804e92bc20f6b06daa7b5fa22464aeeae9c5a3e243e4e92933af-detail.webp",
+              "coverSrc": "/assets/portfolio/6df6a1b5ef03804e92bc20f6b06daa7b5fa22464aeeae9c5a3e243e4e92933af-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "12"
+            }
+          ],
           "visible": true
         },
         {
           "id": "detail-aura",
-          "title": "AURA 新品详情页",
+          "title": "生活日用品详情页",
           "label": "新品上市 / 品牌视觉",
           "artwork": "aura",
           "word": "AURA",
           "code": "06",
           "accent": "#dfc49e",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "73e9c465c87cfb02f12d87d49830bafe96c4e4b828bf9318a84d8e76fbc5631a",
+              "src": "/assets/portfolio/73e9c465c87cfb02f12d87d49830bafe96c4e4b828bf9318a84d8e76fbc5631a-detail.webp",
+              "coverSrc": "/assets/portfolio/73e9c465c87cfb02f12d87d49830bafe96c4e4b828bf9318a84d8e76fbc5631a-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "1"
+            },
+            {
+              "id": "16437bf5f2afbebd97dfc83b3d915b3cf8aeb95f20248badaac98d2258ac3cc1",
+              "src": "/assets/portfolio/16437bf5f2afbebd97dfc83b3d915b3cf8aeb95f20248badaac98d2258ac3cc1-detail.webp",
+              "coverSrc": "/assets/portfolio/16437bf5f2afbebd97dfc83b3d915b3cf8aeb95f20248badaac98d2258ac3cc1-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "2"
+            },
+            {
+              "id": "73b0c91bd9ed5ab33a7f70d4cea39891b3de9718768adac8acb690ae84bbc2c1",
+              "src": "/assets/portfolio/73b0c91bd9ed5ab33a7f70d4cea39891b3de9718768adac8acb690ae84bbc2c1-detail.webp",
+              "coverSrc": "/assets/portfolio/73b0c91bd9ed5ab33a7f70d4cea39891b3de9718768adac8acb690ae84bbc2c1-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "3"
+            },
+            {
+              "id": "a23bb1d8e4db8f9bee943ca12041a35e65b42b1fa03df22a453254afdce31cc0",
+              "src": "/assets/portfolio/a23bb1d8e4db8f9bee943ca12041a35e65b42b1fa03df22a453254afdce31cc0-detail.webp",
+              "coverSrc": "/assets/portfolio/a23bb1d8e4db8f9bee943ca12041a35e65b42b1fa03df22a453254afdce31cc0-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "4"
+            },
+            {
+              "id": "985a014f562455e6ea55158948e609065d25c135405ae7452471f4b823b0a103",
+              "src": "/assets/portfolio/985a014f562455e6ea55158948e609065d25c135405ae7452471f4b823b0a103-detail.webp",
+              "coverSrc": "/assets/portfolio/985a014f562455e6ea55158948e609065d25c135405ae7452471f4b823b0a103-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "5"
+            },
+            {
+              "id": "d7fc38a11d680101e171426306016c6f046c9c15d0d2c00ffebde0d92826d57a",
+              "src": "/assets/portfolio/d7fc38a11d680101e171426306016c6f046c9c15d0d2c00ffebde0d92826d57a-detail.webp",
+              "coverSrc": "/assets/portfolio/d7fc38a11d680101e171426306016c6f046c9c15d0d2c00ffebde0d92826d57a-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "6"
+            },
+            {
+              "id": "3f9541e3a5f6ee02898a942f1ab24e8ad2a932b003f86599c2cc3aa6af8522b7",
+              "src": "/assets/portfolio/3f9541e3a5f6ee02898a942f1ab24e8ad2a932b003f86599c2cc3aa6af8522b7-detail.webp",
+              "coverSrc": "/assets/portfolio/3f9541e3a5f6ee02898a942f1ab24e8ad2a932b003f86599c2cc3aa6af8522b7-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "7"
+            },
+            {
+              "id": "65926b733c75499e61901b79f8f42b5eec255a161c0c7ff88fdc6ffc97f0557c",
+              "src": "/assets/portfolio/65926b733c75499e61901b79f8f42b5eec255a161c0c7ff88fdc6ffc97f0557c-detail.webp",
+              "coverSrc": "/assets/portfolio/65926b733c75499e61901b79f8f42b5eec255a161c0c7ff88fdc6ffc97f0557c-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "8"
+            },
+            {
+              "id": "c180811d59645e3696c1e93ba726cc4fe85c576b75990c785c1cfc7934771a54",
+              "src": "/assets/portfolio/c180811d59645e3696c1e93ba726cc4fe85c576b75990c785c1cfc7934771a54-detail.webp",
+              "coverSrc": "/assets/portfolio/c180811d59645e3696c1e93ba726cc4fe85c576b75990c785c1cfc7934771a54-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "9"
+            },
+            {
+              "id": "1fb0b3f96fb4574f8466b511f8be052291b74ac4fbe89ea50159d072f4d23c06",
+              "src": "/assets/portfolio/1fb0b3f96fb4574f8466b511f8be052291b74ac4fbe89ea50159d072f4d23c06-detail.webp",
+              "coverSrc": "/assets/portfolio/1fb0b3f96fb4574f8466b511f8be052291b74ac4fbe89ea50159d072f4d23c06-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "10"
+            },
+            {
+              "id": "d2686bbca8dc0ae9cccdbf137bf0b3ae37e09162eff3e137c9ca8ec739ffebe4",
+              "src": "/assets/portfolio/d2686bbca8dc0ae9cccdbf137bf0b3ae37e09162eff3e137c9ca8ec739ffebe4-detail.webp",
+              "coverSrc": "/assets/portfolio/d2686bbca8dc0ae9cccdbf137bf0b3ae37e09162eff3e137c9ca8ec739ffebe4-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "11"
+            },
+            {
+              "id": "58b64a7deec97aa30f3b93551008c577a7191adc710627f0311bf94bf05bc362",
+              "src": "/assets/portfolio/58b64a7deec97aa30f3b93551008c577a7191adc710627f0311bf94bf05bc362-detail.webp",
+              "coverSrc": "/assets/portfolio/58b64a7deec97aa30f3b93551008c577a7191adc710627f0311bf94bf05bc362-cover.webp",
+              "width": 1081,
+              "height": 1920,
+              "alt": "12"
+            }
+          ],
           "visible": true
         }
       ]
@@ -301,73 +893,1115 @@
     {
       "id": "home",
       "index": "03",
-      "title": "首页 / 活动页作品",
-      "typeLabel": "Home",
+      "title": "海报作品",
+      "typeLabel": "Poster",
       "projects": [
         {
           "id": "home-brand",
-          "title": "品牌旗舰店首页",
-          "label": "首页 / 品牌视觉升级",
+          "title": "营销类海报",
+          "label": "活动促销/内购会",
           "artwork": "brand",
           "word": "NOVA",
           "code": "01",
           "accent": "#80dbe3",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "01ead0f10ba59434b07d16698fc98342e657554382136f97639bfca3e6fe411b",
+              "src": "/assets/portfolio/01ead0f10ba59434b07d16698fc98342e657554382136f97639bfca3e6fe411b-detail.webp",
+              "coverSrc": "/assets/portfolio/01ead0f10ba59434b07d16698fc98342e657554382136f97639bfca3e6fe411b-cover.webp",
+              "width": 941,
+              "height": 1672,
+              "alt": "1-2"
+            }
+          ],
           "visible": true
         },
         {
           "id": "home-sale",
-          "title": "年度大促活动页",
-          "label": "首页 / 营销活动",
+          "title": "电影类海报",
+          "label": "悬疑 / 氛围感",
           "artwork": "sale",
           "word": "SALE",
           "code": "02",
           "accent": "#dfc06f",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "c425e3300b45076b6af0cd795c71ec1ad317c83d5cbe027f78f37ea51d923e36",
+              "src": "/assets/portfolio/c425e3300b45076b6af0cd795c71ec1ad317c83d5cbe027f78f37ea51d923e36-detail.webp",
+              "coverSrc": "/assets/portfolio/c425e3300b45076b6af0cd795c71ec1ad317c83d5cbe027f78f37ea51d923e36-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "迷雾重重海报"
+            }
+          ],
           "visible": true
         },
         {
           "id": "home-mobile",
-          "title": "品牌 APP 首页",
-          "label": "首页 / 移动端",
+          "title": "文艺类海报",
+          "label": "治愈/ 文字排版",
           "artwork": "mobile",
           "word": "APP",
           "code": "03",
           "accent": "#96b0ff",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "7c0309826fb41dad603afa7f4b31ec13ebdf7b90f2ab5b355f04241dbf2d78ad",
+              "src": "/assets/portfolio/7c0309826fb41dad603afa7f4b31ec13ebdf7b90f2ab5b355f04241dbf2d78ad-detail.webp",
+              "coverSrc": "/assets/portfolio/7c0309826fb41dad603afa7f4b31ec13ebdf7b90f2ab5b355f04241dbf2d78ad-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "活在珍贵的人间"
+            }
+          ],
           "visible": true
         },
         {
           "id": "home-tech",
-          "title": "科技新品预售页",
-          "label": "首页 / 新品预售",
+          "title": "音乐类海报",
+          "label": "胶片 / 情感",
           "artwork": "live",
           "word": "X1",
           "code": "04",
           "accent": "#88a4ff",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "a89f3f25e4fa286d401f717687536bd297e2faa54f88b70884067a92b4d73342",
+              "src": "/assets/portfolio/a89f3f25e4fa286d401f717687536bd297e2faa54f88b70884067a92b4d73342-detail.webp",
+              "coverSrc": "/assets/portfolio/a89f3f25e4fa286d401f717687536bd297e2faa54f88b70884067a92b4d73342-cover.webp",
+              "width": 1484,
+              "height": 1920,
+              "alt": "修炼爱情"
+            }
+          ],
           "visible": true
         },
         {
           "id": "home-event",
-          "title": "节点主题活动页",
-          "label": "首页 / 节点活动",
+          "title": "旅游类海报",
+          "label": "西域 / 概念风",
           "artwork": "event",
           "word": "DAY",
           "code": "05",
           "accent": "#e9b886",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "505762e483d14fee672115b5e982ce75286315500e76656a7a1658647d3cfdb6",
+              "src": "/assets/portfolio/505762e483d14fee672115b5e982ce75286315500e76656a7a1658647d3cfdb6-detail.webp",
+              "coverSrc": "/assets/portfolio/505762e483d14fee672115b5e982ce75286315500e76656a7a1658647d3cfdb6-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "新疆概念风海报"
+            }
+          ],
           "visible": true
         },
         {
           "id": "home-editorial",
-          "title": "内容专题承接页",
-          "label": "首页 / 内容视觉",
+          "title": "国风类海报",
+          "label": "道韵 / 山水意境",
           "artwork": "editorial",
           "word": "EDIT",
           "code": "06",
           "accent": "#8cdbc8",
-          "contentImages": [],
+          "contentImages": [
+            {
+              "id": "a4020421ddb507984fe19c3c71195f8ad779a902a697f9dfec1e9b0e9e5f7f12",
+              "src": "/assets/portfolio/a4020421ddb507984fe19c3c71195f8ad779a902a697f9dfec1e9b0e9e5f7f12-detail.webp",
+              "coverSrc": "/assets/portfolio/a4020421ddb507984fe19c3c71195f8ad779a902a697f9dfec1e9b0e9e5f7f12-cover.webp",
+              "width": 1080,
+              "height": 1920,
+              "alt": "青城山概念风海报"
+            }
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "ui-detail",
+      "index": "04",
+      "title": "专题页作品",
+      "typeLabel": "UI",
+      "projects": [
+        {
+          "id": "ui-detail-project-1fbe89461e8846d18ad3cb69",
+          "title": "十月大促专题页",
+          "label": "网页设计/营销活动",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "01",
+          "accent": "#71dce5",
+          "coverImage": {
+            "id": "a6c693ceafa1da5b4a2b09d096e8cf76b169b59f34bc5167a0502a05db8b56a8",
+            "src": "/assets/portfolio/a6c693ceafa1da5b4a2b09d096e8cf76b169b59f34bc5167a0502a05db8b56a8-detail.webp",
+            "coverSrc": "/assets/portfolio/a6c693ceafa1da5b4a2b09d096e8cf76b169b59f34bc5167a0502a05db8b56a8-cover.webp",
+            "width": 720,
+            "height": 280,
+            "alt": "Banner 独立封面图"
+          },
+          "contentImages": [
+            {
+              "id": "cc1a0f477ae9e1384af17f439048e99d1a519454b58ac7703870e08f31b66987",
+              "src": "/assets/portfolio/cc1a0f477ae9e1384af17f439048e99d1a519454b58ac7703870e08f31b66987-detail.webp",
+              "coverSrc": "/assets/portfolio/cc1a0f477ae9e1384af17f439048e99d1a519454b58ac7703870e08f31b66987-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "779"
+            },
+            {
+              "id": "154630878e42840794b1f5b1ede3e8ef9e2b9a93958f2ca184d93be85b81a498",
+              "src": "/assets/portfolio/154630878e42840794b1f5b1ede3e8ef9e2b9a93958f2ca184d93be85b81a498-detail.webp",
+              "coverSrc": "/assets/portfolio/154630878e42840794b1f5b1ede3e8ef9e2b9a93958f2ca184d93be85b81a498-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "779-bj"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "ui-detail-project-bd160587546c4ac0b8d5498b",
+          "title": "新年大促专题页",
+          "label": "网页设计/营销活动",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "02",
+          "accent": "#71dce5",
+          "coverImage": {
+            "id": "1a50953b0398380dff97bbc9999fc4042eb4b6aa26a6bf0a875c813ce324a655",
+            "src": "/assets/portfolio/1a50953b0398380dff97bbc9999fc4042eb4b6aa26a6bf0a875c813ce324a655-detail.webp",
+            "coverSrc": "/assets/portfolio/1a50953b0398380dff97bbc9999fc4042eb4b6aa26a6bf0a875c813ce324a655-cover.webp",
+            "width": 720,
+            "height": 280,
+            "alt": "UI 作品独立封面图"
+          },
+          "contentImages": [
+            {
+              "id": "5c9f6af850a4f8d9288ceaed15463379df141b87b0e52b4143a75f981dec3d8f",
+              "src": "/assets/portfolio/5c9f6af850a4f8d9288ceaed15463379df141b87b0e52b4143a75f981dec3d8f-detail.webp",
+              "coverSrc": "/assets/portfolio/5c9f6af850a4f8d9288ceaed15463379df141b87b0e52b4143a75f981dec3d8f-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "792"
+            },
+            {
+              "id": "03cc81ad6bfe699c81d353420a907d2d927b5a7e6275a533abf8b246adc21332",
+              "src": "/assets/portfolio/03cc81ad6bfe699c81d353420a907d2d927b5a7e6275a533abf8b246adc21332-detail.webp",
+              "coverSrc": "/assets/portfolio/03cc81ad6bfe699c81d353420a907d2d927b5a7e6275a533abf8b246adc21332-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "792-bj"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "ui-detail-project-80ca52a7037f4e59a273e382",
+          "title": "春季大促专题页",
+          "label": "网页设计/营销活动",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "03",
+          "accent": "#71dce5",
+          "coverImage": {
+            "id": "1eef0bf08cda2bd521e73043508e6e6ad4421da6cbe50650b419786493b489d5",
+            "src": "/assets/portfolio/1eef0bf08cda2bd521e73043508e6e6ad4421da6cbe50650b419786493b489d5-detail.webp",
+            "coverSrc": "/assets/portfolio/1eef0bf08cda2bd521e73043508e6e6ad4421da6cbe50650b419786493b489d5-cover.webp",
+            "width": 720,
+            "height": 280,
+            "alt": "UI 作品独立封面图"
+          },
+          "contentImages": [
+            {
+              "id": "e5a86927141f2b06861fcd4f89dff27c991a881e07c134b8e3587b943ff5afaf",
+              "src": "/assets/portfolio/e5a86927141f2b06861fcd4f89dff27c991a881e07c134b8e3587b943ff5afaf-detail.webp",
+              "coverSrc": "/assets/portfolio/e5a86927141f2b06861fcd4f89dff27c991a881e07c134b8e3587b943ff5afaf-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "794"
+            },
+            {
+              "id": "dd92aae111948e91cb2fd4e2cfd2fbbf50b7d72aebef06831f0a3cf76c703bad",
+              "src": "/assets/portfolio/dd92aae111948e91cb2fd4e2cfd2fbbf50b7d72aebef06831f0a3cf76c703bad-detail.webp",
+              "coverSrc": "/assets/portfolio/dd92aae111948e91cb2fd4e2cfd2fbbf50b7d72aebef06831f0a3cf76c703bad-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "794-bj"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "ui-detail-project-5c99631e04cd45cd8c308a5c",
+          "title": "国庆大促专题页",
+          "label": "网页设计/营销活动",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "04",
+          "accent": "#71dce5",
+          "coverImage": {
+            "id": "e34eb4ea5910aa214d937e4ea883cd9dd7f823909942dbd055babab739a9587c",
+            "src": "/assets/portfolio/e34eb4ea5910aa214d937e4ea883cd9dd7f823909942dbd055babab739a9587c-detail.webp",
+            "coverSrc": "/assets/portfolio/e34eb4ea5910aa214d937e4ea883cd9dd7f823909942dbd055babab739a9587c-cover.webp",
+            "width": 720,
+            "height": 280,
+            "alt": "UI 作品独立封面图"
+          },
+          "contentImages": [
+            {
+              "id": "59fdfa531e888f2b83d7ae0f9a7f2e0dc4c0a9a044ef8d702a673e730f5a3f3a",
+              "src": "/assets/portfolio/59fdfa531e888f2b83d7ae0f9a7f2e0dc4c0a9a044ef8d702a673e730f5a3f3a-detail.webp",
+              "coverSrc": "/assets/portfolio/59fdfa531e888f2b83d7ae0f9a7f2e0dc4c0a9a044ef8d702a673e730f5a3f3a-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "849"
+            },
+            {
+              "id": "656818c1311cac29f78c9d2f82cbdf46bfe3d1b3e6fa9db752bf98ee5d8423d7",
+              "src": "/assets/portfolio/656818c1311cac29f78c9d2f82cbdf46bfe3d1b3e6fa9db752bf98ee5d8423d7-detail.webp",
+              "coverSrc": "/assets/portfolio/656818c1311cac29f78c9d2f82cbdf46bfe3d1b3e6fa9db752bf98ee5d8423d7-cover.webp",
+              "width": 1920,
+              "height": 1000,
+              "alt": "849-bj"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "ui-detail-project-057e4b44125049a7a0feb1a1",
+          "title": "双11/12专题活动页",
+          "label": "网页设计/营销活动",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "05",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "7469153d98b3ca8d97560891a0cbfd9cbe6ccb9c224ce041c845e1b60060eafa",
+              "src": "/assets/portfolio/7469153d98b3ca8d97560891a0cbfd9cbe6ccb9c224ce041c845e1b60060eafa-detail.webp",
+              "coverSrc": "/assets/portfolio/7469153d98b3ca8d97560891a0cbfd9cbe6ccb9c224ce041c845e1b60060eafa-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双11-第2页"
+            },
+            {
+              "id": "ff3bf233f33850f71b9cf8bdaa3dd77352ed482341a9ddc65ce0e96d21598277",
+              "src": "/assets/portfolio/ff3bf233f33850f71b9cf8bdaa3dd77352ed482341a9ddc65ce0e96d21598277-detail.webp",
+              "coverSrc": "/assets/portfolio/ff3bf233f33850f71b9cf8bdaa3dd77352ed482341a9ddc65ce0e96d21598277-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双11-第3页"
+            },
+            {
+              "id": "d460e434d637dc5ecea49e78f7a94747fcb6b73fcfc9a13e3d483bdee509506f",
+              "src": "/assets/portfolio/d460e434d637dc5ecea49e78f7a94747fcb6b73fcfc9a13e3d483bdee509506f-detail.webp",
+              "coverSrc": "/assets/portfolio/d460e434d637dc5ecea49e78f7a94747fcb6b73fcfc9a13e3d483bdee509506f-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双11-第4页"
+            },
+            {
+              "id": "e0ca6422065c937a05ad7536bfdb49bcf5e38b75a427cb77bb14ccb3e379ba3b",
+              "src": "/assets/portfolio/e0ca6422065c937a05ad7536bfdb49bcf5e38b75a427cb77bb14ccb3e379ba3b-detail.webp",
+              "coverSrc": "/assets/portfolio/e0ca6422065c937a05ad7536bfdb49bcf5e38b75a427cb77bb14ccb3e379ba3b-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双11-第5页"
+            },
+            {
+              "id": "302e4d8ea15f2e0829c1249f2dcc2a8920db4120433a2fe44751fc4a3eb37299",
+              "src": "/assets/portfolio/302e4d8ea15f2e0829c1249f2dcc2a8920db4120433a2fe44751fc4a3eb37299-detail.webp",
+              "coverSrc": "/assets/portfolio/302e4d8ea15f2e0829c1249f2dcc2a8920db4120433a2fe44751fc4a3eb37299-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双11-第6页"
+            },
+            {
+              "id": "1855c7f2de81b8ab7d1da864911c8cdd24e801dc1c837f5726fe2ad40675e7e8",
+              "src": "/assets/portfolio/1855c7f2de81b8ab7d1da864911c8cdd24e801dc1c837f5726fe2ad40675e7e8-detail.webp",
+              "coverSrc": "/assets/portfolio/1855c7f2de81b8ab7d1da864911c8cdd24e801dc1c837f5726fe2ad40675e7e8-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双11-第7页"
+            },
+            {
+              "id": "8e88f183973136a3e85b0276dec4f53513494c63e1a0ceb8dd789b71b28e50b5",
+              "src": "/assets/portfolio/8e88f183973136a3e85b0276dec4f53513494c63e1a0ceb8dd789b71b28e50b5-detail.webp",
+              "coverSrc": "/assets/portfolio/8e88f183973136a3e85b0276dec4f53513494c63e1a0ceb8dd789b71b28e50b5-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双12-第1页"
+            },
+            {
+              "id": "7c4ff94e101aefad36fc7bc55803b1f00174a735597d68c7a487b3819be456df",
+              "src": "/assets/portfolio/7c4ff94e101aefad36fc7bc55803b1f00174a735597d68c7a487b3819be456df-detail.webp",
+              "coverSrc": "/assets/portfolio/7c4ff94e101aefad36fc7bc55803b1f00174a735597d68c7a487b3819be456df-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "双12-第2页"
+            },
+            {
+              "id": "fb29efa2e7c83ecc80bd967ec3755e8f66239b112b97ee9836ef60e12271c5f3",
+              "src": "/assets/portfolio/fb29efa2e7c83ecc80bd967ec3755e8f66239b112b97ee9836ef60e12271c5f3-detail.webp",
+              "coverSrc": "/assets/portfolio/fb29efa2e7c83ecc80bd967ec3755e8f66239b112b97ee9836ef60e12271c5f3-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "优惠券页面"
+            },
+            {
+              "id": "465eaa02af8a10ef1ad62cf37c32af7718e6236d651db74a2bc73ed39925de99",
+              "src": "/assets/portfolio/465eaa02af8a10ef1ad62cf37c32af7718e6236d651db74a2bc73ed39925de99-detail.webp",
+              "coverSrc": "/assets/portfolio/465eaa02af8a10ef1ad62cf37c32af7718e6236d651db74a2bc73ed39925de99-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "转盘抽奖页-第1页"
+            },
+            {
+              "id": "d62b4925e03a5a6d6a55772ee56cd798401ba5fcf775b121537b0dbb5f8d43fb",
+              "src": "/assets/portfolio/d62b4925e03a5a6d6a55772ee56cd798401ba5fcf775b121537b0dbb5f8d43fb-detail.webp",
+              "coverSrc": "/assets/portfolio/d62b4925e03a5a6d6a55772ee56cd798401ba5fcf775b121537b0dbb5f8d43fb-cover.webp",
+              "width": 1280,
+              "height": 720,
+              "alt": "转盘抽奖页-第2页"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "ui-detail-project-b2f8efd4b81644358bdb6607",
+          "title": "Banner轮播页",
+          "label": "首页/多张展示",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "06",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "cd53c0d9bf3bbe96fd2d5e7c929645255ed7e1dcd7c1cd1c511d53d8aca1f41b",
+              "src": "/assets/portfolio/cd53c0d9bf3bbe96fd2d5e7c929645255ed7e1dcd7c1cd1c511d53d8aca1f41b-detail.webp",
+              "coverSrc": "/assets/portfolio/cd53c0d9bf3bbe96fd2d5e7c929645255ed7e1dcd7c1cd1c511d53d8aca1f41b-cover.webp",
+              "width": 1920,
+              "height": 480,
+              "alt": "101gqfjlb"
+            },
+            {
+              "id": "695c71b0620071324446ae382cd44e790e30502def36fe217d916d1d6d928abd",
+              "src": "/assets/portfolio/695c71b0620071324446ae382cd44e790e30502def36fe217d916d1d6d928abd-detail.webp",
+              "coverSrc": "/assets/portfolio/695c71b0620071324446ae382cd44e790e30502def36fe217d916d1d6d928abd-cover.webp",
+              "width": 1920,
+              "height": 480,
+              "alt": "10yhpczglb"
+            },
+            {
+              "id": "8567d4e6b178128e1c44bc3754c2b9be40ba62f4bd3598af7357c7cc24b331dc",
+              "src": "/assets/portfolio/8567d4e6b178128e1c44bc3754c2b9be40ba62f4bd3598af7357c7cc24b331dc-detail.webp",
+              "coverSrc": "/assets/portfolio/8567d4e6b178128e1c44bc3754c2b9be40ba62f4bd3598af7357c7cc24b331dc-cover.webp",
+              "width": 1920,
+              "height": 480,
+              "alt": "1ybhdclb"
+            },
+            {
+              "id": "2117d7c4fb1d50508f487b81806d4ad29548063680509c082035d8e62423f380",
+              "src": "/assets/portfolio/2117d7c4fb1d50508f487b81806d4ad29548063680509c082035d8e62423f380-detail.webp",
+              "coverSrc": "/assets/portfolio/2117d7c4fb1d50508f487b81806d4ad29548063680509c082035d8e62423f380-cover.webp",
+              "width": 1920,
+              "height": 480,
+              "alt": "1ynhdfslb"
+            },
+            {
+              "id": "0df840435012bd2fcd5d97209912db1faefdf6b5a7d59c53d4e60e2411f5cee5",
+              "src": "/assets/portfolio/0df840435012bd2fcd5d97209912db1faefdf6b5a7d59c53d4e60e2411f5cee5-detail.webp",
+              "coverSrc": "/assets/portfolio/0df840435012bd2fcd5d97209912db1faefdf6b5a7d59c53d4e60e2411f5cee5-cover.webp",
+              "width": 1920,
+              "height": 480,
+              "alt": "2ykgdjlb"
+            }
+          ],
+          "visible": true
+        }
+      ]
+    },
+    {
+      "id": "group-82acc3721a9c453c98a66c9f",
+      "index": "05",
+      "title": "旅游设计作品",
+      "typeLabel": "Travel",
+      "projects": [
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-374495a847d04b71ba23d0d1",
+          "title": "九寨沟海报/直客图（合集）",
+          "label": "商业广告/自然山水",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "01",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "2a95144fb1332cdce8f16908238f89e61022b697564ad252689541fbdee8af6d",
+              "src": "/assets/portfolio/2a95144fb1332cdce8f16908238f89e61022b697564ad252689541fbdee8af6d-detail.webp",
+              "coverSrc": "/assets/portfolio/2a95144fb1332cdce8f16908238f89e61022b697564ad252689541fbdee8af6d-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "臻九寨-省内三天2-"
+            },
+            {
+              "id": "0aba92f0461f773b19c4c9c224467c167003cc3815a404520433e3ce7d65237a",
+              "src": "/assets/portfolio/0aba92f0461f773b19c4c9c224467c167003cc3815a404520433e3ce7d65237a-detail.webp",
+              "coverSrc": "/assets/portfolio/0aba92f0461f773b19c4c9c224467c167003cc3815a404520433e3ce7d65237a-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "懒九寨2"
+            },
+            {
+              "id": "336297fd3bf52f1fb65eebae51abc9ac5d0cd6663c21b500dd9ef62d50b0e974",
+              "src": "/assets/portfolio/336297fd3bf52f1fb65eebae51abc9ac5d0cd6663c21b500dd9ef62d50b0e974-detail.webp",
+              "coverSrc": "/assets/portfolio/336297fd3bf52f1fb65eebae51abc9ac5d0cd6663c21b500dd9ef62d50b0e974-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "九黄毕达"
+            },
+            {
+              "id": "57c19fcacb465c5d54716bf47b3f01b3513893b3ead61495e3be6b4df57e7f4d",
+              "src": "/assets/portfolio/57c19fcacb465c5d54716bf47b3f01b3513893b3ead61495e3be6b4df57e7f4d-detail.webp",
+              "coverSrc": "/assets/portfolio/57c19fcacb465c5d54716bf47b3f01b3513893b3ead61495e3be6b4df57e7f4d-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "九黄四毕达"
+            },
+            {
+              "id": "f41cb920dc12807c4bfbab723c5d5c70ace4b24305899adbab8ddfa6927fe767",
+              "src": "/assets/portfolio/f41cb920dc12807c4bfbab723c5d5c70ace4b24305899adbab8ddfa6927fe767-detail.webp",
+              "coverSrc": "/assets/portfolio/f41cb920dc12807c4bfbab723c5d5c70ace4b24305899adbab8ddfa6927fe767-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "九寨黄龙"
+            },
+            {
+              "id": "341e9c500ababc0f481af98b56f21a882c00d01d1101475ee7f8714f1c936d5a",
+              "src": "/assets/portfolio/341e9c500ababc0f481af98b56f21a882c00d01d1101475ee7f8714f1c936d5a-detail.webp",
+              "coverSrc": "/assets/portfolio/341e9c500ababc0f481af98b56f21a882c00d01d1101475ee7f8714f1c936d5a-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "夜宿九寨"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-a30551a02bc04d43ba4ff897",
+          "title": "川西海报/直客图（合集）",
+          "label": "商业广告/自然山水",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "03",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "09c662ae87f4b5d8e5e87691a9d8063ae33837ff0f20f42e6bd4371f6e642aa6",
+              "src": "/assets/portfolio/09c662ae87f4b5d8e5e87691a9d8063ae33837ff0f20f42e6bd4371f6e642aa6-detail.webp",
+              "coverSrc": "/assets/portfolio/09c662ae87f4b5d8e5e87691a9d8063ae33837ff0f20f42e6bd4371f6e642aa6-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色牛"
+            },
+            {
+              "id": "e8f5aa355b13558d9f0ab93898aec23df16072f930054f03b14daa12b89ea269",
+              "src": "/assets/portfolio/e8f5aa355b13558d9f0ab93898aec23df16072f930054f03b14daa12b89ea269-detail.webp",
+              "coverSrc": "/assets/portfolio/e8f5aa355b13558d9f0ab93898aec23df16072f930054f03b14daa12b89ea269-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色牛-5日"
+            },
+            {
+              "id": "a7073c4ec7551d9bcdc47d039334005133faae04b0ced9fe3eea1a4f474d66a6",
+              "src": "/assets/portfolio/a7073c4ec7551d9bcdc47d039334005133faae04b0ced9fe3eea1a4f474d66a6-detail.webp",
+              "coverSrc": "/assets/portfolio/a7073c4ec7551d9bcdc47d039334005133faae04b0ced9fe3eea1a4f474d66a6-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "星云牛背"
+            },
+            {
+              "id": "574e68366a6a121013ddb1a674604e96c51d7823706abc99ad8c87331b290468",
+              "src": "/assets/portfolio/574e68366a6a121013ddb1a674604e96c51d7823706abc99ad8c87331b290468-detail.webp",
+              "coverSrc": "/assets/portfolio/574e68366a6a121013ddb1a674604e96c51d7823706abc99ad8c87331b290468-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "星云牛冷"
+            },
+            {
+              "id": "e3f2048a4607346bc978e94256c1624b9bbd8dd5b1fb98b7638510d5511eb245",
+              "src": "/assets/portfolio/e3f2048a4607346bc978e94256c1624b9bbd8dd5b1fb98b7638510d5511eb245-detail.webp",
+              "coverSrc": "/assets/portfolio/e3f2048a4607346bc978e94256c1624b9bbd8dd5b1fb98b7638510d5511eb245-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "星云牛四"
+            },
+            {
+              "id": "22640b209d29012466f3693121430f87e3ff12b02e7c67e9811145cc819a827f",
+              "src": "/assets/portfolio/22640b209d29012466f3693121430f87e3ff12b02e7c67e9811145cc819a827f-detail.webp",
+              "coverSrc": "/assets/portfolio/22640b209d29012466f3693121430f87e3ff12b02e7c67e9811145cc819a827f-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "星云牛四冷"
+            },
+            {
+              "id": "39ba82680b9ba9cf301fcd5fea7335bb2e53a2e095f94965a2769e7534915370",
+              "src": "/assets/portfolio/39ba82680b9ba9cf301fcd5fea7335bb2e53a2e095f94965a2769e7534915370-detail.webp",
+              "coverSrc": "/assets/portfolio/39ba82680b9ba9cf301fcd5fea7335bb2e53a2e095f94965a2769e7534915370-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "星云牛鱼"
+            },
+            {
+              "id": "ee0e9e88ef96fe4ad19ece807f15c28ffe2c8c0b6c287d1e7de078834d964b7f",
+              "src": "/assets/portfolio/ee0e9e88ef96fe4ad19ece807f15c28ffe2c8c0b6c287d1e7de078834d964b7f-detail.webp",
+              "coverSrc": "/assets/portfolio/ee0e9e88ef96fe4ad19ece807f15c28ffe2c8c0b6c287d1e7de078834d964b7f-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美冷嘎措"
+            },
+            {
+              "id": "c6d5788917a077ca7edda35f4e57c1a9fd52ff77bb07b5811a6b1179039663f2",
+              "src": "/assets/portfolio/c6d5788917a077ca7edda35f4e57c1a9fd52ff77bb07b5811a6b1179039663f2-detail.webp",
+              "coverSrc": "/assets/portfolio/c6d5788917a077ca7edda35f4e57c1a9fd52ff77bb07b5811a6b1179039663f2-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色冷"
+            },
+            {
+              "id": "fb6e57fb120d26b1ddac1b527682cffff15cea1df17333cea0d001fe9c717666",
+              "src": "/assets/portfolio/fb6e57fb120d26b1ddac1b527682cffff15cea1df17333cea0d001fe9c717666-detail.webp",
+              "coverSrc": "/assets/portfolio/fb6e57fb120d26b1ddac1b527682cffff15cea1df17333cea0d001fe9c717666-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色四"
+            },
+            {
+              "id": "b836e4a34ec9208196b1f58c200b1da802d009bcb2c33ab9b069a082aca486e0",
+              "src": "/assets/portfolio/b836e4a34ec9208196b1f58c200b1da802d009bcb2c33ab9b069a082aca486e0-detail.webp",
+              "coverSrc": "/assets/portfolio/b836e4a34ec9208196b1f58c200b1da802d009bcb2c33ab9b069a082aca486e0-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色四-修改2"
+            },
+            {
+              "id": "04932ecdd3f8cfb1d5f0893f7398de9c37a27ab724b03e3383b2f1600a99f42d",
+              "src": "/assets/portfolio/04932ecdd3f8cfb1d5f0893f7398de9c37a27ab724b03e3383b2f1600a99f42d-detail.webp",
+              "coverSrc": "/assets/portfolio/04932ecdd3f8cfb1d5f0893f7398de9c37a27ab724b03e3383b2f1600a99f42d-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美四姑-2日游"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-0d1d3ba01cd344eaa0ab2aac",
+          "title": "川西海报/直客图（合集）",
+          "label": "商业广告/自然山水",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "04",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "ae94733d44796cfdf5eab971c177943b55dbe0ce46b0a6f0fd445830d280b7a6",
+              "src": "/assets/portfolio/ae94733d44796cfdf5eab971c177943b55dbe0ce46b0a6f0fd445830d280b7a6-detail.webp",
+              "coverSrc": "/assets/portfolio/ae94733d44796cfdf5eab971c177943b55dbe0ce46b0a6f0fd445830d280b7a6-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美稻亚"
+            },
+            {
+              "id": "35d99c4c09d85ba20470d486fbc56bbff836c6820396bc1f3588c35fb35fba5c",
+              "src": "/assets/portfolio/35d99c4c09d85ba20470d486fbc56bbff836c6820396bc1f3588c35fb35fba5c-detail.webp",
+              "coverSrc": "/assets/portfolio/35d99c4c09d85ba20470d486fbc56bbff836c6820396bc1f3588c35fb35fba5c-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美牛稻"
+            },
+            {
+              "id": "1744e0b5919cda662c7168cc1aae4e484b0ec99cde2fec32b8197e7f33ee653d",
+              "src": "/assets/portfolio/1744e0b5919cda662c7168cc1aae4e484b0ec99cde2fec32b8197e7f33ee653d-detail.webp",
+              "coverSrc": "/assets/portfolio/1744e0b5919cda662c7168cc1aae4e484b0ec99cde2fec32b8197e7f33ee653d-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色稻"
+            },
+            {
+              "id": "ccc853e8b4f255ea849857656857bf0567b7addf9e70dee8543f9d063886d4c7",
+              "src": "/assets/portfolio/ccc853e8b4f255ea849857656857bf0567b7addf9e70dee8543f9d063886d4c7-detail.webp",
+              "coverSrc": "/assets/portfolio/ccc853e8b4f255ea849857656857bf0567b7addf9e70dee8543f9d063886d4c7-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美四稻"
+            },
+            {
+              "id": "a71c517eedb7dad4dccffb481cd2dfc9014d2acd41debf84ffda2a063d97ebeb",
+              "src": "/assets/portfolio/a71c517eedb7dad4dccffb481cd2dfc9014d2acd41debf84ffda2a063d97ebeb-detail.webp",
+              "coverSrc": "/assets/portfolio/a71c517eedb7dad4dccffb481cd2dfc9014d2acd41debf84ffda2a063d97ebeb-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美毕达"
+            },
+            {
+              "id": "2c3ca5d1f5289220b484853cd9078a26b96eba4c827c32a72d749a8bf9348b06",
+              "src": "/assets/portfolio/2c3ca5d1f5289220b484853cd9078a26b96eba4c827c32a72d749a8bf9348b06-detail.webp",
+              "coverSrc": "/assets/portfolio/2c3ca5d1f5289220b484853cd9078a26b96eba4c827c32a72d749a8bf9348b06-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美色毕达"
+            },
+            {
+              "id": "3430d946112cef176bc1bea09d8a67b76827ddfdddb05e92b9b74954284c9c95",
+              "src": "/assets/portfolio/3430d946112cef176bc1bea09d8a67b76827ddfdddb05e92b9b74954284c9c95-detail.webp",
+              "coverSrc": "/assets/portfolio/3430d946112cef176bc1bea09d8a67b76827ddfdddb05e92b9b74954284c9c95-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美四毕达"
+            },
+            {
+              "id": "ab9f6fba8e95129aa89c39c5d73f256ded20d017e0b018067a656ea4cd332e93",
+              "src": "/assets/portfolio/ab9f6fba8e95129aa89c39c5d73f256ded20d017e0b018067a656ea4cd332e93-detail.webp",
+              "coverSrc": "/assets/portfolio/ab9f6fba8e95129aa89c39c5d73f256ded20d017e0b018067a656ea4cd332e93-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "和美鹧毕达"
+            },
+            {
+              "id": "17f5631a59d07fbee27186e242fc52a52212e5a4553a081bdbdbdb914b643b20",
+              "src": "/assets/portfolio/17f5631a59d07fbee27186e242fc52a52212e5a4553a081bdbdbdb914b643b20-detail.webp",
+              "coverSrc": "/assets/portfolio/17f5631a59d07fbee27186e242fc52a52212e5a4553a081bdbdbdb914b643b20-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "四姑毕达"
+            },
+            {
+              "id": "336297fd3bf52f1fb65eebae51abc9ac5d0cd6663c21b500dd9ef62d50b0e974",
+              "src": "/assets/portfolio/336297fd3bf52f1fb65eebae51abc9ac5d0cd6663c21b500dd9ef62d50b0e974-detail.webp",
+              "coverSrc": "/assets/portfolio/336297fd3bf52f1fb65eebae51abc9ac5d0cd6663c21b500dd9ef62d50b0e974-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "九黄毕达"
+            },
+            {
+              "id": "57c19fcacb465c5d54716bf47b3f01b3513893b3ead61495e3be6b4df57e7f4d",
+              "src": "/assets/portfolio/57c19fcacb465c5d54716bf47b3f01b3513893b3ead61495e3be6b4df57e7f4d-detail.webp",
+              "coverSrc": "/assets/portfolio/57c19fcacb465c5d54716bf47b3f01b3513893b3ead61495e3be6b4df57e7f4d-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "九黄四毕达"
+            },
+            {
+              "id": "f41cb920dc12807c4bfbab723c5d5c70ace4b24305899adbab8ddfa6927fe767",
+              "src": "/assets/portfolio/f41cb920dc12807c4bfbab723c5d5c70ace4b24305899adbab8ddfa6927fe767-detail.webp",
+              "coverSrc": "/assets/portfolio/f41cb920dc12807c4bfbab723c5d5c70ace4b24305899adbab8ddfa6927fe767-cover.webp",
+              "width": 1080,
+              "height": 2160,
+              "alt": "九寨黄龙"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-e065d5c5ec984dbca7d81331",
+          "title": "湖南海报/直客图",
+          "label": "商业广告/探境湘西",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "09",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "bae49aead4edac76c21b6319f6ef299ea6d45f2753c8715c0fcede83ed74e3d3",
+              "src": "/assets/portfolio/bae49aead4edac76c21b6319f6ef299ea6d45f2753c8715c0fcede83ed74e3d3-detail.webp",
+              "coverSrc": "/assets/portfolio/bae49aead4edac76c21b6319f6ef299ea6d45f2753c8715c0fcede83ed74e3d3-cover.webp",
+              "width": 945,
+              "height": 1831,
+              "alt": "2021天森有范-新"
+            },
+            {
+              "id": "77da3d376bee6439be19754fe857d84363e74c505145dc751da921798c56316d",
+              "src": "/assets/portfolio/77da3d376bee6439be19754fe857d84363e74c505145dc751da921798c56316d-detail.webp",
+              "coverSrc": "/assets/portfolio/77da3d376bee6439be19754fe857d84363e74c505145dc751da921798c56316d-cover.webp",
+              "width": 945,
+              "height": 1831,
+              "alt": "2021臻享湖南-新"
+            },
+            {
+              "id": "318caee8225182917ecf02b83b9a00d9e0664c62015059870be928086442b3c6",
+              "src": "/assets/portfolio/318caee8225182917ecf02b83b9a00d9e0664c62015059870be928086442b3c6-detail.webp",
+              "coverSrc": "/assets/portfolio/318caee8225182917ecf02b83b9a00d9e0664c62015059870be928086442b3c6-cover.webp",
+              "width": 1130,
+              "height": 1920,
+              "alt": "画板 1"
+            },
+            {
+              "id": "4c795703b9810e178b0b6fe6c0c234b76dc6a2ae4f8c32dd8370a728c066c579",
+              "src": "/assets/portfolio/4c795703b9810e178b0b6fe6c0c234b76dc6a2ae4f8c32dd8370a728c066c579-detail.webp",
+              "coverSrc": "/assets/portfolio/4c795703b9810e178b0b6fe6c0c234b76dc6a2ae4f8c32dd8370a728c066c579-cover.webp",
+              "width": 1130,
+              "height": 1920,
+              "alt": "画板 2"
+            },
+            {
+              "id": "392c7e97df337cc949102c338962b8d22fb97200727c766c52d9882d9606b2ea",
+              "src": "/assets/portfolio/392c7e97df337cc949102c338962b8d22fb97200727c766c52d9882d9606b2ea-detail.webp",
+              "coverSrc": "/assets/portfolio/392c7e97df337cc949102c338962b8d22fb97200727c766c52d9882d9606b2ea-cover.webp",
+              "width": 1002,
+              "height": 1920,
+              "alt": "恋恋湖南"
+            },
+            {
+              "id": "60acb628f855c6b284ef4961800d79735fb697d8762a08ebe69c560934e69a5d",
+              "src": "/assets/portfolio/60acb628f855c6b284ef4961800d79735fb697d8762a08ebe69c560934e69a5d-detail.webp",
+              "coverSrc": "/assets/portfolio/60acb628f855c6b284ef4961800d79735fb697d8762a08ebe69c560934e69a5d-cover.webp",
+              "width": 1002,
+              "height": 1920,
+              "alt": "恋恋湘情"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-c5d850a80d7943b785dab63e",
+          "title": "澳新海报/直客图（合集）",
+          "label": "商业广告/出境旅游",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "08",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "56b7c6654591321d5a8261a50cebd6b35a6b5f9b3ef6afb8ed5a47d999eb1ab2",
+              "src": "/assets/portfolio/56b7c6654591321d5a8261a50cebd6b35a6b5f9b3ef6afb8ed5a47d999eb1ab2-detail.webp",
+              "coverSrc": "/assets/portfolio/56b7c6654591321d5a8261a50cebd6b35a6b5f9b3ef6afb8ed5a47d999eb1ab2-cover.webp",
+              "width": 1080,
+              "height": 2918,
+              "alt": "澳大利亚7日游"
+            },
+            {
+              "id": "5213e9864291445c1e1d4674b69009218c13e03763b2c20015a26dcdac69a1df",
+              "src": "/assets/portfolio/5213e9864291445c1e1d4674b69009218c13e03763b2c20015a26dcdac69a1df-detail.webp",
+              "coverSrc": "/assets/portfolio/5213e9864291445c1e1d4674b69009218c13e03763b2c20015a26dcdac69a1df-cover.webp",
+              "width": 1080,
+              "height": 3493,
+              "alt": "27-4"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-d50d6a8eb956482492b41837",
+          "title": "小红书封面+内页设计（合集）",
+          "label": "红薯攻略/川西旅行",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "06",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "6dd6ebc9916b990012580af8e9f23ab5bd6c7a958bf1ede5e82062930ccd139f",
+              "src": "/assets/portfolio/6dd6ebc9916b990012580af8e9f23ab5bd6c7a958bf1ede5e82062930ccd139f-detail.webp",
+              "coverSrc": "/assets/portfolio/6dd6ebc9916b990012580af8e9f23ab5bd6c7a958bf1ede5e82062930ccd139f-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 1"
+            },
+            {
+              "id": "8ba568d725c9700be17601e5baf5e76eda5eac1676f7266eb4e11923198d314f",
+              "src": "/assets/portfolio/8ba568d725c9700be17601e5baf5e76eda5eac1676f7266eb4e11923198d314f-detail.webp",
+              "coverSrc": "/assets/portfolio/8ba568d725c9700be17601e5baf5e76eda5eac1676f7266eb4e11923198d314f-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 2"
+            },
+            {
+              "id": "bb4f3c1b6e653b1e44b4092550632c8083f42e4180dc30bddcb6634e21ed86de",
+              "src": "/assets/portfolio/bb4f3c1b6e653b1e44b4092550632c8083f42e4180dc30bddcb6634e21ed86de-detail.webp",
+              "coverSrc": "/assets/portfolio/bb4f3c1b6e653b1e44b4092550632c8083f42e4180dc30bddcb6634e21ed86de-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 1"
+            },
+            {
+              "id": "5da7eb1d3a424dc5fb10ea36a6fcf4eb067b5bb236b3292c0fd2d0e5508785e0",
+              "src": "/assets/portfolio/5da7eb1d3a424dc5fb10ea36a6fcf4eb067b5bb236b3292c0fd2d0e5508785e0-detail.webp",
+              "coverSrc": "/assets/portfolio/5da7eb1d3a424dc5fb10ea36a6fcf4eb067b5bb236b3292c0fd2d0e5508785e0-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 2"
+            },
+            {
+              "id": "efb382212a571354f27667cc8c317615c0a8a200d21caf6f52758aeeeb6ba88d",
+              "src": "/assets/portfolio/efb382212a571354f27667cc8c317615c0a8a200d21caf6f52758aeeeb6ba88d-detail.webp",
+              "coverSrc": "/assets/portfolio/efb382212a571354f27667cc8c317615c0a8a200d21caf6f52758aeeeb6ba88d-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 1"
+            },
+            {
+              "id": "a63b65bd9937bce8c14aec72f745b0c3d74f497f3fecae02f3a25855c66839f8",
+              "src": "/assets/portfolio/a63b65bd9937bce8c14aec72f745b0c3d74f497f3fecae02f3a25855c66839f8-detail.webp",
+              "coverSrc": "/assets/portfolio/a63b65bd9937bce8c14aec72f745b0c3d74f497f3fecae02f3a25855c66839f8-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 2"
+            },
+            {
+              "id": "cc535c27ed81fb309045d19d7b312aede97ceb046a440dafd982557a6ffd6591",
+              "src": "/assets/portfolio/cc535c27ed81fb309045d19d7b312aede97ceb046a440dafd982557a6ffd6591-detail.webp",
+              "coverSrc": "/assets/portfolio/cc535c27ed81fb309045d19d7b312aede97ceb046a440dafd982557a6ffd6591-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 1"
+            },
+            {
+              "id": "320a1bc16a1a880ec300f23368335268135ddaa88b577378b976dc2e3c428195",
+              "src": "/assets/portfolio/320a1bc16a1a880ec300f23368335268135ddaa88b577378b976dc2e3c428195-detail.webp",
+              "coverSrc": "/assets/portfolio/320a1bc16a1a880ec300f23368335268135ddaa88b577378b976dc2e3c428195-cover.webp",
+              "width": 1080,
+              "height": 1440,
+              "alt": "画板 2 拷贝 2"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-682a405591a242448b848438",
+          "title": "川西详情页",
+          "label": "自驾旅行/云海旷野",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "05",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "ef1488a0fef69631f0ef944237844657d5d7ec526c0f4aa3f4542720df2d1bfa",
+              "src": "/assets/portfolio/ef1488a0fef69631f0ef944237844657d5d7ec526c0f4aa3f4542720df2d1bfa-detail.webp",
+              "coverSrc": "/assets/portfolio/ef1488a0fef69631f0ef944237844657d5d7ec526c0f4aa3f4542720df2d1bfa-cover.webp",
+              "width": 790,
+              "height": 914,
+              "alt": "牛背山露营详情页-1_01"
+            },
+            {
+              "id": "65eedd8af25b0e3d54e1cf210b8e27f4dce399a931287c0cde7884728a920cce",
+              "src": "/assets/portfolio/65eedd8af25b0e3d54e1cf210b8e27f4dce399a931287c0cde7884728a920cce-detail.webp",
+              "coverSrc": "/assets/portfolio/65eedd8af25b0e3d54e1cf210b8e27f4dce399a931287c0cde7884728a920cce-cover.webp",
+              "width": 790,
+              "height": 1094,
+              "alt": "牛背山露营详情页-1_02"
+            },
+            {
+              "id": "3ea02ad1009ff42ff0b3ba3d8a4bdc9daaa8231d9be871e0672ab89ceb385659",
+              "src": "/assets/portfolio/3ea02ad1009ff42ff0b3ba3d8a4bdc9daaa8231d9be871e0672ab89ceb385659-detail.webp",
+              "coverSrc": "/assets/portfolio/3ea02ad1009ff42ff0b3ba3d8a4bdc9daaa8231d9be871e0672ab89ceb385659-cover.webp",
+              "width": 790,
+              "height": 554,
+              "alt": "牛背山露营详情页-1_03"
+            },
+            {
+              "id": "d4699e6b0eddcbbd419ace9a8a45ffe3c9925bd9012f8e15173adc59dd298a68",
+              "src": "/assets/portfolio/d4699e6b0eddcbbd419ace9a8a45ffe3c9925bd9012f8e15173adc59dd298a68-detail.webp",
+              "coverSrc": "/assets/portfolio/d4699e6b0eddcbbd419ace9a8a45ffe3c9925bd9012f8e15173adc59dd298a68-cover.webp",
+              "width": 790,
+              "height": 1012,
+              "alt": "牛背山露营详情页-1_04"
+            },
+            {
+              "id": "88aa7273c0eacce53be622487f49405ac116a0389eb301715c49d7723cca23a0",
+              "src": "/assets/portfolio/88aa7273c0eacce53be622487f49405ac116a0389eb301715c49d7723cca23a0-detail.webp",
+              "coverSrc": "/assets/portfolio/88aa7273c0eacce53be622487f49405ac116a0389eb301715c49d7723cca23a0-cover.webp",
+              "width": 790,
+              "height": 1407,
+              "alt": "牛背山露营详情页-1_05"
+            },
+            {
+              "id": "4fe8718c7099d33f79f837edec02f7817448b1bbe7447a6450071234e200ddab",
+              "src": "/assets/portfolio/4fe8718c7099d33f79f837edec02f7817448b1bbe7447a6450071234e200ddab-detail.webp",
+              "coverSrc": "/assets/portfolio/4fe8718c7099d33f79f837edec02f7817448b1bbe7447a6450071234e200ddab-cover.webp",
+              "width": 790,
+              "height": 1255,
+              "alt": "牛背山露营详情页-1_06"
+            },
+            {
+              "id": "a1c06b7ed36125b97877ba25227bc87d8085c165d6104388ea988a64746eb869",
+              "src": "/assets/portfolio/a1c06b7ed36125b97877ba25227bc87d8085c165d6104388ea988a64746eb869-detail.webp",
+              "coverSrc": "/assets/portfolio/a1c06b7ed36125b97877ba25227bc87d8085c165d6104388ea988a64746eb869-cover.webp",
+              "width": 790,
+              "height": 989,
+              "alt": "牛背山露营详情页-1_07"
+            },
+            {
+              "id": "05ecc7b8ee824703295f2b664ab902e0ae077fcb528ba3b0dfbcbc462fba4385",
+              "src": "/assets/portfolio/05ecc7b8ee824703295f2b664ab902e0ae077fcb528ba3b0dfbcbc462fba4385-detail.webp",
+              "coverSrc": "/assets/portfolio/05ecc7b8ee824703295f2b664ab902e0ae077fcb528ba3b0dfbcbc462fba4385-cover.webp",
+              "width": 790,
+              "height": 1720,
+              "alt": "牛背山露营详情页-1_08"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-de36e4c7ac9c48c8bb4b748a",
+          "title": "新疆详情页",
+          "label": "小团旅行/定制游",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "07",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "8af9708ed48976c2d1756abc4caa20746af530fc5af6f1cf1aa3a65f39fbb99f",
+              "src": "/assets/portfolio/8af9708ed48976c2d1756abc4caa20746af530fc5af6f1cf1aa3a65f39fbb99f-detail.webp",
+              "coverSrc": "/assets/portfolio/8af9708ed48976c2d1756abc4caa20746af530fc5af6f1cf1aa3a65f39fbb99f-cover.webp",
+              "width": 750,
+              "height": 1343,
+              "alt": "新疆6日游_01"
+            },
+            {
+              "id": "99cd27a6987bef6bcee4fa63e735bd506a4d23fc6b081aed56fcf959487ebe31",
+              "src": "/assets/portfolio/99cd27a6987bef6bcee4fa63e735bd506a4d23fc6b081aed56fcf959487ebe31-detail.webp",
+              "coverSrc": "/assets/portfolio/99cd27a6987bef6bcee4fa63e735bd506a4d23fc6b081aed56fcf959487ebe31-cover.webp",
+              "width": 750,
+              "height": 1502,
+              "alt": "新疆6日游_02"
+            },
+            {
+              "id": "33daeb2e66569c6ee6656332a638748e4155434048de52913fdb9cc1a28e9201",
+              "src": "/assets/portfolio/33daeb2e66569c6ee6656332a638748e4155434048de52913fdb9cc1a28e9201-detail.webp",
+              "coverSrc": "/assets/portfolio/33daeb2e66569c6ee6656332a638748e4155434048de52913fdb9cc1a28e9201-cover.webp",
+              "width": 750,
+              "height": 1950,
+              "alt": "新疆6日游_03"
+            },
+            {
+              "id": "e4e84ac243c9b4509e0765427af3c2ebf891f0811ea9a8cde8c30a5c68c966a5",
+              "src": "/assets/portfolio/e4e84ac243c9b4509e0765427af3c2ebf891f0811ea9a8cde8c30a5c68c966a5-detail.webp",
+              "coverSrc": "/assets/portfolio/e4e84ac243c9b4509e0765427af3c2ebf891f0811ea9a8cde8c30a5c68c966a5-cover.webp",
+              "width": 750,
+              "height": 1942,
+              "alt": "新疆6日游_04"
+            },
+            {
+              "id": "34da9ac88fd7152d230eb29c142834c4401281e3beaa5a0f178baa1c36c2a5f3",
+              "src": "/assets/portfolio/34da9ac88fd7152d230eb29c142834c4401281e3beaa5a0f178baa1c36c2a5f3-detail.webp",
+              "coverSrc": "/assets/portfolio/34da9ac88fd7152d230eb29c142834c4401281e3beaa5a0f178baa1c36c2a5f3-cover.webp",
+              "width": 750,
+              "height": 1410,
+              "alt": "新疆6日游_05"
+            },
+            {
+              "id": "3a401a4d04e03c85372a97c8dae3583e7a489c595c22bcee0d1383877e3de94f",
+              "src": "/assets/portfolio/3a401a4d04e03c85372a97c8dae3583e7a489c595c22bcee0d1383877e3de94f-detail.webp",
+              "coverSrc": "/assets/portfolio/3a401a4d04e03c85372a97c8dae3583e7a489c595c22bcee0d1383877e3de94f-cover.webp",
+              "width": 750,
+              "height": 1087,
+              "alt": "新疆6日游_06"
+            },
+            {
+              "id": "116293533aba7924c7fe8c5023314908628ec8ed8f846765ea3b29b389190779",
+              "src": "/assets/portfolio/116293533aba7924c7fe8c5023314908628ec8ed8f846765ea3b29b389190779-detail.webp",
+              "coverSrc": "/assets/portfolio/116293533aba7924c7fe8c5023314908628ec8ed8f846765ea3b29b389190779-cover.webp",
+              "width": 750,
+              "height": 2289,
+              "alt": "新疆6日游_07"
+            },
+            {
+              "id": "83fd58264e823f18607df3334c60b4ffa46bb497778b756398891184c64f99ac",
+              "src": "/assets/portfolio/83fd58264e823f18607df3334c60b4ffa46bb497778b756398891184c64f99ac-detail.webp",
+              "coverSrc": "/assets/portfolio/83fd58264e823f18607df3334c60b4ffa46bb497778b756398891184c64f99ac-cover.webp",
+              "width": 750,
+              "height": 1711,
+              "alt": "新疆6日游_08"
+            },
+            {
+              "id": "c9094d0c7edaa544677b9133250b6b710014c84dcca43957f6135c58b8e2c0de",
+              "src": "/assets/portfolio/c9094d0c7edaa544677b9133250b6b710014c84dcca43957f6135c58b8e2c0de-detail.webp",
+              "coverSrc": "/assets/portfolio/c9094d0c7edaa544677b9133250b6b710014c84dcca43957f6135c58b8e2c0de-cover.webp",
+              "width": 750,
+              "height": 1369,
+              "alt": "新疆6日游_09"
+            },
+            {
+              "id": "e9062012a0d696aa0ee6c94b442a1ad259537600135f05cddf5aa86343d6b33e",
+              "src": "/assets/portfolio/e9062012a0d696aa0ee6c94b442a1ad259537600135f05cddf5aa86343d6b33e-detail.webp",
+              "coverSrc": "/assets/portfolio/e9062012a0d696aa0ee6c94b442a1ad259537600135f05cddf5aa86343d6b33e-cover.webp",
+              "width": 750,
+              "height": 1988,
+              "alt": "新疆6日游_10"
+            },
+            {
+              "id": "74aac89087671ed77b5d5909a9b4cfc8739e45d3265afa5643ebaf47d8e7c589",
+              "src": "/assets/portfolio/74aac89087671ed77b5d5909a9b4cfc8739e45d3265afa5643ebaf47d8e7c589-detail.webp",
+              "coverSrc": "/assets/portfolio/74aac89087671ed77b5d5909a9b4cfc8739e45d3265afa5643ebaf47d8e7c589-cover.webp",
+              "width": 750,
+              "height": 1447,
+              "alt": "新疆6日游_11"
+            },
+            {
+              "id": "354274a32a57fd2a7325d96b99115d13a782c16582a2295781a71ac562d5b42b",
+              "src": "/assets/portfolio/354274a32a57fd2a7325d96b99115d13a782c16582a2295781a71ac562d5b42b-detail.webp",
+              "coverSrc": "/assets/portfolio/354274a32a57fd2a7325d96b99115d13a782c16582a2295781a71ac562d5b42b-cover.webp",
+              "width": 750,
+              "height": 1137,
+              "alt": "新疆6日游_12"
+            }
+          ],
+          "visible": true
+        },
+        {
+          "id": "group-82acc3721a9c453c98a66c9f-project-e4037d307b47490b9df020b0",
+          "title": "泰国行程页",
+          "label": "东南亚旅行/wordx行程美化",
+          "artwork": "brand",
+          "word": "NEW",
+          "code": "02",
+          "accent": "#71dce5",
+          "contentImages": [
+            {
+              "id": "f5ed65f4a247728510ab4128ff931f08b9686c2ba555a685b5cb7aba3e33f5e0",
+              "src": "/assets/portfolio/f5ed65f4a247728510ab4128ff931f08b9686c2ba555a685b5cb7aba3e33f5e0-detail.webp",
+              "coverSrc": "/assets/portfolio/f5ed65f4a247728510ab4128ff931f08b9686c2ba555a685b5cb7aba3e33f5e0-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "D1"
+            },
+            {
+              "id": "1786bba0f37c32fef8e2fe9c06594b7bad4a827f546bed95216cb37810e1fc9e",
+              "src": "/assets/portfolio/1786bba0f37c32fef8e2fe9c06594b7bad4a827f546bed95216cb37810e1fc9e-detail.webp",
+              "coverSrc": "/assets/portfolio/1786bba0f37c32fef8e2fe9c06594b7bad4a827f546bed95216cb37810e1fc9e-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "D2"
+            },
+            {
+              "id": "48cc8beca667cb72c5c6195fb292a272c16d64ddd286478f4fd4e907c787f38d",
+              "src": "/assets/portfolio/48cc8beca667cb72c5c6195fb292a272c16d64ddd286478f4fd4e907c787f38d-detail.webp",
+              "coverSrc": "/assets/portfolio/48cc8beca667cb72c5c6195fb292a272c16d64ddd286478f4fd4e907c787f38d-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "D3"
+            },
+            {
+              "id": "a7ab48a3e89b01b54dd69750eb6cca02e0fbb942a0b058ae89b43b34a305c195",
+              "src": "/assets/portfolio/a7ab48a3e89b01b54dd69750eb6cca02e0fbb942a0b058ae89b43b34a305c195-detail.webp",
+              "coverSrc": "/assets/portfolio/a7ab48a3e89b01b54dd69750eb6cca02e0fbb942a0b058ae89b43b34a305c195-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "D4"
+            },
+            {
+              "id": "55f32efdf5804be27b8430bdf192a4f496280538f62c4329dacfadeaeb83660c",
+              "src": "/assets/portfolio/55f32efdf5804be27b8430bdf192a4f496280538f62c4329dacfadeaeb83660c-detail.webp",
+              "coverSrc": "/assets/portfolio/55f32efdf5804be27b8430bdf192a4f496280538f62c4329dacfadeaeb83660c-cover.webp",
+              "width": 1357,
+              "height": 1920,
+              "alt": "bj"
+            }
+          ],
           "visible": true
         }
       ]

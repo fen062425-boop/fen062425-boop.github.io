@@ -607,10 +607,17 @@ function validateConfigPayload(value) {
 }
 
 async function saveConfig(config, projectRoot, paths, settings) {
-  await ensureLibrary(paths);
   const configPath = resolve(projectRoot, "data", "portfolio-config.json");
   const serialized = validateConfigPayload(config);
-  const backupCreated = await maybeBackupConfig(configPath, paths, settings);
+  let backupCreated = false;
+
+  try {
+    await ensureLibrary(paths);
+    backupCreated = await maybeBackupConfig(configPath, paths, settings);
+  } catch {
+    // The project config remains editable when the optional image library is offline.
+  }
+
   await atomicWrite(configPath, serialized);
   const savedAt = new Date().toISOString();
 
@@ -652,9 +659,12 @@ async function directoryMetrics(path) {
 }
 
 async function storageStatus(projectRoot, paths, settings) {
+  const configPath = resolve(projectRoot, "data", "portfolio-config.json");
   const base = {
     available: false,
     readOnly: true,
+    configWritable: false,
+    configError: null,
     root: paths.root,
     freeBytes: null,
     totalBytes: null,
@@ -669,6 +679,19 @@ async function storageStatus(projectRoot, paths, settings) {
   };
 
   try {
+    const configProbe = resolve(
+      projectRoot,
+      "data",
+      `.config-write-test-${randomUUID()}`
+    );
+    await writeFile(configProbe, "");
+    await unlink(configProbe);
+    base.configWritable = true;
+  } catch (error) {
+    base.configError = error.message;
+  }
+
+  try {
     await ensureLibrary(paths);
     const [originals, web, recycle, index] = await Promise.all([
       directoryMetrics(paths.originals),
@@ -676,7 +699,6 @@ async function storageStatus(projectRoot, paths, settings) {
       directoryMetrics(paths.recycle),
       readAssetIndex(paths, { create: true })
     ]);
-    const configPath = resolve(projectRoot, "data", "portfolio-config.json");
     const configStat = await stat(configPath).catch((error) => {
       if (error.code === "ENOENT") return null;
       throw error;

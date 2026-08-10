@@ -29,7 +29,10 @@ function inspectStrings(value) {
       if (/^data:image\//i.test(candidate)) {
         errors.push(`${location}: inline Base64 image data is not publishable.`);
       }
-      if (win32.isAbsolute(candidate)) {
+      if (
+        win32.isAbsolute(candidate) &&
+        !(candidate.startsWith("/") && !candidate.startsWith("//"))
+      ) {
         errors.push(`${location}: absolute Windows path is not publishable.`);
       }
       if (
