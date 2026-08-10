@@ -1,6 +1,18 @@
 import "../styles/globals.css";
 
-const siteUrl = "https://visual-designer-portfolio.fen062425.chatgpt.site";
+const repositoryOwner = process.env.GITHUB_REPOSITORY_OWNER ?? "";
+const repositoryName = process.env.GITHUB_REPOSITORY?.split("/")[1] ?? "";
+const githubBasePath =
+  repositoryOwner &&
+  repositoryName &&
+  repositoryName !== `${repositoryOwner}.github.io`
+    ? `/${repositoryName}`
+    : "";
+const siteUrl =
+  repositoryOwner && repositoryName
+    ? `https://${repositoryOwner}.github.io${githubBasePath}`
+    : "https://visual-designer-portfolio.fen062425.chatgpt.site";
+const publicAssetUrl = (path) => `${githubBasePath}${path}`;
 const title = "Creative E-commerce Director · 设计师作品集";
 const description =
   "面向品牌视觉与电商内容的设计师作品集，展示视频创意、详情页设计与首页视觉项目。";
@@ -10,7 +22,7 @@ export const metadata = {
   title,
   description,
   icons: {
-    icon: "/favicon.svg"
+    icon: publicAssetUrl("/favicon.svg")
   },
   openGraph: {
     title,
@@ -19,7 +31,7 @@ export const metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/og.png",
+        url: publicAssetUrl("/og.png"),
         width: 1536,
         height: 1024,
         alt: "Creative E-commerce Director 作品集预览"
@@ -30,7 +42,7 @@ export const metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og.png"]
+    images: [publicAssetUrl("/og.png")]
   }
 };
 
